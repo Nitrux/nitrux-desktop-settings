@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.2.2)  nitrux; urgency=medium
+
+  * Add NetworkManager settings back.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 17 Jul 2025 18:38:00 -0500
+
 nitrux-desktop-settings (6.2.1)  nitrux; urgency=medium
 
   * Clean maintainer scripts.
