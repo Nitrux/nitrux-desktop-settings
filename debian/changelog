@@ -1,8 +1,13 @@
+nitrux-desktop-settings (6.2.4)  nitrux; urgency=medium
+
+  * Update zshrc.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 22 Jul 2025 23:15:00 -0500
+
 nitrux-desktop-settings (6.2.3)  nitrux; urgency=medium
 
   * Add gamemode.ini back.
   * Add autostart-pipewire, cleaunup-appimagekit-launchers and overlay-encycontrol back.
-
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 21 Jul 2025 21:12:00 -0500
 

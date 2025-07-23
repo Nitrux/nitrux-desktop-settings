@@ -222,38 +222,18 @@ function cat() {
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Make DrKonqi shut the F up
-export KDE_DEBUG=1
-
 # Add $PATH for AppImages
 export PATH="/Applications:$PATH"
 
 # Add $PATH for sbin
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 
-# Allow sudo to be removed
-export SUDO_FORCE_REMOVE=yes
-
-# Add environment variables for Plasma Wayland to use Nvidia GBM
+# Add environment variables for Wayland to use Nvidia GBM
 export GBM_BACKEND=nvidia-drm
 export __NV_PRIME_RENDER_OFFLOAD=1
 
 # Add Flatpak environment variables to XDG_DATA_DIRS
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
-
-# Add variables for Firefox to work with touchscreens in X11 and Wayland
-export MOZ_USE_XINPUT2=1
-export MOZ_ENABLE_WAYLAND=1
-
-# Add variables for Fcitx5
-export INPUT_METHOD=fcitx
-export GTK_IM_MODULE=fcitx
-export QT_IM_MODULE=fcitx
-export XMODIFIERS=@im=fcitx
-export XIM_SERVERS=fcitx
-
-# Add variable to make Plasma use Qt scaling
-export PLASMA_USE_QT_SCALING=1
 
 # Add variable for Qt scale factor
 export QT_SCALE_FACTOR=1
