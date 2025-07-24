@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.2.5)  nitrux; urgency=medium
+
+  * Add cursors to this package.
+  * Add Hyprland configuration file.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 24 Jul 2025 13:17:00 -0500
+
 nitrux-desktop-settings (6.2.4)  nitrux; urgency=medium
 
   * Update zshrc.
