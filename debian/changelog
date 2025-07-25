@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.2.3)  nitrux; urgency=medium
+
+  * Remove Hyprland configuration file.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 25 Jul 2025 16:49:00 -0500
+
 nitrux-desktop-settings (6.2.5)  nitrux; urgency=medium
 
   * Add cursors to this package.
