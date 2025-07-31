@@ -25,13 +25,13 @@
 
 # -- Add oh-my-zsh.
 
-git clone -- https://github.com/ohmyzsh/ohmyzsh.git /etc/skel/.oh-my-zsh
+git clone https://github.com/ohmyzsh/ohmyzsh.git /etc/skel/.oh-my-zsh
 
 
 # -- Add p10k for OhMyZSH.
 
 mkdir -p /etc/skel/.oh-my-zsh/custom/themes/powerlevel10k
-git clone --depth=1 -- https://github.com/romkatv/powerlevel10k.git /etc/skel/.oh-my-zsh/custom/themes/powerlevel10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git /etc/skel/.oh-my-zsh/custom/themes/powerlevel10k
 
 
 # -- Add xdg_dir environment variables.

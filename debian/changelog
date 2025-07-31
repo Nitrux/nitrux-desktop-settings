@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.2.4)  nitrux; urgency=medium
+
+  * Fix postinst.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 30 Jul 2025 23:47:00 -0500
+
 nitrux-desktop-settings (6.2.3)  nitrux; urgency=medium
 
   * Remove Hyprland configuration file.
