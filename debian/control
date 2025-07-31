@@ -9,5 +9,5 @@ Homepage: http://nx-desktop.org
 
 Package: nitrux-desktop-settings
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, git
 Description: Defaults settings for Nitrux.
