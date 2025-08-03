@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.2.5)  nitrux; urgency=medium
+
+  * Fix cursor directory name.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 03 Aug 2025 01:55:00 -0500
+
 nitrux-desktop-settings (6.2.4)  nitrux; urgency=medium
 
   * Fix postinst.
