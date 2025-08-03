@@ -1,6 +1,7 @@
 nitrux-desktop-settings (6.2.5)  nitrux; urgency=medium
 
   * Fix cursor directory name.
+  * Add package dependency.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Sun, 03 Aug 2025 01:55:00 -0500
 
