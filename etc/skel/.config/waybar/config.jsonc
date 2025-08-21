@@ -7,7 +7,7 @@
     "spacing": 4, // Gaps between modules (4px)
     // Choose the order of the modules
     "modules-left": [
-        "hyprland/workspaces",
+        "hyprland/workspaces"
     ],
     "modules-center": [
         "hyprland/window"
@@ -24,7 +24,7 @@
         "backlight",
         "keyboard-state",
         "battery",
-        "battery#bat2",
+        "battery#bat1",
         "clock",
         "tray",
         "custom/power"
@@ -46,17 +46,17 @@
         "capslock": true,
         "format": "{name} {icon}",
         "format-icons": {
-            "locked": "⇧",
-            "unlocked": "⌨"
+            "locked": "▣",
+            "unlocked": "□"
         }
     },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
-    },
+    // "idle_inhibitor": {
+    //     "format": "{icon}",
+    //     "format-icons": {
+    //         "activated": "",
+    //         "deactivated": ""
+    //     }
+    // },
     "tray": {
         // "icon-size": 21,
         "spacing": 10,
@@ -105,8 +105,8 @@
         // "format-full": "",
         "format-icons": ["", "", "", "", ""]
     },
-    "battery#bat2": {
-        "bat": "BAT2"
+    "battery#bat1": {
+        "bat": "BAT1"
     },
     "power-profiles-daemon": {
       "format": "{icon}",
@@ -145,20 +145,20 @@
             "car": "",
             "default": ["", "", ""]
         },
-        "on-click": "pavucontrol"
+        "on-click": "pavucontrol-qt"
     },
-    "custom/media": {
-        "format": "{icon} {text}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
-    },
+    // "custom/media": {
+    //     "format": "{icon} {text}",
+    //     "return-type": "json",
+    //     "max-length": 40,
+    //     "format-icons": {
+    //         "spotify": "",
+    //         "default": "🎜"
+    //     },
+    //     "escape": true,
+    //     "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
+    //     // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    // },
     "custom/power": {
         "format" : "⏻ ",
 		"tooltip": false,
@@ -166,9 +166,7 @@
 		"menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
 		"menu-actions": {
 			"shutdown": "shutdown",
-			"reboot": "reboot",
-			"suspend": "systemctl suspend",
-			"hibernate": "systemctl hibernate"
+			"reboot": "reboot"
 		}
     }
 }
