@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=autostart-pipewire
-Exec=autostart-pipewire
-Comment=PipeWire is a server and user space API to deal with multimedia pipelines.
-Icon=preferences-desktop-sound
-Categories=System;
-Terminal=false
-NoDisplay=true
