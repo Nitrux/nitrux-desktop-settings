@@ -237,3 +237,6 @@ export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/
 
 # Add variable for Qt scale factor
 export QT_SCALE_FACTOR=1
+
+# Supress AT-SPI warning message
+export NO_AT_BRIDGE=1

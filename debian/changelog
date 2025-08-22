@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.3.1)  nitrux; urgency=medium
+
+  * Update hyprpaper configuration.
+  * Update zshrc.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 22 Aug 2025 14:06:00 -0500
+
 nitrux-desktop-settings (6.3.0)  nitrux; urgency=medium
 
   * Update hyprland configuration.
