@@ -1,7 +1,7 @@
 @import "mocha.css"; 
 
 * {
-    font-family: "MesloLGS Nerd Font Mono Bold";
+    font-family: "Switzer;
     font-size: 16px;
     min-height: 0;
     font-weight: bold;
@@ -55,6 +55,7 @@ button:hover {
 }
 
 #pulseaudio,
+#power-profiles-daemon,
 #clock,
 #battery,
 #cpu,
@@ -88,6 +89,11 @@ button:hover {
 #pulseaudio {
     color: @blue;
     border-bottom: 2px solid @blue;
+}
+
+#power-profiles-daemon {
+    color: @rosewater;
+    border-bottom: 2px solid @rosewater;
 }
 
 #network {
