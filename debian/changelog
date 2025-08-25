@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.3.9)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+  * Add wlogout configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 25 Aug 2025 02:19:00 -0500
+
 nitrux-desktop-settings (6.3.8)  nitrux; urgency=medium
 
   * Update hyprlock configuration.
