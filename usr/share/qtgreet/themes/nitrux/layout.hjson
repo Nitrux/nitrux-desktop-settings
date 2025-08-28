@@ -43,6 +43,7 @@
 		}
 		Clock: {
 			Type: 	Time
+			Font: Switzer, 16, Bold, Normal
 			Format: hh:mm:ss
 			Width: 	100
 			Height: 36
