@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.4.6)  nitrux; urgency=medium
+
+  * Update wofi and hyprlock configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 09 Sep 2025 14:41:00 -0500
+
 nitrux-desktop-settings (6.4.5)  nitrux; urgency=medium
 
   * Update crystal dock configuration.

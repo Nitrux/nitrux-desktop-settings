@@ -58,54 +58,54 @@
 
 /* Window */
 window {
-  margin: 0px;
-  padding: 10px;
-  border: 2px solid @lavender;
-  border-radius: 8px;
-  background-color: @base;
+  margin: 5px;
+  padding: 6px;
+  border: 2px solid @sapphire;
+  border-radius: 0.11em;
+  background-color: @crust;
 }
 
 /* Inner Box */
 #inner-box {
   margin: 5px;
-  padding: 10px;
+  padding: 6px;
   border: none;
-  background-color: @base;
+  background-color: @crust;
 }
 
 /* Outer Box */
 #outer-box {
   margin: 5px;
-  padding: 10px;
+  padding: 6px;
   border: none;
-  background-color: @base;
+  background-color: @crust;
 }
 
 /* Scroll */
 #scroll {
-  margin: 0px;
-  padding: 10px;
+  margin: 5px;
+  padding: 6px;
   border: none;
-  background-color: @base;
+  background-color: @crust;
 }
 
 /* Input */
 #input {
   margin: 5px 20px;
-  padding: 10px;
+  padding: 6px;
   border: none;
-  border-radius: 0.1em;
+  border-radius: 0.11em;
   color: @text;
-  background-color: @base;
+  background-color: @crust;
 }
 
 #input image {
     border: none;
-    color: @red;
+    color: @mauve;
 }
 
 #input * {
-  outline: 4px solid @red!important;
+  outline: 2px solid @red!important;
 }
 
 /* Text */
@@ -116,23 +116,23 @@ window {
 }
 
 #entry {
-  background-color: @base;
+  background-color: @crust;
 }
 
 #entry arrow {
   border: none;
-  color: @lavender;
+  color: @sapphire;
 }
 
 /* Selected Entry */
 #entry:selected {
-  border: 0.11em solid @lavender;
+  border: 0.11em solid @sapphire;
 }
 
 #entry:selected #text {
-  color: @mauve;
+  color: @sappphire;
 }
 
 #entry:drop(active) {
-  background-color: @lavender!important;
+  background-color: @sapphire!important;
 }

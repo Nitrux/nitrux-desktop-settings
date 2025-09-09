@@ -1,0 +1,41 @@
+# Wofi Configuration for a Beautiful UI with Icons
+# Prompt text in the input box
+prompt= Search
+# Set the number of visible lines for the list
+lines=10
+
+[general]
+# Position of the Wofi window
+position = center
+# Set the font to JetBrains Mono Nerd Font, size 12
+font = JetBrainsMono Nerd Font 12
+# Icon size
+icon-size = 32
+# Background opacity (0 to 1)
+background-opacity = 0.85
+# Set the icon theme for Wofi
+icon-theme = Papirus
+
+[colors]
+# Customize the colors for the UI elements
+background = #282828
+foreground = #ebdbb2
+active = #fabd2f
+inactive = #928374
+border = #504945
+
+[listview]
+# Height of each item in the list
+item-height = 36
+# Border width and rounded corners for items
+border-width = 0
+border-radius = 10
+# Customize the item padding
+padding = 5
+
+[entry]
+# Focus and selection colors for the entry (input box)
+selected-background = #1d2021
+selected-foreground = #fabd2f
+background = #1d2021
+foreground = #ebdbb2
