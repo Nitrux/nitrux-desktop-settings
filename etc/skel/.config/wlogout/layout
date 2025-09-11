@@ -6,7 +6,7 @@
 }
 {
     "label" : "hibernate",
-    "action" : "loginctl hibernate",
+    "action" : "loginctl lock-session && loginctl hibernate",
     "text" : "Hibernate",
     "keybind" : "h"
 }
@@ -24,7 +24,7 @@
 }
 {
     "label" : "suspend",
-    "action" : "loginctl suspend",
+    "action" : "loginctl lock-session && loginctl suspend",
     "text" : "Suspend",
     "keybind" : "u"
 }
