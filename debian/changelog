@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.5.2)  nitrux; urgency=medium
+
+  * Update hyprland and waybar configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 11 Sep 2025 16:04:00 -0500
+
 nitrux-desktop-settings (6.5.1)  nitrux; urgency=medium
 
   * Try to fix gtk configuration.

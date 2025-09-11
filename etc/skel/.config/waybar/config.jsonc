@@ -36,7 +36,7 @@
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "<span size='13000' foreground='#f5e0dc'> </span>Network Unavailable",
     "tooltip-format-wifi": "Signal Strenght: {signalStrength}%",
-    "on-click": "nm-connection-editor"
+    "on-click": "kcmshell6 kcm_networkmanagement"
   },
   "pulseaudio": {
       "format": "{icon}  {volume}%",
