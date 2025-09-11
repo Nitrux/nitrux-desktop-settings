@@ -2,7 +2,7 @@
   "position": "top",
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["network", "pulseaudio", "power-profiles-daemon", "battery", "clock"],
+  "modules-right": ["network", "bluetooth", "pulseaudio", "power-profiles-daemon", "battery", "clock"],
   "clock": {
     "format": "<span foreground='#f5c2e7'>   </span>{:%a %d %H:%M}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
@@ -22,12 +22,21 @@
     "format-icons": ["", "", "", "", ""],
     "tooltip-format": "{time}"
   },
+  "bluetooth": {
+    "format": " {status}",
+    "format-disabled": "", // an empty format will hide the module
+    "format-connected": " {num_connections} connected",
+    "tooltip-format": "{controller_alias}\t{controller_address}",
+    "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+    "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
+  },
   "network": {
     "format-wifi": "<span size='13000' foreground='#f5e0dc'> </span>{essid}",
     "format-ethernet": "<span size='13000' foreground='#f5e0dc'>ﯱ </span> {ifname}",
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "<span size='13000' foreground='#f5e0dc'> </span>Network Unavailable",
-    "tooltip-format-wifi": "Signal Strenght: {signalStrength}%"
+    "tooltip-format-wifi": "Signal Strenght: {signalStrength}%",
+    "on-click": "nm-connection-editor"
   },
   "pulseaudio": {
       "format": "{icon}  {volume}%",

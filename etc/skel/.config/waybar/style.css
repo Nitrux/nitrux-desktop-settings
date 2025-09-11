@@ -55,6 +55,7 @@ button:hover {
 }
 
 #pulseaudio,
+#bluetooth,
 #power-profiles-daemon,
 #clock,
 #battery,
@@ -87,6 +88,11 @@ button:hover {
 }
 
 #pulseaudio {
+    color: @teal;
+    border-bottom: 2px solid @blue;
+}
+
+#bluetooth {
     color: @blue;
     border-bottom: 2px solid @blue;
 }
