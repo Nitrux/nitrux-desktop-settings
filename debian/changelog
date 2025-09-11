@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.5.1)  nitrux; urgency=medium
+
+  * Try to fix gtk configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 11 Sep 2025 14:29:00 -0500
+
 nitrux-desktop-settings (6.5.0)  nitrux; urgency=medium
 
   * Update waybar and gtk configuration.
