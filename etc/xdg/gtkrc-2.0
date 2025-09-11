@@ -1,5 +1,19 @@
-# created by KDE Plasma, vie. mar. 26 15:56:45 2021
-#
+# DO NOT EDIT! This file will be overwritten by nwg-look.
+# Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
-gtk-alternative-button-order = 1
-
+include "~/.gtkrc-2.0.mine"
+gtk-theme-name="Breeze"
+gtk-icon-theme-name="Luv"
+gtk-font-name="Switzer 10"
+gtk-cursor-theme-name="nitrux_snow_cursors"
+gtk-cursor-theme-size=24
+gtk-toolbar-style=0
+gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
+gtk-button-images=0
+gtk-menu-images=0
+gtk-enable-event-sounds=1
+gtk-enable-input-feedback-sounds=0
+gtk-xft-antialias=1
+gtk-xft-hinting=1
+gtk-xft-hintstyle="hintslight"
+gtk-xft-gba="rgb"
