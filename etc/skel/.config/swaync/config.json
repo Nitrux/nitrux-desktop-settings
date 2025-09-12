@@ -1,0 +1,56 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "control-center-height": 300,
+  "control-center-layer": "overlay",
+  "control-center-margin-bottom": 20,
+  "control-center-margin-left": 0,
+  "control-center-margin-right": 0,
+  "control-center-margin-top": 0,
+  "control-center-width": 500,
+  "control-center-positionX": "right",
+  "control-center-positionY": "top",
+  "cssPriority": "application",
+  "fit-to-screen": true,
+  "hide-on-action": false,
+  "hide-on-clear": true,
+  "image-visibility": "when-available",
+  "keyboard-shortcuts": true,
+  "layer": "overlay",
+  "notification-body-image-height": 100,
+  "notification-body-image-width": 200,
+  "notification-inline-replies": true,
+  "notification-window-width": 400,
+  "positionX": "right",
+  "positionY": "top",
+  "script-fail-notify": true,
+  "timeout": 10,
+  "timeout-critical": 0,
+  "timeout-low": 5,
+  "transition-time": 100,
+  "widget-config": {
+    "title": {
+      "text": "Notifications",
+      "button-text": "󰎟 Clear",
+      "clear-all-button": true
+    },
+    "dnd": {
+      "text": "󰂠  Do Not Disturb"
+    },
+    "mpris": {
+      "loop-carousel": true,
+      "show-album-art": "when-available"
+    },
+    "volume": {
+      "label": "",
+      "show-per-app": true,
+      "show-per-app-icon": true,
+      "show-per-app-label": true
+    }
+  },
+  "widgets": [
+    "title",
+    "dnd",
+    "notifications",
+    "mpris"
+  ]
+}

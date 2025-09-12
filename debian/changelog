@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.5.5)  nitrux; urgency=medium
+
+  * Add swaync configuration.
+  * Update wlogout configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 12 Sep 2025 15:39:00 -0500
+
 nitrux-desktop-settings (6.5.4)  nitrux; urgency=medium
 
   * Update hyprlock and waybar configuration.

@@ -1,0 +1,338 @@
+:root {
+  --red: #ed8796;
+  --maroon: #ee99a0;
+  --pink: #f5bde6;
+  --flamingo: #f0c6c6;
+  --peach: #f5a97f;
+  --yellow: #eed49f;
+  --sky: #91d7e3;
+  --sapphire: #7dc4e4;
+  --blue: #8aadf4;
+  --text: #cad3f5;
+  --subtext0: #a5adcb;
+  --subtext1: #b8c0e0;
+  --surface1: #494d64;
+  --surface2: #5b6078;
+  --base: #363a4f;
+  --mantle: #1e2030;
+
+  --bg-primary: var(--mantle);
+  --bg-secondary: var(--base);
+  --accent: var(--peach);
+  --accent-hover: var(--flamingo);
+  --accent-active: var(--yellow);
+
+  --summary: var(--text);
+  --title: var(--text);
+  --body: var(--subtext0);
+  --time: var(--subtext0);
+  --dnd: var(--subtext0);
+  --low: var(--surface1);
+  --normal: var(--flamingo);
+  --critical: var(--red);
+}
+
+* {
+  all: unset;
+  font-size: 14px;
+  font-family: "FiraSans Nerd Font";
+  transition: 200ms;
+}
+
+/* notifications */
+
+.floating-notifications > scrolledwindow,
+.control-center {
+  border-radius: 0px 0px 0px 12px;
+  color: var(--text);
+  margin: 0px 0px;
+  background-color: var(--bg-primary);
+}
+
+.floating-notifications > scrolledwindow > widget > *:not(:last-child)  {
+  border-bottom: 1px solid var(--bg-secondary);
+}
+
+.notification.low {
+  border-right: 5px solid var(--low);
+}
+
+.notification.normal {
+  border-right: 5px solid var(--normal);
+}
+
+.notification.critical {
+  border-right: 5px solid var(--critical);
+}
+
+.notification .notification-content {
+  margin: 7px;
+}
+
+.notification .notification-content overlay {
+  /* icons */
+  margin: 4px;
+}
+
+.notification-content .summary {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--summary);
+}
+
+.notification.critical > * > .notification-content .summary {
+  color: var(--critical);
+}
+
+.notification-content .time {
+  color: var(--time);
+  margin-right: 40px;
+}
+
+.notification-content .body {
+  color: var(--body);
+}
+
+.notification > *:last-child > * {
+  min-height: 3.4em;
+}
+
+.close-button {
+  margin: 10px;
+  padding: 2px;
+  border-radius: 6.3px;
+  color: var(--bg-primary);
+  background-color: var(--red);
+}
+
+.close-button:hover {
+  background-color: var(--maroon);
+}
+
+.close-button:active {
+  background-color: var(--pink);
+}
+
+.notification .notification-action {
+  border-radius: 7px;
+  background-color: var(--accent);
+  color: var(--bg-primary);
+  margin: 0px 12px 6px;
+  padding: 4px;
+  font-size: 0.2rem; /* controls the button size not text size*/
+}
+
+.notification .notification-action:hover {
+  background-color: var(--accent-hover);
+}
+
+.notification .notification-action:active {
+  background-color: var(--accent-active);
+}
+
+.notification.critical progress {
+  background-color: var(--critical);
+}
+
+.notification.normal progress {
+  background-color: var(--normal);
+}
+
+.notification.low progress {
+  background-color: var(--low);
+}
+
+.notification progress,
+.notification trough,
+.notification progressbar {
+  border-radius: 12px;
+  padding: 3px 0;
+}
+
+/* TODO: appear from right */
+.control-center {
+  padding: 14px;
+}
+
+.control-center .notification-background {
+  border-radius: 6px 0 0 6px;
+}
+
+.control-center .notification-background .notification.low {
+  opacity: 0.8;
+}
+
+.control-center .widget-title > label {
+  color: var(--title);
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.control-center .widget-title button {
+  border-radius: 7px;
+  color: var(--bg-primary);
+  background-color: var(--accent);
+  padding: 8px;
+}
+
+.control-center .widget-title button:hover {
+  background-color: var(--accent-hover);
+}
+
+.control-center .widget-title button:active {
+  background-color: var(--accent-active);
+}
+
+.control-center .notification-group {
+  margin-top: 10px;
+}
+
+.control-center .notification-group .notification-background {
+  background-color: var(--bg-primary);
+}
+
+.control-center .notification-group:focus .notification-background {
+  background-color: var(--bg-secondary);
+}
+
+scrollbar slider {
+  margin: -3px;
+  opacity: 0.8;
+}
+
+scrollbar trough {
+  margin: 2px 0;
+}
+
+/* dnd */
+.widget-dnd {
+  color: var(--dnd);
+  margin-top: 5px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+}
+
+.widget-dnd > switch {
+  font-size: initial;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+
+.widget-dnd > switch:checked {
+  background: var(--accent-active);
+}
+
+.widget-dnd > switch slider {
+  background: var(--accent);
+  border-radius: 8px;
+}
+
+/* mpris */
+.widget-mpris-player {
+  background-color: var(--bg-secondary);
+  border-radius: 12.6px;
+}
+
+.mpris-overlay {
+  background-color: var(--bg-primary);
+  opacity: 0.9;
+  padding: 15px 10px;
+}
+
+.widget-mpris-album-art {
+  -gtk-icon-size: 100px;
+  border-radius: 12.6px;
+  margin: 0 10px;
+}
+
+.widget-mpris-title {
+  font-size: 1.2rem;
+  color: var(--text);
+}
+
+.widget-mpris-subtitle {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.widget-mpris button {
+  border-radius: 6px;
+  color: var(--text);
+  margin: 0 5px;
+  padding: 2px;
+}
+
+.widget-mpris button image {
+  -gtk-icon-size: 1.8rem;
+}
+
+.widget-mpris button:hover {
+  background-color: var(--bg-secondary);
+}
+
+.widget-mpris button:active {
+  background-color: var(--surface1);
+}
+
+.widget-mpris button:disabled {
+  opacity: 0.5;
+}
+
+.widget-menubar > box > .menu-button-bar > button > label {
+  font-size: 3rem;
+  padding: 0.5rem 2rem;
+}
+
+.widget-menubar > box > .menu-button-bar > :last-child {
+  color: var(--red);
+}
+
+/* .power-buttons button:hover, */
+/* .powermode-buttons button:hover, */
+/* .screenshot-buttons button:hover { */
+/*   background: #363a4f; */
+/* } */
+
+.control-center .widget-label > label {
+  color: var(--text);
+  font-size: 2rem;
+}
+
+.widget-buttons-grid {
+  padding-top: 1rem;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button label {
+  font-size: 2.5rem;
+}
+
+.widget-volume {
+  padding: 1rem 0;
+}
+
+.widget-volume label {
+  color: var(--accent);
+  padding: 0 1rem;
+}
+
+.widget-volume trough highlight {
+  background: var(--accent-hover);
+}
+
+.widget-backlight trough highlight {
+  background: var(--yellow);
+}
+
+.widget-backlight label {
+  font-size: 1.5rem;
+  color: var(--yellow);
+}
+
+.widget-backlight .KB {
+  padding-bottom: 1rem;
+}
+
+.image {
+  padding-right: 0.5rem;
+}
