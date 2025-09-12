@@ -1,5 +1,0 @@
-# Make Plasma Wayland use Fcitx5 settings
-
-QT_IM_MODULE=fcitx
-GTK_IM_MODULE=fcitx
-XMODIFIERS=@im=fcitx

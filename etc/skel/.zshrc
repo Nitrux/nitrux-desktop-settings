@@ -222,13 +222,13 @@ function cat() {
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# Add $PATH for AppImages
+# Add $PATH for system AppImages
 export PATH="/Applications:$PATH"
 
 # Add $PATH for sbin
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
 
-# Add environment variables for Wayland to use Nvidia GBM
+# Add environment variables for Wayland to use NVIDIA GBM
 export GBM_BACKEND=nvidia-drm
 export __NV_PRIME_RENDER_OFFLOAD=1
 
