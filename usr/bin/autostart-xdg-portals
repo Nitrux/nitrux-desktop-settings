@@ -28,25 +28,18 @@
 set -eu
 
 
-# -- Start KDE's PolicyKit agent to save wireless networks using a GUI.
-#   -- kded6 and kwalletd6 are required.
+# -- Brings up the Hyprland backend first, then the main portal, and (if present) the document/permission helpers.
 
-QDBUS="$(command -v qdbus6 || command -v qdbus || true)"
-POLKIT_AGENT="/usr/lib/x86_64-linux-gnu/libexec/polkit-kde-authentication-agent-1"
+[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] || { command -v dbus-launch >/dev/null && eval "$(dbus-launch --sh-syntax)"; }
 
-[ -x "$POLKIT_AGENT" ] || POLKIT_AGENT="/usr/lib/polkit-kde-authentication-agent-1"
-if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v dbus-launch >/dev/null; then
-  eval "$(dbus-launch --sh-syntax)"
-fi
+BIN_HYPR="$(command -v xdg-desktop-portal-hyprland || echo /usr/libexec/xdg-desktop-portal-hyprland)"
+BIN_PORTAL="$(command -v xdg-desktop-portal || echo /usr/libexec/xdg-desktop-portal)"
+BIN_DOC="/usr/libexec/xdg-document-portal"
+BIN_PERM="/usr/libexec/xdg-permission-store"
 
-pgrep -xu "$USER" polkit-kde-authentication-agent-1 >/dev/null || "$POLKIT_AGENT" &
-pgrep -xu "$USER" kwalletd6 >/dev/null || kwalletd6 >/dev/null 2>&1 &
-pgrep -xu "$USER" kded6 >/dev/null || kded6 --replace >/dev/null 2>&1 &
+pgrep -f xdg-desktop-portal-hyprland >/dev/null || "$BIN_HYPR" &
+sleep 1
+pgrep -f "xdg-desktop-portal$" >/dev/null || "$BIN_PORTAL" &
 
-if [ -n "$QDBUS" ]; then
-  for _ in $(seq 1 40); do
-    "$QDBUS" 2>/dev/null | grep -q org.kde.kded6 && break
-    sleep 0.25
-  done
-  "$QDBUS" org.kde.kded6 /kded org.kde.kded6.loadModule networkmanagement || true
-fi
+[ -x "$BIN_DOC" ] && pgrep -f xdg-document-portal >/dev/null || { [ -x "$BIN_DOC" ] && "$BIN_DOC" & }
+[ -x "$BIN_PERM" ] && pgrep -f xdg-permission-store >/dev/null || { [ -x "$BIN_PERM" ] && "$BIN_PERM" & }

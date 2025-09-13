@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.5.9)  nitrux; urgency=medium
+
+  * Ensure the portals are started with the session.
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 13 Sep 2025 09:31:00 -0500
+
 nitrux-desktop-settings (6.5.8)  nitrux; urgency=medium
 
   * Update waybar configuration.
