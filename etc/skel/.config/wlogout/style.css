@@ -27,25 +27,25 @@ button:focus, button:active, button:hover {
 }
 
 #lock {
-    background-image: url("~/.config/wlogout/icons/system-lock-screen.png");
+    background-image: url("/usr/share/wlogout/icons/Luv/system-lock-screen.png");
 }
 
 #logout {
-    background-image: url("~/.config/wlogout/icons/system-log-out.png");
+    background-image: url("/usr/share/wlogout/icons/Luv/system-log-out.png");
 }
 
 #suspend {
-    background-image: url("~/.config/wlogout/icons/system-suspend.png");
+    background-image: url("/usr/share/wlogout/icons/Luv/system-suspend.png");
 }
 
 #hibernate {
-    background-image: url("~/.config/wlogout/icons/system-suspend-hibernate.png");
+    background-image: url("/usr/share/wlogout/icons/Luv/system-suspend-hibernate.png");
 }
 
 #shutdown {
-    background-image: url("~/.config/wlogout/icons/system-shutdown.png");
+    background-image: url("/usr/share/wlogout/icons/Luv/system-shutdown.png");
 }
 
 #reboot {
-    background-image: url("~/.config/wlogout/icons/system-reboot.png");
+    background-image: url("/usr/share/wlogout/icons/Luv/system-reboot.png");
 }

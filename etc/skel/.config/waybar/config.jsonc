@@ -60,10 +60,10 @@
     "tooltip": true,
     "format": "<span font-size='large'>{icon}</span>",
     "format-icons": {
-      "notification": "",
-      "none": "",
-      "dnd-notification": "",
-      "dnd-none": ""
+      "notification": "🔔",
+      "none": "🔕",
+      "dnd-notification": "🔔",
+      "dnd-none": "🔕"
     },
     "return-type": "json",
     "exec-if": "which swaync-client",

@@ -15,12 +15,13 @@
   --surface2: #5b6078;
   --base: #363a4f;
   --mantle: #1e2030;
+  --crust: #11111b;
 
-  --bg-primary: var(--mantle);
+  --bg-primary: var(--crust);
   --bg-secondary: var(--base);
-  --accent: var(--peach);
+  --accent: var(--sky);
   --accent-hover: var(--flamingo);
-  --accent-active: var(--yellow);
+  --accent-active: var(--sapphire);
 
   --summary: var(--text);
   --title: var(--text);
@@ -35,7 +36,7 @@
 * {
   all: unset;
   font-size: 14px;
-  font-family: "FiraSans Nerd Font";
+  font-family: "Switzer";
   transition: 200ms;
 }
 
@@ -43,7 +44,7 @@
 
 .floating-notifications > scrolledwindow,
 .control-center {
-  border-radius: 0px 0px 0px 12px;
+  border-radius: 0px 0px 0px 0px;
   color: var(--text);
   margin: 0px 0px;
   background-color: var(--bg-primary);
@@ -169,10 +170,10 @@
 }
 
 .control-center .widget-title button {
-  border-radius: 7px;
+  border-radius: 6px;
   color: var(--bg-primary);
   background-color: var(--accent);
-  padding: 8px;
+  padding: 6px;
 }
 
 .control-center .widget-title button:hover {
@@ -207,7 +208,7 @@ scrollbar trough {
 /* dnd */
 .widget-dnd {
   color: var(--dnd);
-  margin-top: 5px;
+  margin-top: 12px;
   border-radius: 8px;
   font-size: 1.1rem;
 }
@@ -220,7 +221,7 @@ scrollbar trough {
 }
 
 .widget-dnd > switch:checked {
-  background: var(--accent-active);
+  background: var(--mantle);
 }
 
 .widget-dnd > switch slider {

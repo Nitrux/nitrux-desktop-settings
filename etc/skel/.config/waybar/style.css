@@ -57,6 +57,7 @@ button:hover {
 #pulseaudio,
 #bluetooth,
 #power-profiles-daemon,
+#custom-swaync,
 #clock,
 #battery,
 #cpu,
@@ -95,6 +96,11 @@ button:hover {
 #bluetooth {
     color: @blue;
     border-bottom: 2px solid @blue;
+}
+
+#custom-swaync {
+    color: @flamingo;
+    border-bottom: 2px solid @flamingo;
 }
 
 #power-profiles-daemon {
