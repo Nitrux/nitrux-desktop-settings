@@ -1,8 +1,14 @@
-nitrux-desktop-settings (6.5.6)  nitrux; urgency=medium
+nitrux-desktop-settings (6.5.7)  nitrux; urgency=medium
 
   * Update waybar, swaync and gtk configuration.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Sat, 13 Sep 2025 04:13:00 -0500
+
+nitrux-desktop-settings (6.5.6)  nitrux; urgency=medium
+
+  * Update waybar configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 12 Sep 2025 15:45:00 -0500
 
 nitrux-desktop-settings (6.5.5)  nitrux; urgency=medium
 
