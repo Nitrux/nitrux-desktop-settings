@@ -108,7 +108,7 @@ ForegroundPositive=39,174,96
 ForegroundVisited=127,140,141
 
 [General]
-ColorScheme=NitruxDark
+ColorScheme=CatppuccinMochaNitrux
 Name=Nitrux Dark
 XftAntialias=true
 XftHintStyle=hintmedium
@@ -131,7 +131,7 @@ Theme=Luv
 [KDE]
 LookAndFeelPackage=org.kde.nitrux.dark.desktop
 AnimationDurationFactor=0.7071067811865475
-ColorScheme=NitruxDark
+ColorScheme=CatppuccinMochaNitrux
 ShowIconsInMenuItems=false
 ShowIconsOnPushButtons=false
 contrast=0
