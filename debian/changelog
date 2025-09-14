@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.6.1)  nitrux; urgency=medium
+
+  * Update kde configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 14 Sep 2025 03:11:00 -0500
+
 nitrux-desktop-settings (6.6.0)  nitrux; urgency=medium
 
   * Add catpuccin mocha color schemes.
