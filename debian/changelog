@@ -1,4 +1,4 @@
-nitrux-desktop-settings (6.6.2)  nitrux; urgency=medium
+nitrux-desktop-settings (6.6.3)  nitrux; urgency=medium
 
   * Update hyprland, waybar configuration.
   * Update xdg portals wrapper.
