@@ -37,9 +37,24 @@ BIN_PORTAL="$(command -v xdg-desktop-portal || echo /usr/libexec/xdg-desktop-por
 BIN_DOC="/usr/libexec/xdg-document-portal"
 BIN_PERM="/usr/libexec/xdg-permission-store"
 
-pgrep -f xdg-desktop-portal-hyprland >/dev/null || "$BIN_HYPR" &
-sleep 1
-pgrep -f "xdg-desktop-portal$" >/dev/null || "$BIN_PORTAL" &
+if ! pgrep -f -u "$USER" '(^|/)xdg-desktop-portal-hyprland(\s|$)' >/dev/null; then
+  "$BIN_HYPR" &
+fi
 
-[ -x "$BIN_DOC" ] && pgrep -f xdg-document-portal >/dev/null || { [ -x "$BIN_DOC" ] && "$BIN_DOC" & }
-[ -x "$BIN_PERM" ] && pgrep -f xdg-permission-store >/dev/null || { [ -x "$BIN_PERM" ] && "$BIN_PERM" & }
+sleep 1
+
+if ! pgrep -f -u "$USER" '(^|/)xdg-desktop-portal(\s|$)' >/dev/null; then
+  "$BIN_PORTAL" &
+fi
+
+if [ -x "$BIN_DOC" ]; then
+  if ! pgrep -f -u "$USER" '(^|/)xdg-document-portal(\s|$)' >/dev/null; then
+    "$BIN_DOC" &
+  fi
+fi
+
+if [ -x "$BIN_PERM" ]; then
+  if ! pgrep -f -u "$USER" '(^|/)xdg-permission-store(\s|$)' >/dev/null; then
+    "$BIN_PERM" &
+  fi
+fi

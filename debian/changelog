@@ -1,5 +1,12 @@
 nitrux-desktop-settings (6.6.2)  nitrux; urgency=medium
 
+  * Update hyprland, waybar configuration.
+  * Update xdg portals wrapper.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 15 Sep 2025 05:28:00 -0500
+
+nitrux-desktop-settings (6.6.2)  nitrux; urgency=medium
+
   * Update kde configuration.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 15 Sep 2025 03:18:00 -0500

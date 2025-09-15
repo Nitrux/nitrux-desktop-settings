@@ -29,7 +29,8 @@
     "tooltip-format": "{controller_alias}\t{controller_address}",
     "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
     "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-    "on-click": "kcmshell6 kcm_bluetooth"
+    "on-click": "bluedevil-wizard",
+    "on-click-middle": "kcmshell6 kcm_bluetooth"
   },
   "network": {
     "format-wifi": "<span size='13000' foreground='#f5e0dc'> </span>{essid}",
