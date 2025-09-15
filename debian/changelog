@@ -1,6 +1,6 @@
 nitrux-desktop-settings (6.6.4)  nitrux; urgency=medium
 
-  * Remove link to Breeze-Dark, their GTK 4 theme is broken and it breakes sway-notification-center.
+  * Remove link to Breeze-Dark, their GTK 4 theme is broken and it breaks sway-notification-center.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 15 Sep 2025 06:41:00 -0500
 
