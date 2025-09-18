@@ -28,33 +28,45 @@
 set -eu
 
 
-# -- Brings up the Hyprland backend first, then the main portal, and (if present) the document/permission helpers.
+# -- The script has two flags: -f for full-screen and -s for region selection (via slurp). It saves to ~/Pictures/, copies to the clipboard, and shows a styled notification.
 
-[ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] || { command -v dbus-launch >/dev/null && eval "$(dbus-launch --sh-syntax)"; }
+mode=""
+while getopts "fs" opt; do
+  case "$opt" in
+    f) mode="full";;
+    s) mode="select";;
+    *) echo "Usage: $0 [-f | -s]"; exit 2;;
+  esac
+done
 
-BIN_HYPR="$(command -v xdg-desktop-portal-hyprland || echo /usr/lib/xdg-desktop-portal-hyprland)"
-BIN_PORTAL="$(command -v xdg-desktop-portal || echo /usr/libexec/xdg-desktop-portal)"
-BIN_DOC="/usr/libexec/xdg-document-portal"
-BIN_PERM="/usr/libexec/xdg-permission-store"
-
-if ! pgrep -f -u "$USER" '(^|/)xdg-desktop-portal-hyprland(\s|$)' >/dev/null; then
-  "$BIN_HYPR" &
+if [ -z "${mode}" ]; then
+  echo "Usage: $0 [-f | -s]"
+  exit 2
 fi
 
-sleep 1
+outdir="$HOME/Pictures"
+mkdir -p "$outdir"
+outfile="$outdir/screenshot-$(date +'%Y%m%d-%H%M%S').png"
 
-if ! pgrep -f -u "$USER" '(^|/)xdg-desktop-portal(\s|$)' >/dev/null; then
-  "$BIN_PORTAL" &
-fi
-
-if [ -x "$BIN_DOC" ]; then
-  if ! pgrep -f -u "$USER" '(^|/)xdg-document-portal(\s|$)' >/dev/null; then
-    "$BIN_DOC" &
+if [ "$mode" = "full" ]; then
+  if grim "$outfile"; then
+    wl-copy < "$outfile"
+    notify-send -a "Grimshot" -u normal -i "spectacle" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
+  else
+    notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture full-screen image."
+    exit 1
   fi
-fi
-
-if [ -x "$BIN_PERM" ]; then
-  if ! pgrep -f -u "$USER" '(^|/)xdg-permission-store(\s|$)' >/dev/null; then
-    "$BIN_PERM" &
+else
+  geom="$(slurp -w 0 || true)"
+  if [ -z "${geom}" ]; then
+    notify-send -a "Grimshot" -u low -i "dialog-information" "Screenshot Cancelled" "No region selected."
+    exit 1
+  fi
+  if grim -g "$geom" "$outfile"; then
+    wl-copy < "$outfile"
+    notify-send -a "Grimshot" -u normal -i "spectacle" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
+  else
+    notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture selected region."
+    exit 1
   fi
 fi
