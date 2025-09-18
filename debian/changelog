@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.6.6)  nitrux; urgency=medium
+
+  * Improve grimshot to use the screenshot as the notficiation icon.
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 18 Sep 2025 02:46:00 -0500
+
 nitrux-desktop-settings (6.6.5)  nitrux; urgency=medium
 
   * Fix path to hyrpland desktop portal in autostart script.

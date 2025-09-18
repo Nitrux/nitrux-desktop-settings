@@ -32,41 +32,47 @@ set -eu
 
 mode=""
 while getopts "fs" opt; do
-  case "$opt" in
-    f) mode="full";;
-    s) mode="select";;
-    *) echo "Usage: $0 [-f | -s]"; exit 2;;
-  esac
+    case "$opt" in
+        f) mode="full";;
+        s) mode="select";;
+        *) echo "Usage: $0 [-f | -s]"; exit 2;;
+    esac
 done
 
 if [ -z "${mode}" ]; then
-  echo "Usage: $0 [-f | -s]"
-  exit 2
+    echo "Usage: $0 [-f | -s]"
+    exit 2
 fi
 
-outdir="$HOME/Pictures"
+xdg_dirs="${XDG_CONFIG_HOME:-$HOME/.config}/user-dirs.dirs"
+if [ -r "$xdg_dirs" ]; then
+    # shellcheck source=/dev/null
+    . "$xdg_dirs"
+fi
+
+outdir="${XDG_PICTURES_DIR:-$HOME/Pictures}"
 mkdir -p "$outdir"
 outfile="$outdir/screenshot-$(date +'%Y%m%d-%H%M%S').png"
 
 if [ "$mode" = "full" ]; then
-  if grim "$outfile"; then
-    wl-copy < "$outfile"
-    notify-send -a "Grimshot" -u normal -i "spectacle" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
-  else
-    notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture full-screen image."
-    exit 1
-  fi
+    if grim "$outfile"; then
+        wl-copy -t image/png < "$outfile"
+        notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
+    else
+        notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture full-screen image."
+        exit 1
+    fi
 else
-  geom="$(slurp -w 0 || true)"
-  if [ -z "${geom}" ]; then
-    notify-send -a "Grimshot" -u low -i "dialog-information" "Screenshot Cancelled" "No region selected."
-    exit 1
-  fi
-  if grim -g "$geom" "$outfile"; then
-    wl-copy < "$outfile"
-    notify-send -a "Grimshot" -u normal -i "spectacle" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
-  else
-    notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture selected region."
-    exit 1
-  fi
+    geom="$(slurp -w 0 || true)"
+    if [ -z "${geom}" ]; then
+        notify-send -a "Grimshot" -u low -i "dialog-information" "Screenshot Cancelled" "No region selected."
+        exit 1
+    fi
+    if grim -g "$geom" "$outfile"; then
+        wl-copy -t image/png < "$outfile"
+        notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
+    else
+        notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture selected region."
+        exit 1
+    fi
 fi
