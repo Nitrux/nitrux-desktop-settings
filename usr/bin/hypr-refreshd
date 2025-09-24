@@ -36,8 +36,7 @@ MONITOR_NAME="eDP-1"
 
 # -- Functions.
 
-usage() { echo "Usage: $0 [ac|battery]"; exit 1; }
-
+usage() { echo "Usage: $0"; exit 1; }
 log() { logger -t hypr-refreshd "$1: $2"; }
 need() { command -v "$1" >/dev/null 2>&1 || { log "ERR" "$1 not found"; exit 1; }; }
 
@@ -80,28 +79,21 @@ upsert_config_line() {
       gsub(/^[ \t]+|[ \t]+$/, "", newline);
       re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*1[ \t]*$";
       re_monitor="^[ \t]*monitor[ \t]*=[ \t]*" name "[ \t]*,";
-      did_replace=0; commented_generic=0
+      did_replace=0
     }
     {
-      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; commented_generic=1; next }
-      if ($0 ~ re_monitor) {
-        if (did_replace==0) { print newline; did_replace=1 }
-        next
-      }
+      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; next }
+      if ($0 ~ re_monitor) { if (did_replace==0) { print newline; did_replace=1 } ; next }
       print
     }
-    END {
-      if (did_replace==0) print newline
-    }
+    END { if (did_replace==0) print newline }
   ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
   return 0
 }
 
 apply_ac() {
   m=""
-  if ! m="$(pick_mode hi 2>/dev/null)"; then
-    m=""
-  fi
+  if ! m="$(pick_mode hi 2>/dev/null)"; then m=""; fi
   [ -n "$m" ] || { log "AC" "no valid mode"; return 1; }
   if upsert_config_line "$m"; then
     hyprctl reload >/dev/null 2>&1 || true
@@ -113,9 +105,7 @@ apply_ac() {
 
 apply_battery() {
   m=""
-  if ! m="$(pick_mode lo 2>/dev/null)"; then
-    m=""
-  fi
+  if ! m="$(pick_mode lo 2>/dev/null)"; then m=""; fi
   [ -n "$m" ] || { log "BAT" "no valid mode"; return 1; }
   if upsert_config_line "$m"; then
     hyprctl reload >/dev/null 2>&1 || true
@@ -125,11 +115,59 @@ apply_battery() {
   return 1
 }
 
+sysfs_state() {
+  any=0
+  seen=0
+  for d in /sys/class/power_supply/*; do
+    [ -d "$d" ] || continue
+    seen=1
+    t="$(cat "$d/type" 2>/dev/null || echo)"
+    case "$t" in
+      Mains|USB|USB_C|USB_PD) ;;
+      *) continue ;;
+    esac
+    if [ -r "$d/online" ]; then
+      v="$(cat "$d/online" 2>/dev/null || echo 0)"
+      [ "$v" = "1" ] && { any=1; break; }
+    fi
+  done
+  if [ "$any" = "1" ]; then
+    echo ac
+  elif [ "$seen" = "1" ]; then
+    echo battery
+  else
+    echo unknown
+  fi
+}
+
+upower_state() {
+  dev="$(upower -e 2>/dev/null | awk '/DisplayDevice/{print; exit}')"
+  [ -n "$dev" ] || { echo unknown; return; }
+  s="$(upower -i "$dev" 2>/dev/null | awk -F': *' '/on-battery:/ {print $2; exit}')"
+  case "$s" in
+    yes) echo battery ;;
+    no) echo ac ;;
+    *) echo unknown ;;
+  esac
+}
+
 current_state() {
-  dev="$(upower -e | grep -m1 DisplayDevice || true)"
-  [ -n "$dev" ] || { echo ac; return; }
-  s="$(upower -i "$dev" | awk '/on-battery:/ {print $2; exit}')"
-  [ "$s" = "yes" ] && echo battery || echo ac
+  s="$(sysfs_state)"
+  [ "$s" != "unknown" ] && { echo "$s"; return; }
+  s="$(upower_state)"
+  [ "$s" != "unknown" ] && { echo "$s"; return; }
+  echo unknown
+}
+
+wait_for_state() {
+  tries=20
+  while :; do
+    s="$(current_state)"
+    [ "$s" != "unknown" ] && { echo "$s"; return; }
+    tries=$((tries-1))
+    [ "$tries" -le 0 ] && { echo battery; return; }
+    sleep 0.2
+  done
 }
 
 apply_state() {
@@ -140,7 +178,7 @@ apply_state() {
   esac
 }
 
-state="$(current_state)"
+state="$(wait_for_state)"
 apply_state "$state" || true
 
 upower --monitor-detail | while IFS= read -r line; do
