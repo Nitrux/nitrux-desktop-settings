@@ -9,5 +9,5 @@ Homepage: http://nx-desktop.org
 
 Package: nitrux-desktop-settings
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, git, zsh, brightnessctl
+Depends: ${shlibs:Depends}, ${misc:Depends}, git, zsh, brightnessctl, jq
 Description: Defaults settings for Nitrux.
