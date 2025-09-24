@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+
+#############################################################################################################################################################################
+#   The license used for this file and its contents is: BSD-3-Clause                                                                                                        #
+#                                                                                                                                                                           #
+#   Copyright <2025> <Uri Herrera <uri_herrera@nxos.org>>                                                                                                                   #
+#                                                                                                                                                                           #
+#   Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:                          #
+#                                                                                                                                                                           #
+#    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.                                        #
+#                                                                                                                                                                           #
+#    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer                                      #
+#       in the documentation and/or other materials provided with the distribution.                                                                                         #
+#                                                                                                                                                                           #
+#    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software                    #
+#       without specific prior written permission.                                                                                                                          #
+#                                                                                                                                                                           #
+#    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,                      #
+#    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS                  #
+#    BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE                 #
+#    GOODS OR SERVICES; LOSS OF USE, DATA,   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,                      #
+#    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.   #
+#############################################################################################################################################################################
+
+
+# -- Exit on errors.
+
+set -eu
+
+
+# -- Variables.
+
+HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"
+MONITOR_NAME="eDP-1"
+
+
+# -- Functions.
+
+usage() { echo "Usage: $0 [ac|battery]"; exit 1; }
+
+log() { logger -t hypr-refreshd "$1: $2"; }
+need() { command -v "$1" >/dev/null 2>&1 || { log "ERR" "$1 not found"; exit 1; }; }
+
+need hyprctl
+need jq
+need upower
+
+pick_mode() {
+  pref="$1"
+  hyprctl monitors -j 2>/dev/null | jq -r --arg name "$MONITOR_NAME" --arg pref "$pref" '
+    (map(select(.name==$name)) | .[0]) as $m
+    | if $m==null then empty else
+      (if ($m.availableModes|type=="array" and ($m.availableModes|length)>0) then
+         $m.availableModes
+         | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
+               | {w:(.w|tonumber), h:(.h|tonumber), r:((.r|tonumber)|floor)})
+       else
+         ($m.modes
+          | map({w:(.width//.w), h:(.height//.h),
+                 r:(((.refreshRate//.refresh)//0) as $rr
+                    | if $rr>1000 then ($rr/1000|floor) else ($rr|floor) end)}))
+       end) as $all
+      | ($all | max_by([.w,.h]) | {w,h}) as $maxres
+      | ($all | map(select(.w==$maxres.w and .h==$maxres.h)))
+      | (if $pref=="hi" then max_by(.r) else min_by(.r) end) as $pick
+      | "\($pick.w)x\($pick.h)@\($pick.r)"
+    end
+  '
+}
+
+upsert_config_line() {
+  mode_str="$1"
+  exact="monitor = $MONITOR_NAME, $mode_str, auto, 1"
+  if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null; then
+    return 1
+  fi
+  tmp="$(mktemp)"
+  awk -v name="$MONITOR_NAME" -v newline="$exact" '
+    BEGIN {
+      gsub(/^[ \t]+|[ \t]+$/, "", newline);
+      re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*1[ \t]*$";
+      re_monitor="^[ \t]*monitor[ \t]*=[ \t]*" name "[ \t]*,";
+      did_replace=0; commented_generic=0
+    }
+    {
+      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; commented_generic=1; next }
+      if ($0 ~ re_monitor) {
+        if (did_replace==0) { print newline; did_replace=1 }
+        next
+      }
+      print
+    }
+    END {
+      if (did_replace==0) print newline
+    }
+  ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
+  return 0
+}
+
+apply_ac() {
+  m=""
+  if ! m="$(pick_mode hi 2>/dev/null)"; then
+    m=""
+  fi
+  [ -n "$m" ] || { log "AC" "no valid mode"; return 1; }
+  if upsert_config_line "$m"; then
+    hyprctl reload >/dev/null 2>&1 || true
+    log "AC" "applied $m"
+    return 0
+  fi
+  return 1
+}
+
+apply_battery() {
+  m=""
+  if ! m="$(pick_mode lo 2>/dev/null)"; then
+    m=""
+  fi
+  [ -n "$m" ] || { log "BAT" "no valid mode"; return 1; }
+  if upsert_config_line "$m"; then
+    hyprctl reload >/dev/null 2>&1 || true
+    log "BAT" "applied $m"
+    return 0
+  fi
+  return 1
+}
+
+current_state() {
+  dev="$(upower -e | grep -m1 DisplayDevice || true)"
+  [ -n "$dev" ] || { echo ac; return; }
+  s="$(upower -i "$dev" | awk '/on-battery:/ {print $2; exit}')"
+  [ "$s" = "yes" ] && echo battery || echo ac
+}
+
+apply_state() {
+  case "$1" in
+    ac) apply_ac ;;
+    battery) apply_battery ;;
+    *) return 1 ;;
+  esac
+}
+
+state="$(current_state)"
+apply_state "$state" || true
+
+upower --monitor-detail | while IFS= read -r line; do
+  case "$line" in
+    *"on-battery:"*"yes"*) new="battery" ;;
+    *"on-battery:"*"no"*)  new="ac" ;;
+    *) continue ;;
+  esac
+  [ "$new" = "$state" ] && continue
+  state="$new"
+  apply_state "$state" || true
+done
