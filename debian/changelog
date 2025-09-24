@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.6.8)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+  * Add dispatcher to set correct timezone.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 23 Sep 2025 22:13:00 -0500
+
 nitrux-desktop-settings (6.6.7)  nitrux; urgency=medium
 
   * Add daemon to change refresh rate of laptop screen depending on the power source.
