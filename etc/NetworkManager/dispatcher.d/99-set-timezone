@@ -40,7 +40,15 @@ STATUS="$2"
 
 # -- Wait until full connectivity is established, including DNS.
 
-nm-online -q -t 15 >/dev/null 2>&1 || exit 1
+TIMEOUT=90
+INTERVAL=3
+WAITED=0
+
+while ! nm-online -q; do
+    sleep "$INTERVAL"
+    WAITED=$((WAITED + INTERVAL))
+    [ "$WAITED" -ge "$TIMEOUT" ] && logger -t auto-timezone "Timeout waiting for internet connectivity" && exit 1
+done
 
 
 # -- Use IP geolocation to detect timezone.
@@ -55,14 +63,14 @@ ZONE=$(curl -fsSL "$TZ_API" | jq -r .timezone)
 if [ -n "$ZONE" ] && [ "$ZONE" != "null" ] && [ -e "/usr/share/zoneinfo/$ZONE" ]; then
     ln -sf "/usr/share/zoneinfo/$ZONE" /etc/localtime
     echo "$ZONE" > /etc/timezone
-    echo "Timezone set to $ZONE"
+    logger -t auto-timezone "Timezone set to $ZONE"
 else
     if [ -f /etc/timezone ] && [ -e "/usr/share/zoneinfo/$(cat /etc/timezone)" ]; then
         CACHED_ZONE="$(cat /etc/timezone)"
         ln -sf "/usr/share/zoneinfo/$CACHED_ZONE" /etc/localtime
-        echo "Timezone fallback to $CACHED_ZONE"
+        logger -t auto-timezone "Timezone fallback to $CACHED_ZONE"
     else
-        echo "Failed to determine timezone automatically and no fallback available."
+        logger -t auto-timezone "Failed to determine timezone automatically and no fallback available."
     fi
 fi
 

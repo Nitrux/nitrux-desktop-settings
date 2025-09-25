@@ -37,7 +37,7 @@ MONITOR_NAME="eDP-1"
 # -- Functions.
 
 usage() { echo "Usage: $0"; exit 1; }
-log() { logger -t hypr-refreshd "$1: $2"; }
+log() { logger -t hyprscreend "$1: $2"; }
 need() { command -v "$1" >/dev/null 2>&1 || { log "ERR" "$1 not found"; exit 1; }; }
 
 need hyprctl

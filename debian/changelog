@@ -1,3 +1,11 @@
+nitrux-desktop-settings (6.7.0)  nitrux; urgency=medium
+
+  * Rename hypr-refreshd to hyprscreend.
+  * Improve robustness of dispatcher to change timezone.
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 24 Sep 2025 21:27:00 -0500
+
 nitrux-desktop-settings (6.6.9)  nitrux; urgency=medium
 
   * Determine power from sysfs first (it’s instant and doesn’t need root), and only fall back to UPower.
