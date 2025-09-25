@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.7.1)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 25 Sep 2025 01:04:00 -0500
+
 nitrux-desktop-settings (6.7.0)  nitrux; urgency=medium
 
   * Rename hypr-refreshd to hyprscreend.
