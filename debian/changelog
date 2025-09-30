@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.7.2)  nitrux; urgency=medium
+
+  * Update hypridle configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 29 Sep 2025 00:11:00 -0500
+
 nitrux-desktop-settings (6.7.1)  nitrux; urgency=medium
 
   * Update hyprland configuration.
