@@ -34,8 +34,7 @@ wget -q -O ~/.local/bin/itch-setup https://raw.githubusercontent.com/Nitrux/stor
 
 notify-send -i "itch-io" "Installing itch.io, please wait..." 
 
-chmod +x ~/.local/bin/itch-setup
-~/.local/bin/./itch-setup
+chmod +x ~/.local/bin/itch-setup && sh ~/.local/bin/./itch-setup
 
 notify-send -i "itch-io" "Installation complete." 
 

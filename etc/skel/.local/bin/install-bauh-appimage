@@ -46,12 +46,6 @@ download_appimage() {
     echo "$destination"
 }
 
-kill_appimaged() {
-    if pgrep -x "appimaged" > /dev/null; then
-        pkill -x "appimaged"
-    fi
-}
-
 
 # -- Create $HOME/Applications directory if it doesn't exist.
 
@@ -91,9 +85,7 @@ EOF
 
 notify-send -a "System Message" -i "appimage-cli-manager" "Desktop launcher for Bauh has been created successfully."
 
-kill_appimaged
-
-kioclient5 exec /etc/xdg/autostart/appimagekit-appimaged.desktop &
+kioclient exec /etc/xdg/autostart/appimagekit-appimaged.desktop &
 
 notify-send -a "System Message" -i "appimage-cli-manager" "Installation complete."
 
