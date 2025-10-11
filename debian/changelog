@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.7.8)  nitrux; urgency=medium
+
+  * Add script to enable/disable touchpad.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 09 Oct 2025 15:48:00 -0500
+
 nitrux-desktop-settings (6.7.7)  nitrux; urgency=medium
 
   * Fix AppImages install scripts.
