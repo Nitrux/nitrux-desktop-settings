@@ -1,8 +1,14 @@
+nitrux-desktop-settings (6.7.7)  nitrux; urgency=medium
+
+  * Fix AppImages install scripts.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 09 Oct 2025 02:26:00 -0500
+
 nitrux-desktop-settings (6.7.6)  nitrux; urgency=medium
 
   * Remove desktop launchers for installer scripts.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Thu, 09 Oct 2025 16:08:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 10 Oct 2025 16:09:00 -0500
 
 nitrux-desktop-settings (6.7.5)  nitrux; urgency=medium
 

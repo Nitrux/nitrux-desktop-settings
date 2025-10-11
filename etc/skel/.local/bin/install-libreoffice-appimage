@@ -60,8 +60,6 @@ appimage_file=$(download_appimage "LibreOffice-fresh.standard-x86_64.AppImage" "
 
 mv "$appimage_file" "$HOME/Applications/"
 
-kioclient exec /etc/xdg/autostart/appimagekit-appimaged.desktop &
-
 notify-send -a "System Message" -i "libreoffice-startcenter" "Installation complete."
 
 

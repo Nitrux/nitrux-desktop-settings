@@ -83,11 +83,7 @@ Icon=appimage-cli-manager
 MimeType=application/vnd.appimage;application/x-executable;
 EOF
 
-notify-send -a "System Message" -i "appimage-cli-manager" "Desktop launcher for Bauh has been created successfully."
-
-kioclient exec /etc/xdg/autostart/appimagekit-appimaged.desktop &
-
-notify-send -a "System Message" -i "appimage-cli-manager" "Installation complete."
+notify-send -a "System Message" -i "appimage-cli-manager" "Desktop launcher for Bauh has been created successfully. Installation complete."
 
 
 # -- Clean up the install script if Bauh was installed successfully.
