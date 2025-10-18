@@ -8,17 +8,18 @@
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "battery": {
+    "swap-icon-label": true,
     "states": {
       "warning": 30,
       "critical": 15
     },
-    "format": "<span size='13000' foreground='#a6e3a1'>{icon} </span> {capacity}%",
-    "format-warning": "<span size='13000' foreground='#B1E3AD'>{icon} </span> {capacity}%",
-    "format-critical": "<span size='13000' foreground='#E38C8F'>{icon} </span> {capacity}%",
-    "format-charging": "<span size='13000' foreground='#B1E3AD'> </span>{capacity}%",
-    "format-plugged": "<span size='13000' foreground='#B1E3AD'> </span>{capacity}%",
-    "format-alt": "<span size='13000' foreground='#B1E3AD'>{icon} </span> {time}",
-    "format-full": "<span size='13000' foreground='#B1E3AD'> </span>{capacity}%",
+    "format": "{capacity}%",
+    "format-warning": "{capacity}%",
+    "format-critical": "{capacity}%",
+    "format-charging": "{capacity}%",
+    "format-plugged": "{capacity}%",
+    "format-full": "{capacity}%",
+    "format-alt": "{time}",
     "format-icons": ["", "", "", "", ""],
     "tooltip-format": "{time}"
   },
@@ -41,14 +42,16 @@
     "on-click": "kcmshell6 kcm_networkmanagement"
   },
   "pulseaudio": {
-      "format": "{icon}  {volume}%",
-      "format-muted": "",
-      "format-icons": {
-          "default": ["", "", " "]
-      },
-      "on-click": "kcmshell6 kcm_pulseaudio"
+    "swap-icon-label": true,
+    "format": "{icon}  {volume}%",
+    "format-muted": "",
+    "format-icons": {
+        "default": ["", "", " "]
+    },
+    "on-click": "kcmshell6 kcm_pulseaudio"
   },
   "power-profiles-daemon": {
+    "swap-icon-label": true,
     "format": "{icon}  {profile}",
     "format-icons": {
       "default": "",
