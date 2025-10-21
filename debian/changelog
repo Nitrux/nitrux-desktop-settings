@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.8.3)  nitrux; urgency=medium
+
+  * Enable fullscreen in hyprland.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 21 Oct 2025 07:33:00 -0500
+
 nitrux-desktop-settings (6.8.2)  nitrux; urgency=medium
 
   * Use hyprctl to exit session in wlogout.
