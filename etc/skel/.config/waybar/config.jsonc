@@ -19,7 +19,7 @@
     "format-plugged": "  {capacity}%",
     "format-full": "  {capacity}%",
 
-    "format-alt": "{icon} {time}",
+    "format-alt": "{icon}  {time}",
     "format-icons": ["","","","",""],
     "tooltip-format": "{time}"
   },
