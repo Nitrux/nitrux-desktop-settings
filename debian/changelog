@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.8.2)  nitrux; urgency=medium
+
+  * Reintsate the battery icon in waybar.
+  * Use different clors for different battery states in waybar.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 20 Oct 2025 19:42:00 -0500
+
 nitrux-desktop-settings (6.8.0)  nitrux; urgency=medium
 
   * Revise NetworkManager dispatcher script to sync time.

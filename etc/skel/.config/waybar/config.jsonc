@@ -9,18 +9,18 @@
   },
   "battery": {
     "swap-icon-label": true,
-    "states": {
-      "warning": 30,
-      "critical": 15
-    },
-    "format": "{capacity}%",
-    "format-warning": "{capacity}%",
-    "format-critical": "{capacity}%",
-    "format-charging": "{capacity}%",
-    "format-plugged": "{capacity}%",
-    "format-full": "{capacity}%",
-    "format-alt": "{time}",
-    "format-icons": ["", "", "", "", ""],
+    "states": { "warning": 30, "critical": 15 },
+
+    "format": "{icon} {capacity}%",
+    "format-warning": "{icon} {capacity}%",
+    "format-critical": "{icon} {capacity}%",
+
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-full": " {capacity}%",
+
+    "format-alt": "{icon} {time}",
+    "format-icons": ["","","","",""],
     "tooltip-format": "{time}"
   },
   "bluetooth": {

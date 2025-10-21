@@ -127,6 +127,13 @@ button:hover {
     border-bottom: 2px solid @green;
 }
 
+/* Battery state colors */
+#battery.warning  { color: @yellow; border-bottom-color: @yellow; }
+#battery.critical { color: @red;    border-bottom-color: @red; }
+#battery.charging,
+#battery.plugged  { color: @teal;   border-bottom-color: @teal; }
+#battery.full     { color: @green;  border-bottom-color: @green; }
+
 /* If workspaces is the leftmost module, omit left margin */
 .modules-left>widget:first-child>#workspaces {
     margin-left: 0;
