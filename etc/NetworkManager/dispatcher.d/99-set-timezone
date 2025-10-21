@@ -25,17 +25,28 @@
 
 # -- Verify commands exist.
 
-for cmd in jq curl nm-online; do
-    command -v "$cmd" >/dev/null 2>&1 || exit 1
+for cmd in jq curl logger nm-online ntpd rc-service; do
+    command -v "$cmd" >/dev/null 2>&1 || exit 1; 
 done
 
 
 # -- Dispatcher variables.
-  # shellcheck disable=SC2034
-IFACE="$1"
-STATUS="$2"
 
-[ "$STATUS" != "up" ] && exit 0
+LOCK=/run/auto-timezone.lock
+mkdir "$LOCK" 2>/dev/null || exit 0
+trap 'rmdir "$LOCK" 2>/dev/null || true' EXIT
+
+IFACE="${1:-}"
+STATUS="${2:-}"
+
+    # -- Run every time we connect to a VPN. If the VPN server is in a different city or country, the worldtimeapi.org service will see the VPN's IP address. 
+    # -- This will cause the script to change the system's timezone to match the VPN server's location.
+
+    # [ "$STATUS" = "up" ] || [ "$STATUS" = "vpn-up" ] || exit 0
+
+[ "$STATUS" = "up" ] || exit 0
+
+logger -t auto-timezone "event iface=$IFACE status=$STATUS"
 
 
 # -- Wait until full connectivity is established, including DNS.
@@ -43,38 +54,54 @@ STATUS="$2"
 TIMEOUT=90
 INTERVAL=3
 WAITED=0
-
 while ! nm-online -q; do
-    sleep "$INTERVAL"
-    WAITED=$((WAITED + INTERVAL))
-    [ "$WAITED" -ge "$TIMEOUT" ] && logger -t auto-timezone "Timeout waiting for internet connectivity" && exit 1
+  sleep "$INTERVAL"
+  WAITED=$((WAITED + INTERVAL))
+  [ "$WAITED" -ge "$TIMEOUT" ] && logger -t auto-timezone "Timeout waiting for internet connectivity" && exit 1
 done
+
+logger -t auto-timezone "connectivity ok"
 
 
 # -- Use IP geolocation to detect timezone.
-#    -- ⚠️ A Note on Privacy: This method sends your IP address to a third-party service (worldtimeapi.org). This is a common practice and generally low-risk, but it's important to be aware of.
+#    -- ⚠️ A Note on Privacy: This method sends your IP address to a third-party service (worldtimeapi.org). This is a common practice and generally low-risk, but it's important to be aware of it.
 
 TZ_API="https://worldtimeapi.org/api/ip"
-ZONE=$(curl -fsSL "$TZ_API" | jq -r .timezone)
+ZONE=""
+TRIES=5
+SLEEP=2
+i=0
+while [ $i -lt $TRIES ]; do
+  ZONE="$(curl -fsSL --max-time 5 "$TZ_API" | jq -r '.timezone' || true)"
+  [ -n "$ZONE" ] && [ "$ZONE" != "null" ] && [ -e "/usr/share/zoneinfo/$ZONE" ] && break
+  i=$((i+1))
+  sleep $SLEEP
+done
 
-
-# -- If successful, set it. Fallback using a cached timezone (from /etc/timezone).
-
-if [ -n "$ZONE" ] && [ "$ZONE" != "null" ] && [ -e "/usr/share/zoneinfo/$ZONE" ]; then
-    ln -sf "/usr/share/zoneinfo/$ZONE" /etc/localtime
-    echo "$ZONE" > /etc/timezone
-    logger -t auto-timezone "Timezone set to $ZONE"
+if [ -n "$ZONE" ] && [ -e "/usr/share/zoneinfo/$ZONE" ]; then
+  CURRENT="$(readlink -f /etc/localtime 2>/dev/null || true)"
+  TARGET="/usr/share/zoneinfo/$ZONE"
+  if [ "$CURRENT" != "$TARGET" ]; then
+    ln -sf "$TARGET" /etc/localtime
+    printf '%s\n' "$ZONE" > /etc/timezone
+    logger -t auto-timezone "timezone set $ZONE"
+  else
+    printf '%s\n' "$ZONE" > /etc/timezone
+    logger -t auto-timezone "timezone unchanged $ZONE"
+  fi
 else
-    if [ -f /etc/timezone ] && [ -e "/usr/share/zoneinfo/$(cat /etc/timezone)" ]; then
-        CACHED_ZONE="$(cat /etc/timezone)"
-        ln -sf "/usr/share/zoneinfo/$CACHED_ZONE" /etc/localtime
-        logger -t auto-timezone "Timezone fallback to $CACHED_ZONE"
-    else
-        logger -t auto-timezone "Failed to determine timezone automatically and no fallback available."
-    fi
+  if [ -f /etc/timezone ] && [ -e "/usr/share/zoneinfo/$(cat /etc/timezone)" ]; then
+    CACHED_ZONE="$(cat /etc/timezone)"
+    ln -sf "/usr/share/zoneinfo/$CACHED_ZONE" /etc/localtime
+    logger -t auto-timezone "timezone fallback $CACHED_ZONE"
+  else
+    logger -t auto-timezone "timezone detect failed"
+  fi
 fi
 
 
 # -- Restart NTP service to re-sync with the correct offset.
 
-rc-service ntpsec-openrc restart
+rc-service ntpsec-openrc stop
+ntpd -gq
+rc-service ntpsec-openrc start

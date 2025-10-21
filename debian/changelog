@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.8.0)  nitrux; urgency=medium
+
+  * Revise NetworkManager dispatcher script to sync time.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 20 Oct 2025 18:13:00 -0500
+
 nitrux-desktop-settings (6.7.9)  nitrux; urgency=medium
 
   * Update waybar configuration.
