@@ -11,13 +11,13 @@
     "swap-icon-label": true,
     "states": { "warning": 30, "critical": 15 },
 
-    "format": "{icon} {capacity}%",
-    "format-warning": "{icon} {capacity}%",
-    "format-critical": "{icon} {capacity}%",
+    "format": "{icon}  {capacity}%",
+    "format-warning": "{icon}  {capacity}%",
+    "format-critical": "{icon}  {capacity}%",
 
-    "format-charging": " {capacity}%",
-    "format-plugged": " {capacity}%",
-    "format-full": " {capacity}%",
+    "format-charging": "  {capacity}%",
+    "format-plugged": "  {capacity}%",
+    "format-full": "  {capacity}%",
 
     "format-alt": "{icon} {time}",
     "format-icons": ["","","","",""],
