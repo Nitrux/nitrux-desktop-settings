@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.8.4)  nitrux; urgency=medium
+
+  * Update gamemode configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 21 Oct 2025 19:13:00 -0500
+
 nitrux-desktop-settings (6.8.3)  nitrux; urgency=medium
 
   * Enable fullscreen in hyprland.
