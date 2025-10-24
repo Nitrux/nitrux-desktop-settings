@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.8.5)  nitrux; urgency=medium
+
+  * Update gamemode configuration, which was different from my local copy, somehow?.
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 23 Oct 2025 23:05:00 -0500
+
 nitrux-desktop-settings (6.8.4)  nitrux; urgency=medium
 
   * Update gamemode configuration.
