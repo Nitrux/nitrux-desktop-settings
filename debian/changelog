@@ -1,3 +1,11 @@
+nitrux-desktop-settings (6.8.6)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+  * Add hyprextscreend to monitor external screens.
+  * Update hyprscreend.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 30 Oct 2025 17:51:00 -0500
+
 nitrux-desktop-settings (6.8.5)  nitrux; urgency=medium
 
   * Update gamemode configuration, which was different from my local copy, somehow?.

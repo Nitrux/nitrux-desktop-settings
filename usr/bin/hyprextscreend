@@ -31,19 +31,20 @@ set -euo pipefail
 # -- Variables.
 
 HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"
-MONITOR_NAME="eDP-1"
+EXTERNAL_MONITORS="HDMI-1 DP-1"
 LOCKFILE="/tmp/hyprconf.lock"
 
 
 # -- Functions.
 
 usage() { echo "Usage: $0"; exit 1; }
-log() { logger -t hyprscreend "$1: $2"; }
+log() { logger -t hyprexternald "$1: $2"; }
 need() { command -v "$1" >/dev/null 2>&1 || { log "ERR" "$1 not found"; exit 1; }; }
 
 need hyprctl
 need jq
-need upower
+need pkill
+need nohup
 
 acquire_lock() {
   while ! mkdir "$LOCKFILE" 2>/dev/null; do
@@ -57,70 +58,81 @@ release_lock() {
   trap - EXIT INT TERM
 }
 
-pick_mode() {
-  pref="$1"
-  name="$2"
-  command -v hyprctl >/dev/null 2>&1 || { echo ""; return 1; }
-  
+pick_mode_for_monitor() {
+  name="$1"
+  pref="$2"
   hyprctl monitors -j 2>/dev/null | jq -r --arg name "$name" --arg pref "$pref" '
     (map(select(.name==$name)) | .[0]) as $m
     | if $m==null then empty else
       (if ($m.availableModes|type=="array" and ($m.availableModes|length)>0) then
-        $m.availableModes
-        | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
-          | {w:(.w|tonumber), h:(.h|tonumber), r:((.r|tonumber)|floor)})
-      else
-        ($m.modes
-         | map({w:(.width//.w), h:(.height//.h),
-           r:(((.refreshRate//.refresh)//0) as $rr
-             | if $rr>1000 then ($rr/1000|floor) else ($rr|floor) end)}))
-      end) as $all
-      | select(($all|length)>0)
+         $m.availableModes
+         | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
+               | {w:(.w|tonumber), h:(.h|tonumber), r:((.r|tonumber)|floor)})
+       else
+         ($m.modes
+          | map({w:(.width//.w), h:(.height//.h),
+                 r:(((.refreshRate//(.refresh//0))//0) as $rr
+                    | if $rr>1000 then ($rr/1000|floor) else ($rr|floor) end)}))
+       end) as $all
       | ($all | max_by([.w,.h]) | {w,h}) as $maxres
       | ($all | map(select(.w==$maxres.w and .h==$maxres.h))) as $cands
-      | select(($cands|length)>0)
-      | (if $pref=="hi" then ($cands | max_by(.r)) else ($cands | min_by(.r)) end) as $pick
-      | "\($pick.w)x\($pick.h)@\($pick.r) \($m.x) \($m.y) \($m.scale)"
+      | (if $pref=="hi" then ($cands|max_by(.r)) else ($cands|min_by(.r)) end) as $pick
+      | if $pick==null then empty else "\($pick.w)x\($pick.h)@\($pick.r)" end
     end
   '
 }
 
-upsert_config_line() {
+pick_mode_fixed_hz() {
+  name="$1"
+  hz="$2"
+  hyprctl monitors -j 2>/dev/null | jq -r --arg name "$name" --argjson hz "$hz" '
+    (map(select(.name==$name)) | .[0]) as $m
+    | if $m==null then empty else
+      (if ($m.availableModes|type=="array" and ($m.availableModes|length)>0) then
+         $m.availableModes
+         | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
+               | {w:(.w|tonumber), h:(.h|tonumber), r:((.r|tonumber)|floor)})
+       else
+         ($m.modes
+          | map({w:(.width//.w), h:(.height//.h),
+                 r:(((.refreshRate//(.refresh//0))//0) as $rr
+                    | if $rr>1000 then ($rr/1000|floor) else ($rr|floor) end)}))
+       end) as $all
+      | ($all | max_by([.w,.h]) | {w,h}) as $maxres
+      | ($all | map(select(.w==$maxres.w and .h==$maxres.h))) as $cands
+      | ($cands | map(select(.r==$hz)) | if length>0 then . else $cands end) as $pickset
+      | ($pickset | min_by(.r)) as $pick
+      | if $pick==null then empty else "\($pick.w)x\($pick.h)@\($pick.r)" end
+    end
+  '
+}
+
+upsert_external_below_edp1() {
   acquire_lock
-
-  mode_str="$1"
-  pos_str="$2"
-  scale="$3"
-
-  exact="monitor = $MONITOR_NAME, $mode_str, ${pos_str}, $scale"
+  mon="$1"
+  mode_str="$2"
+  exact="monitor = $mon, $mode_str, auto, 1"
   if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null; then
     release_lock
     return 1
   fi
   tmp="$(mktemp)"
-  awk -v name="$MONITOR_NAME" -v newline="$exact" '
+  awk -v edp="eDP-1" -v mon="$mon" -v newline="$exact" '
     BEGIN {
       gsub(/^[ \t]+|[ \t]+$/, "", newline)
-      re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*[0-9.]+[ \t]*$"
-      re_monitor="^[ \t]*monitor[ \t]*=[ \t]*" name "[ \t]*,"
+      re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*1[ \t]*$"
+      re_edp="^[ \t]*monitor[ \t]*=[ \t]*" edp "[ \t]*,"
+      re_mon="^[ \t]*monitor[ \t]*=[ \t]*" mon "[ \t]*,"
       did_insert=0
     }
     {
-      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) {
-        print "# " $0
-        if (did_insert == 0) {
-          print newline
-          did_insert=1
-        }
-        next
-      }
-
-      if ($0 ~ re_monitor) next
-
+      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; next }
+      if ($0 ~ re_mon) { next }
+      if ($0 ~ re_edp) { print $0; if (did_insert==0) { print newline; did_insert=1 }; next }
       print
     }
     END {
-      if (did_insert == 0) print newline
+      if (did_insert==0) print newline
     }
   ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
 
@@ -128,120 +140,55 @@ upsert_config_line() {
   return 0
 }
 
-apply_ac() {
-  local mode_str pos_x pos_y scale pos_str
-
-  if ! read -r mode_str pos_x pos_y scale < <(pick_mode hi 2>/dev/null); then
-    mode_str=""
+restart_cristal_dock() {
+  if command -v cristal-dock >/dev/null 2>&1; then
+    pkill -x cristal-dock >/dev/null 2>&1 || true
+    nohup cristal-dock >/dev/null 2>&1 &
+    disown || true
   fi
-  
-  [ -n "$mode_str" ] || { log "AC" "no valid mode or current monitor state found"; return 1; }
-
-  pos_str="${pos_x}x${pos_y}"
-
-  if upsert_config_line "$mode_str" "$pos_str" "$scale"; then
-    hyprctl reload >/dev/null 2>&1 || true
-    log "AC" "applied $mode_str, pos $pos_str, scale $scale"
-    return 0
-  fi
-  return 1
 }
 
-apply_battery() {
-  local mode_str pos_x pos_y scale pos_str
-
-  if ! read -r mode_str pos_x pos_y scale < <(pick_mode lo 2>/dev/null); then
-    mode_str=""
-  fi
+list_connected_externals() {
+  mon_list="${EXTERNAL_MONITORS// /|}"
   
-  [ -n "$mode_str" ] || { log "BAT" "no valid mode or current monitor state found"; return 1; }
-  
-  pos_str="${pos_x}x${pos_y}"
-
-  if upsert_config_line "$mode_str" "$pos_str" "$scale"; then
-    hyprctl reload >/dev/null 2>&1 || true
-    log "BAT" "applied $mode_str, pos $pos_str, scale $scale"
-    return 0
-  fi
-  return 1
+  hyprctl monitors -j 2>/dev/null | jq -r --arg list "$mon_list" '
+    map(.name)|.[]|select(test($list))
+  '
 }
 
-sysfs_state() {
-  any=0
-  seen=0
-  for d in /sys/class/power_supply/*; do
-    [ -d "$d" ] || continue
-    seen=1
-    t="$(cat "$d/type" 2>/dev/null || echo)"
-    case "$t" in
-      Mains|USB|USB_C|USB_PD) ;;
-      *) continue ;;
-    esac
-    if [ -r "$d/online" ]; then
-      v="$(cat "$d/online" 2>/dev/null || echo 0)"
-      [ "$v" = "1" ] && { any=1; break; }
+handle_new_external() {
+  mon="$1"
+  m60="$(pick_mode_fixed_hz "$mon" 60 || true)"
+  if [ -n "$m60" ]; then
+    if upsert_external_below_edp1 "$mon" "$m60"; then
+      hyprctl reload >/dev/null 2>&1 || true
+      restart_cristal_dock
     fi
-  done
-  if [ "$any" = "1" ]; then
-    echo ac
-  elif [ "$seen" = "1" ]; then
-    echo battery
-  else
-    echo unknown
+  fi
+  sleep 0.5
+  mhi="$(pick_mode_for_monitor "$mon" hi || true)"
+  if [ -n "$mhi" ] && [ "$mhi" != "$m60" ]; then
+    if upsert_external_below_edp1 "$mon" "$mhi"; then
+      hyprctl reload >/dev/null 2>&1 || true
+    fi
   fi
 }
 
-upower_state() {
-  dev="$(upower -e 2>/dev/null | awk '/DisplayDevice/{print; exit}')"
-  [ -n "$dev" ] || { echo unknown; return; }
-  s="$(upower -i "$dev" 2>/dev/null | awk -F': *' '/on-battery:/ {print $2; exit}')"
-  case "$s" in
-    yes) echo battery ;;
-    no) echo ac ;;
-    *) echo unknown ;;
-  esac
-}
-
-current_state() {
-  s="$(sysfs_state)"
-  [ "$s" != "unknown" ] && { echo "$s"; return; }
-  s="$(upower_state)"
-  [ "$s" != "unknown" ] && { echo "$s"; return; }
-  echo unknown
-}
-
-wait_for_state() {
-  tries=20
+watch_externals() {
+  prev=""
   while :; do
-    s="$(current_state)"
-    [ "$s" != "unknown" ] && { echo "$s"; return; }
-    tries=$((tries-1))
-    [ "$tries" -le 0 ] && { echo battery; return; }
-    sleep 0.2
+    curr="$(list_connected_externals | tr '\n' ' ' | sed 's/[[:space:]]\+$//')"
+    for m in $curr; do
+      echo " $prev " | grep -q " $m " || handle_new_external "$m"
+    done
+    prev="$curr"
+    sleep 1
   done
 }
 
-apply_state() {
-  case "$1" in
-    ac) apply_ac ;;
-    battery) apply_battery ;;
-    *) return 1 ;;
-  esac
-}
 
+# -- Configure external screens in Hyprland.
 
-# -- Change refresh rate of internal screen depending on the power source.
+log "INFO" "Starting external monitor daemon"
 
-state="$(wait_for_state)"
-apply_state "$state" || true
-
-upower --monitor-detail | while IFS= read -r line; do
-  case "$line" in
-    *"on-battery:"*"yes"*) new="battery" ;;
-    *"on-battery:"*"no"*)  new="ac" ;;
-    *) continue ;;
-  esac
-  [ "$new" = "$state" ] && continue
-  state="$new"
-  apply_state "$state" || true
-done
+watch_externals 
