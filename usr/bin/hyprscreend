@@ -102,8 +102,18 @@ upsert_config_line() {
       did_replace=0
     }
     {
-      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; next }
-      if ($0 ~ re_monitor) { if (did_replace==0) { print newline; did_replace=1 } ; next }
+      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { 
+        print "# " $0;
+        print newline;
+        did_replace=1;
+        next
+      }
+
+      if ($0 ~ re_monitor) { 
+        if (did_replace==0) { print newline; did_replace=1 } ; 
+        next 
+      }
+
       print
     }
     END { if (did_replace==0) print newline }
