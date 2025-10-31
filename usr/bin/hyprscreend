@@ -33,6 +33,7 @@ set -euo pipefail
 HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"
 MONITOR_NAME="eDP-1"
 LOCKFILE="/tmp/hyprconf.lock"
+SCALE_FACTOR="1.0"
 
 
 # -- Functions.
@@ -59,40 +60,34 @@ release_lock() {
 
 pick_mode() {
   pref="$1"
-  name="$2"
-  command -v hyprctl >/dev/null 2>&1 || { echo ""; return 1; }
-  
-  hyprctl monitors -j 2>/dev/null | jq -r --arg name "$name" --arg pref "$pref" '
+  hyprctl monitors -j 2>/dev/null | jq -r --arg name "$MONITOR_NAME" --arg pref "$pref" '
     (map(select(.name==$name)) | .[0]) as $m
     | if $m==null then empty else
       (if ($m.availableModes|type=="array" and ($m.availableModes|length)>0) then
-        $m.availableModes
-        | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
-          | {w:(.w|tonumber), h:(.h|tonumber), r:((.r|tonumber)|floor)})
-      else
-        ($m.modes
-         | map({w:(.width//.w), h:(.height//.h),
-           r:(((.refreshRate//.refresh)//0) as $rr
-             | if $rr>1000 then ($rr/1000|floor) else ($rr|floor) end)}))
-      end) as $all
-      | select(($all|length)>0)
-      | ($all | max_by([.w,.h]) | {w,h}) as $maxres
-      | ($all | map(select(.w==$maxres.w and .h==$maxres.h))) as $cands
-      | select(($cands|length)>0)
-      | (if $pref=="hi" then ($cands | max_by(.r)) else ($cands | min_by(.r)) end) as $pick
-      | "\($pick.w)x\($pick.h)@\($pick.r) \($m.x) \($m.y) \($m.scale)"
+         $m.availableModes
+         | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
+               | {w:(.w|tonumber), h:(.h|tonumber), r:((.r|tonumber)|floor)})
+       else
+         ($m.modes
+          | map({w:(.width//.w), h:(.height//.h),
+                 r:(((.refreshRate//.refresh)//0) as $rr
+                    | if $rr>1000 then ($rr/1000|floor) else ($rr|floor) end)}))
+       end) as $all
+      | ([$all[] | select(.r>0)]) as $valid
+      | (if ($valid|length)>0 then $valid else $all end) as $cand
+      | ($cand | max_by([.w,.h]) | {w,h}) as $maxres
+      | ($cand | map(select(.w==$maxres.w and .h==$maxres.h)))
+      | (if $pref=="hi" then max_by(.r) else min_by(.r) end) as $pick
+      | "\($pick.w)x\($pick.h)@\($pick.r)"
     end
   '
 }
 
 upsert_config_line() {
   acquire_lock
-
   mode_str="$1"
-  pos_str="$2"
-  scale="$3"
-
-  exact="monitor = $MONITOR_NAME, $mode_str, ${pos_str}, $scale"
+  scale="$2"
+  exact="monitor = $MONITOR_NAME, $mode_str, auto, $scale"
   if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null;
   then
     release_lock
@@ -101,64 +96,41 @@ upsert_config_line() {
   tmp="$(mktemp)"
   awk -v name="$MONITOR_NAME" -v newline="$exact" '
     BEGIN {
-      gsub(/^[ \t]+|[ \t]+$/, "", newline)
+      gsub(/^[ \t]+|[ \t]+$/, "", newline);
       re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*[0-9.]+"
-      re_monitor="^[ \t]*monitor[ \t]*=[ \t]*" name "[ \t]*,"
-      did_insert=0
+      re_monitor="^[ \t]*monitor[ \t]*=[ \t]*" name "[ \t]*,";
+      did_replace=0
     }
     {
-      if ($0 ~ re_monitor) {
-        if (did_insert == 0) {
-          print newline 
-          did_insert=1
-        }
-        next
-      }
-
-      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/ && did_insert == 0) {
-        print "# " $0
-        print newline 
-        did_insert=1
-        next
-      }
-      
+      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; next }
+      if ($0 ~ re_monitor) { if (did_replace==0) { print newline; did_replace=1 } ; next }
       print
     }
+    END { if (did_replace==0) print newline }
   ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
-
   release_lock
   return 0
 }
 
 apply_ac() {
-  local output mode_str pos_x pos_y scale pos_str
-  output="$(pick_mode hi "$MONITOR_NAME" 2>/dev/null || true)"
-  read -r mode_str pos_x pos_y scale <<< "$output"
-  
-  [ -n "$mode_str" ] || { log "AC" "no valid mode or current monitor state found"; return 1; }
-
-  pos_str="${pos_x}x${pos_y}"
-
-  if upsert_config_line "$mode_str" "$pos_str" "$scale"; then
+  m=""
+  if ! m="$(pick_mode hi 2>/dev/null)"; then m=""; fi
+  [ -n "$m" ] || { log "AC" "no valid mode"; return 1; }
+  if upsert_config_line "$m" "$SCALE_FACTOR"; then
     hyprctl reload >/dev/null 2>&1 || true
-    log "AC" "applied $mode_str, pos $pos_str, scale $scale"
+    log "AC" "applied $m, scale $SCALE_FACTOR"
     return 0
   fi
   return 1
 }
 
 apply_battery() {
-  local output mode_str pos_x pos_y scale pos_str
-  output="$(pick_mode lo "$MONITOR_NAME" 2>/dev/null || true)"
-  read -r mode_str pos_x pos_y scale <<< "$output"
-  
-  [ -n "$mode_str" ] || { log "BAT" "no valid mode or current monitor state found"; return 1; }
-  
-  pos_str="${pos_x}x${pos_y}"
-
-  if upsert_config_line "$mode_str" "$pos_str" "$scale"; then
+  m=""
+  if ! m="$(pick_mode lo 2>/dev/null)"; then m=""; fi
+  [ -n "$m" ] || { log "BAT" "no valid mode"; return 1; }
+  if upsert_config_line "$m" "$SCALE_FACTOR"; then
     hyprctl reload >/dev/null 2>&1 || true
-    log "BAT" "applied $mode_str, pos $pos_str, scale $scale"
+    log "BAT" "applied $m, scale $SCALE_FACTOR"
     return 0
   fi
   return 1
@@ -172,7 +144,7 @@ sysfs_state() {
     seen=1
     t="$(cat "$d/type" 2>/dev/null || echo)"
     case "$t" in
-      Mains|USB|USB_C|USB_PD) ;;
+      Mains|USB|USB_C|USB_PD|AC) ;;
       *) continue ;;
     esac
     if [ -r "$d/online" ]; then
@@ -233,7 +205,6 @@ apply_state() {
 (
   state="$(wait_for_state)"
   apply_state "$state" || true
-  
   upower --monitor-detail | while IFS= read -r line;
   do
     case "$line" in
