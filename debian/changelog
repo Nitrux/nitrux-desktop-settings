@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.8.9)  nitrux; urgency=medium
+
+  * Ensure hyprscreend correctly handles the power state on a cold boot and monitors for subsequent changes.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 31 Oct 2025 00:20:00 -0500
+
 nitrux-desktop-settings (6.8.8)  nitrux; urgency=medium
 
   * Ensure monitor lines are added to the correct section in both scripts.

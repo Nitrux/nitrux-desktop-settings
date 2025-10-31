@@ -229,16 +229,19 @@ apply_state() {
 
 # -- Change refresh rate of internal screen depending on the power source.
 
-state="$(wait_for_state)"
-apply_state "$state" || true
-
-upower --monitor-detail | while IFS= read -r line; do
-  case "$line" in
-    *"on-battery:"*"yes"*) new="battery" ;;
-    *"on-battery:"*"no"*)  new="ac" ;;
-    *) continue ;;
-  esac
-  [ "$new" = "$state" ] && continue
-  state="$new"
+(
+  state="$(wait_for_state)"
   apply_state "$state" || true
-done
+  
+  upower --monitor-detail | while IFS= read -r line;
+  do
+    case "$line" in
+      *"on-battery:"*"yes"*) new="battery" ;;
+      *"on-battery:"*"no"*)  new="ac" ;;
+      *) continue ;;
+    esac
+    [ "$new" = "$state" ] && continue
+    state="$new"
+    apply_state "$state" || true
+  done
+) &
