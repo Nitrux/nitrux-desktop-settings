@@ -101,26 +101,27 @@ upsert_config_line() {
   awk -v name="$MONITOR_NAME" -v newline="$exact" '
     BEGIN {
       gsub(/^[ \t]+|[ \t]+$/, "", newline)
-      re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*[0-9.]+[ \t]*$"
+      re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*[0-9.]+"
       re_monitor="^[ \t]*monitor[ \t]*=[ \t]*" name "[ \t]*,"
       did_insert=0
     }
     {
-      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) {
-        print "# " $0
+      if ($0 ~ re_monitor) {
         if (did_insert == 0) {
-          print newline
+          print newline 
           did_insert=1
         }
         next
       }
 
-      if ($0 ~ re_monitor) next
-
+      if ($0 !~ /^[ \t]*#/ && $0 ~ re_generic && did_insert == 0) {
+        print "# " $0
+        print newline 
+        did_insert=1
+        next
+      }
+      
       print
-    }
-    END {
-      if (did_insert == 0) print newline
     }
   ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
 
