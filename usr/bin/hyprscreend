@@ -93,7 +93,8 @@ upsert_config_line() {
   scale="$3"
 
   exact="monitor = $MONITOR_NAME, $mode_str, ${pos_str}, $scale"
-  if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null; then
+  if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null;
+  then
     release_lock
     return 1
   fi
@@ -114,7 +115,7 @@ upsert_config_line() {
         next
       }
 
-      if ($0 !~ /^[ \t]*#/ && $0 ~ re_generic && did_insert == 0) {
+      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/ && did_insert == 0) {
         print "# " $0
         print newline 
         did_insert=1
