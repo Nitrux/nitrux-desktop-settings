@@ -130,6 +130,10 @@ upsert_external_below_edp1() {
   mode_str="$2"
   scale="$3"
   exact="monitor = $mon, $mode_str, auto, $scale"
+  if [ "$mon" = "eDP-1" ]; then
+    release_lock
+    return 0
+  fi
   if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null; then
     release_lock
     return 0
@@ -145,15 +149,14 @@ upsert_external_below_edp1() {
     }
     {
       if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; next }
-      if ($0 ~ re_mon) { next }
       if ($0 ~ re_edp) { print $0; if (did_insert==0) { print newline; did_insert=1 }; next }
+      if ($0 ~ re_mon) { next }
       print
     }
     END {
       if (did_insert==0) print newline
     }
   ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
-
   release_lock
   return 0
 }

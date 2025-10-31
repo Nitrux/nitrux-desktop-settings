@@ -34,7 +34,7 @@ done
 
 # -- Use file to test with aplay.
 
-audio_sample="/usr/share/sounds/pipewire_test_sound_level_up.mp3"
+audio_sample=""
 
 
 # -- Reproduce sound to make PipeWire work.
