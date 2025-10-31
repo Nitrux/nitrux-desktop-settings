@@ -1,3 +1,10 @@
+nitrux-desktop-settings (6.8.7)  nitrux; urgency=medium
+
+  * Fix hyprscreend not changing the refresh rate on power source change event.
+  * Fix hyprextscreend typos and restart the dock whenever an external monitor is plugged in.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 30 Oct 2025 20:45:00 -0500
+
 nitrux-desktop-settings (6.8.6)  nitrux; urgency=medium
 
   * Update hyprland configuration.

@@ -38,7 +38,7 @@ LOCKFILE="/tmp/hyprconf.lock"
 # -- Functions.
 
 usage() { echo "Usage: $0"; exit 1; }
-log() { logger -t hyprexternald "$1: $2"; }
+log() { logger -t hyprextscreend "$1: $2"; }
 need() { command -v "$1" >/dev/null 2>&1 || { log "ERR" "$1 not found"; exit 1; }; }
 
 need hyprctl
@@ -114,7 +114,7 @@ upsert_external_below_edp1() {
   exact="monitor = $mon, $mode_str, auto, 1"
   if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null; then
     release_lock
-    return 1
+    return 0
   fi
   tmp="$(mktemp)"
   awk -v edp="eDP-1" -v mon="$mon" -v newline="$exact" '
@@ -140,10 +140,10 @@ upsert_external_below_edp1() {
   return 0
 }
 
-restart_cristal_dock() {
-  if command -v cristal-dock >/dev/null 2>&1; then
-    pkill -x cristal-dock >/dev/null 2>&1 || true
-    nohup cristal-dock >/dev/null 2>&1 &
+restart_crystal_dock() {
+  if command -v crystal-dock >/dev/null 2>&1; then
+    pkill -x crystal-dock >/dev/null 2>&1 || true
+    nohup crystal-dock >/dev/null 2>&1 &
     disown || true
   fi
 }
@@ -162,7 +162,7 @@ handle_new_external() {
   if [ -n "$m60" ]; then
     if upsert_external_below_edp1 "$mon" "$m60"; then
       hyprctl reload >/dev/null 2>&1 || true
-      restart_cristal_dock
+      restart_crystal_dock
     fi
   fi
   sleep 0.5
