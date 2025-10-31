@@ -129,11 +129,9 @@ upsert_config_line() {
 }
 
 apply_ac() {
-  local mode_str pos_x pos_y scale pos_str
-
-  if ! read -r mode_str pos_x pos_y scale < <(pick_mode hi 2>/dev/null); then
-    mode_str=""
-  fi
+  local output mode_str pos_x pos_y scale pos_str
+  output="$(pick_mode hi "$MONITOR_NAME" 2>/dev/null || true)"
+  read -r mode_str pos_x pos_y scale <<< "$output"
   
   [ -n "$mode_str" ] || { log "AC" "no valid mode or current monitor state found"; return 1; }
 
@@ -148,11 +146,9 @@ apply_ac() {
 }
 
 apply_battery() {
-  local mode_str pos_x pos_y scale pos_str
-
-  if ! read -r mode_str pos_x pos_y scale < <(pick_mode lo 2>/dev/null); then
-    mode_str=""
-  fi
+  local output mode_str pos_x pos_y scale pos_str
+  output="$(pick_mode lo "$MONITOR_NAME" 2>/dev/null || true)"
+  read -r mode_str pos_x pos_y scale <<< "$output"
   
   [ -n "$mode_str" ] || { log "BAT" "no valid mode or current monitor state found"; return 1; }
   
