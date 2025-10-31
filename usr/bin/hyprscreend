@@ -28,15 +28,26 @@
 set -euo pipefail
 
 
-# -- Variables.
+# -- Configuration.
 
-HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"
-MONITOR_NAME="eDP-1"
-LOCKFILE="/tmp/hyprconf.lock"
-SCALE_FACTOR="1.0"
+CONFIG_FILE="/etc/hyprscreend.conf"
 
 
 # -- Functions.
+
+load_config() {
+  if [ -r "$CONFIG_FILE" ]; then
+    log "INFO" "Loading configuration from $CONFIG_FILE"
+    # shellcheck source=/dev/null
+    . "$CONFIG_FILE"
+  else
+    log "WARN" "$CONFIG_FILE not found, using defaults"
+    HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"
+    INTERNAL_SCREEN="eDP-1"
+    SCALE_FACTOR="1.0"
+    LOCKFILE="/tmp/hyprconf.lock"
+  fi
+}
 
 usage() { echo "Usage: $0"; exit 1; }
 log() { logger -t hyprscreend "$1: $2"; }
@@ -60,7 +71,7 @@ release_lock() {
 
 pick_mode() {
   pref="$1"
-  hyprctl monitors -j 2>/dev/null | jq -r --arg name "$MONITOR_NAME" --arg pref "$pref" '
+  hyprctl monitors -j 2>/dev/null | jq -r --arg name "$INTERNAL_SCREEN" --arg pref "$pref" '
     (map(select(.name==$name)) | .[0]) as $m
     | if $m==null then empty else
       (if ($m.availableModes|type=="array" and ($m.availableModes|length)>0) then
@@ -87,14 +98,14 @@ upsert_config_line() {
   acquire_lock
   mode_str="$1"
   scale="$2"
-  exact="monitor = $MONITOR_NAME, $mode_str, auto, $scale"
+  exact="monitor = $INTERNAL_SCREEN, $mode_str, auto, $scale"
   if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null;
   then
     release_lock
     return 1
   fi
   tmp="$(mktemp)"
-  awk -v name="$MONITOR_NAME" -v newline="$exact" '
+  awk -v name="$INTERNAL_SCREEN" -v newline="$exact" '
     BEGIN {
       gsub(/^[ \t]+|[ \t]+$/, "", newline);
       re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*[0-9.]+"
@@ -213,6 +224,8 @@ apply_state() {
 # -- Change refresh rate of internal screen depending on the power source.
 
 (
+  log "INFO" "Starting Hyprland screen refresh rate daemon"
+
   state="$(wait_for_state)"
   apply_state "$state" || true
   upower --monitor-detail | while IFS= read -r line;
