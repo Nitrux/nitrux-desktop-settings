@@ -1,8 +1,9 @@
 nitrux-desktop-settings (6.9.1)  nitrux; urgency=medium
 
   * Move hyprscreen and hyprextscreend configuration to a single file in /etc.
+  * Remove cleaunp-appimagekit-launchers.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Fri, 31 Oct 2025 03:18:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 31 Oct 2025 03:23:00 -0500
 
 nitrux-desktop-settings (6.9.0)  nitrux; urgency=medium
 
