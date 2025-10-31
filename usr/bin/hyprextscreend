@@ -36,17 +36,20 @@ CONFIG_FILE="/etc/hyprscreen.conf"
 # -- Functions.
 
 load_config() {
-  if [ -r "$CONFIG_FILE" ]; then
-    log "INFO" "Loading configuration from $CONFIG_FILE"
-    # shellcheck source=/dev/null
-    . "$CONFIG_FILE"
-  else
-    log "WARN" "$CONFIG_FILE not found, using defaults"
-    HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"
-    EXTERNAL_SCREEN="HDMI-1 DP-1"
-    SCALE_FACTOR="1.0"
-    LOCKFILE="/tmp/hyprconf.lock"
+  if [ ! -r "$CONFIG_FILE" ]; then
+    log "ERR" "Required configuration file not found or is unreadable: $CONFIG_FILE. Exiting."
+    exit 1
   fi
+  
+  log "INFO" "Loading configuration from $CONFIG_FILE"
+  
+  # shellcheck source=/dev/null
+  . "$CONFIG_FILE"
+
+  : "${HYPR_CONFIG:?Required variable HYPR_CONFIG is not set in config file.}"
+  : "${EXTERNAL_SCREEN:?Required variable EXTERNAL_SCREEN is not set in config file.}"
+  : "${SCALE_FACTOR:?Required variable SCALE_FACTOR is not set in config file.}"
+  : "${LOCKFILE:?Required variable LOCKFILE is not set in config file.}"
 }
 
 usage() { echo "Usage: $0"; exit 1; }
@@ -57,6 +60,8 @@ need hyprctl
 need jq
 need pkill
 need nohup
+
+load_config
 
 acquire_lock() {
   while ! mkdir "$LOCKFILE" 2>/dev/null; do
