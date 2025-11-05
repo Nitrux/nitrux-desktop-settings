@@ -23,7 +23,7 @@
 #############################################################################################################################################################################
 
 
-# -- Add oh-my-zsh.
+# -- Add OhMyZSH.
 
 git clone https://github.com/ohmyzsh/ohmyzsh.git /etc/skel/.oh-my-zsh
 
@@ -65,4 +65,4 @@ sed -i '$ a Inherits=nitrux_snow_cursors' /etc/X11/cursors/nitrux_cursors.theme
 
 #	-- Overwrite file from bash.
 
-$(which cp) -rf /etc/skel/.bak.bashrc /etc/skel/.bashrc
+cp -rf /etc/skel/.bak.bashrc /etc/skel/.bashrc
