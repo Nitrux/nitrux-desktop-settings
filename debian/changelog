@@ -1,6 +1,7 @@
 nitrux-desktop-settings (6.9.8)  nitrux; urgency=medium
 
   * Update install scripts.
+  * Set bauh theme to darcula.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Wed, 05 Nov 2025 09:20:00 -0500
 

@@ -40,7 +40,7 @@ ui:
   system_theme: true
   table:
     max_displayed: 50
-  theme: light
+  theme: darcula
   tray:
     default_icon: null
     updates_icon: null
