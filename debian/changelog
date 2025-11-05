@@ -1,3 +1,12 @@
+nitrux-desktop-settings (6.9.5)  nitrux; urgency=medium
+
+  * Update autostart-xdg-portals to correctly start portals.
+  * Add system-wide xdg-portals configuration.
+  * Update hyprland configuration.
+  * Update hypridle configuration to keep the screen unlocked a bit more.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 05 Nov 2025 02:56:00 -0500
+
 nitrux-desktop-settings (6.9.4)  nitrux; urgency=medium
 
   * Update p10k configuration.
