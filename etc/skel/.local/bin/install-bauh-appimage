@@ -63,6 +63,12 @@ appimage_file=$(download_appimage "bauh-0.10.7-x86_64.AppImage" "https://github.
 
 mv "$appimage_file" "$HOME/Applications/"
 
+
+# -- Add flathub.
+
+flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+
 # -- Get absolute path for the AppImage.
 
 APPIMAGE_PATH="$HOME/Applications/bauh-0.10.7-x86_64.AppImage"

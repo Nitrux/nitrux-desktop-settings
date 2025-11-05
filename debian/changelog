@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.9.9)  nitrux; urgency=medium
+
+  * Add flathub when installing bauh appimage.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 05 Nov 2025 09:25:00 -0500
+
 nitrux-desktop-settings (6.9.8)  nitrux; urgency=medium
 
   * Update install scripts.
