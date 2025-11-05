@@ -1,3 +1,9 @@
+nitrux-desktop-settings (6.9.4)  nitrux; urgency=medium
+
+  * Update p10k configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 04 Nov 2025 20:55:00 -0500
+
 nitrux-desktop-settings (6.9.3)  nitrux; urgency=medium
 
   * Fix hyprscreend and hyprextscreend, again.
