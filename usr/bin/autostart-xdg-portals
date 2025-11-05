@@ -30,54 +30,84 @@ set -eu
 
 # -- Write to log.
 
-logger -t autostart-xdg-portals "Restarting XDG portals"
+logger -t autostart-xdg-portals "(Re)Starting XDG portals"
 
 
-# -- Kill portal process if they're running.
+# -- Functions.
 
-killall xdg-desktop-portal xdg-desktop-portal-kde xdg-desktop-portal-hyprland xdg-desktop-portal-gnome xdg-desktop-portal-wlr 2>/dev/null || true
+have_interfaces() {
+    gdbus introspect --session --dest org.freedesktop.portal.Desktop \
+        --object-path /org/freedesktop/portal/desktop 2>/dev/null | \
+            grep -E 'OpenURI|FileChooser' >/dev/null
+}
+
+start_stack() {
+    killall xdg-desktop-portal xdg-desktop-portal-kde xdg-desktop-portal-hyprland \
+        xdg-desktop-portal-gnome xdg-desktop-portal-wlr 2>/dev/null || true
+
+    /usr/lib/xdg-desktop-portal-hyprland &
+    sleep 0.2
+        if pgrep -f '(^|/)xdg-desktop-portal-hyprland(\s|$)' >/dev/null; then
+            logger -t autostart-xdg-portals "Started xdg-desktop-portal-hyprland"
+        else
+            logger -t autostart-xdg-portals "Failed to start xdg-desktop-portal-hyprland"
+        fi
+
+    /usr/lib/x86_64-linux-gnu/libexec/xdg-desktop-portal-kde 2> >(logger -t autostart-xdg-portals -p user.err) &
+    sleep 0.2
+        if pgrep -f '(^|/)xdg-desktop-portal-kde(\s|$)' >/dev/null; then
+            logger -t autostart-xdg-portals "Started xdg-desktop-portal-kde"
+        else
+            logger -t autostart-xdg-portals "Failed to start xdg-desktop-portal-kde"
+        fi
+
+    G_MESSAGES_DEBUG=all /usr/libexec/xdg-desktop-portal -r 2> >(logger -t autostart-xdg-portals -p user.err) &
+    sleep 1
+    if pgrep -f '(^|/)xdg-desktop-portal(\s|$)' >/dev/null; then
+        logger -t autostart-xdg-portals "Started main xdg-desktop-portal"
+    else
+        logger -t autostart-xdg-portals "Failed to start main xdg-desktop-portal"
+     fi
+}
 
 
 # -- Start portal processes.
 
-/usr/lib/xdg-desktop-portal-hyprland &
-sleep 0.2
-if pgrep -f '(^|/)xdg-desktop-portal-hyprland(\s|$)' >/dev/null; then
-  logger -t autostart-xdg-portals "Started xdg-desktop-portal-hyprland"
-else
-  logger -t autostart-xdg-portals "Failed to start xdg-desktop-portal-hyprland"
-fi
+max=6
+i=1
+ok=0
+while [ "$i" -le "$max" ]; do
+    logger -t autostart-xdg-portals "Attempt $i/$max"
+    start_stack
+    for _ in $(seq 1 30); do
+        if have_interfaces; then ok=1; break; fi
+        sleep 0.3
+    done
+    [ "$ok" -eq 1 ] && break
+    logger -t autostart-xdg-portals "Interfaces not ready; retrying"
+    sleep 1
+    i=$((i+1))
+done
 
-/usr/lib/x86_64-linux-gnu/libexec/xdg-desktop-portal-kde &
-sleep 0.2
-if pgrep -f '(^|/)xdg-desktop-portal-kde(\s|$)' >/dev/null; then
-  logger -t autostart-xdg-portals "Started xdg-desktop-portal-kde"
-else
-  logger -t autostart-xdg-portals "Failed to start xdg-desktop-portal-kde"
-fi
-
-G_MESSAGES_DEBUG=all /usr/libexec/xdg-desktop-portal -r 2> >(logger -t autostart-xdg-portals -p user.err) &
-sleep 1
-if pgrep -f '(^|/)xdg-desktop-portal(\s|$)' >/dev/null; then
-  logger -t autostart-xdg-portals "Started main xdg-desktop-portal"
-else
-  logger -t autostart-xdg-portals "Failed to start main xdg-desktop-portal"
+if [ "$ok" -ne 1 ]; then
+    logger -t autostart-xdg-portals "Failed to expose OpenURI/FileChooser after $max attempts"
+    exit 1
 fi
 
 /usr/libexec/xdg-document-portal &
 sleep 0.2
 if pgrep -f '(^|/)xdg-document-portal(\s|$)' >/dev/null; then
-  logger -t autostart-xdg-portals "Started xdg-document-portal"
+    logger -t autostart-xdg-portals "Started xdg-document-portal"
 else
-  logger -t autostart-xdg-portals "Failed to start xdg-document-portal"
+    logger -t autostart-xdg-portals "Failed to start xdg-document-portal"
 fi
 
 /usr/libexec/xdg-permission-store &
 sleep 0.2
 if pgrep -f '(^|/)xdg-permission-store(\s|$)' >/dev/null; then
-  logger -t autostart-xdg-portals "Started xdg-permission-store"
+    logger -t autostart-xdg-portals "Started xdg-permission-store"
 else
-  logger -t autostart-xdg-portals "Failed to start xdg-permission-store"
+    logger -t autostart-xdg-portals "Failed to start xdg-permission-store"
 fi
 
 logger -t autostart-xdg-portals "XDG portal startup complete"
