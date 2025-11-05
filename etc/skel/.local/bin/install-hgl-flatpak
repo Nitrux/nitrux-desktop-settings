@@ -22,7 +22,10 @@
 #    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.   #
 #############################################################################################################################################################################
 
-set -x
+
+# -- Exit on errors.
+
+set -eu
 
 
 # -- Add flathub.
@@ -55,7 +58,6 @@ flatpak install -y --user "runtime/org.freedesktop.Platform.VulkanLayer.vkBasalt
 
 if flatpak list --app --columns=application | grep -q "$FPK_APP"; then
     rm "$HOME/.local/bin/install-hgl-flatpak"
-    rm "$HOME/.local/share/applications/install.hgl.desktop"
 fi
 
 notify-send -a "System Message" -i "heroic" "Launching Heroic Games Launcher."

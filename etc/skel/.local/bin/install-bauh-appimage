@@ -22,7 +22,10 @@
 #    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.   #
 #############################################################################################################################################################################
 
-set -x
+
+# -- Exit on errors.
+
+set -eu
 
 
 # -- Functions
@@ -89,8 +92,7 @@ notify-send -a "System Message" -i "appimage-cli-manager" "Desktop launcher for 
 # -- Clean up the install script if Bauh was installed successfully.
 
 if [ -f "$APPIMAGE_PATH" ]; then
-    rm "$HOME/.local/bin/install-bauh-appimage"
-    rm "$HOME/.local/share/applications/install.bauh.desktop"
+    rm -f "$HOME/.local/bin/install-bauh-appimage"
 fi
 
 exit

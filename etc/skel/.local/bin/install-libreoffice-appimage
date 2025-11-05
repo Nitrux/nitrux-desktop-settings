@@ -22,7 +22,10 @@
 #    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.   #
 #############################################################################################################################################################################
 
-set -x
+
+# -- Exit on errors.
+
+set -eu
 
 
 # -- Functions
@@ -67,7 +70,6 @@ notify-send -a "System Message" -i "libreoffice-startcenter" "Installation compl
 
 if [ -f "$HOME/Applications/LibreOffice-fresh.standard-x86_64.AppImage" ]; then
     rm "$HOME/.local/bin/install-libreoffice-appimage"
-    rm "$HOME/.local/share/applications/install.libreoffice.desktop"
 fi
 
 exit
