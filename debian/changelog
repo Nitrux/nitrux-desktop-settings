@@ -1,6 +1,7 @@
 nitrux-desktop-settings (7.0.0)  nitrux; urgency=medium
 
   * Update portals configuratione.
+  * Update nota configuration.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Wed, 05 Nov 2025 17:28:00 -0500
 
