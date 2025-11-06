@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.0.1)  nitrux; urgency=medium
+
+  * Use a GUI pinentry and point gpg-agent at it.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 06 Nov 2025 10:25:00 -0500
+
 nitrux-desktop-settings (7.0.0)  nitrux; urgency=medium
 
   * Update portals configuratione.
