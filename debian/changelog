@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.0.7)  nitrux; urgency=medium
+
+  * Fix install launchers.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 10 Nov 2025 15:33:00 -0500
+
 nitrux-desktop-settings (7.0.6)  nitrux; urgency=medium
 
   * Update nx-sys-usecase to wait 5 seconds to display the notifications.

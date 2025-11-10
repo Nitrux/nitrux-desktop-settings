@@ -99,6 +99,7 @@ notify-send -a "System Message" -i "appimage-cli-manager" "Desktop launcher for 
 
 if [ -f "$APPIMAGE_PATH" ]; then
     rm -f "$HOME/.local/bin/install-bauh-appimage"
+    rm -f "$HOME/.local/share/applications/install.bauh.desktop"
 fi
 
 exit

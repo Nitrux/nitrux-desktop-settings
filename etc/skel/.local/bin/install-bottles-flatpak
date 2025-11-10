@@ -57,7 +57,8 @@ flatpak install -y --user "runtime/org.freedesktop.Platform.VulkanLayer.vkBasalt
 # -- Check if Bottles is installed an delete install script.
 
 if flatpak list --app --columns=application | grep -q "$FPK_APP"; then
-    rm "$HOME/.local/bin/install-bottles-flatpak"
+    rm -f "$HOME/.local/bin/install-bottles-flatpak"
+    rm -f "$HOME/.local/share/applications/install.bottles.desktop"
 fi
 
 notify-send -a "System Message" -i "com.usebottles.bottles" "Launching Bottles."

@@ -57,7 +57,8 @@ flatpak install -y --user "runtime/org.freedesktop.Platform.VulkanLayer.vkBasalt
 # -- Check if HGL is installed an delete install script.
 
 if flatpak list --app --columns=application | grep -q "$FPK_APP"; then
-    rm "$HOME/.local/bin/install-hgl-flatpak"
+    rm -f "$HOME/.local/bin/install-hgl-flatpak"
+    rm "$HOME/.local/share/applications/install.hgl.desktop"
 fi
 
 notify-send -a "System Message" -i "heroic" "Launching Heroic Games Launcher."

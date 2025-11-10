@@ -48,8 +48,9 @@ notify-send -i "itch-io" "Launching itch.io."
 
 if [ -d "$HOME/.itch" ];
     then
-         rm "$HOME/.local/bin/itch-setup"
-         rm "$HOME/.local/bin/install-itch-io"
+         rm -f "$HOME/.local/bin/itch-setup"
+         rm -f "$HOME/.local/bin/install-itch-io"
+         rm -f "$HOME/.local/share/applications/install.itch.io.desktop"
 fi
 
 exit
