@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+#############################################################################################################################################################################
+#   The license used for this file and its contents is: BSD-3-Clause                                                                                                        #
+#                                                                                                                                                                           #
+#   Copyright <2025> <Uri Herrera <uri_herrera@nxos.org>>                                                                                                                   #
+#                                                                                                                                                                           #
+#   Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:                          #
+#                                                                                                                                                                           #
+#    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.                                        #
+#                                                                                                                                                                           #
+#    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer                                      #
+#       in the documentation and/or other materials provided with the distribution.                                                                                         #
+#                                                                                                                                                                           #
+#    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software                    #
+#       without specific prior written permission.                                                                                                                          #
+#                                                                                                                                                                           #
+#    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,                      #
+#    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS                  #
+#    BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE                 #
+#    GOODS OR SERVICES; LOSS OF USE, DATA,   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,                      #
+#    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.   #
+#############################################################################################################################################################################
+
+
+# -- Exit on errors.
+
+set -eu
+
+
+# -- Notify users that running the distribution on a VM or low-spec hardware is *NOT THE INTENDED USE CASE*.
+
+if grep -q "EDK II" /var/log/syslog || grep -q "VMware, Inc" /var/log/syslog; then
+    notify-send -a "System Message" -u critical --action=Understood -i "dialog-warning" "VM Detected" "Nitrux is running in a Virtual Machine. Performance will be severely affected. Issues regarding VM usage will be closed at bug tracker."
+fi
+
+TOTAL_RAM_MB=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024}')
+PHYSICAL_CORES=$(lscpu | grep "^Core(s) per socket:" | awk '{print $4}')
+THREADS=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
+
+if (( $(echo "$TOTAL_RAM_MB < 4096" | bc -l) )) || (( PHYSICAL_CORES < 4 )) || (( THREADS < 4 )); then
+    notify-send -a "System Message" -u critical --action=Understood -i "dialog-warning" "System Specs Warning" "This system has less than 4GB of RAM, fewer than 4 physical cores, or fewer than 4 threads. Performance may be limited. Nitrux does not target low-spec hardware systems."
+fi

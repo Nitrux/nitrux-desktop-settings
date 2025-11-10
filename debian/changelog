@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.0.5)  nitrux; urgency=medium
+
+  * Add script to explicilty state that running the distribution in VMs and low-spec hardware is not the intended use case.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 09 Nov 2025 22:01:00 -0500
+
 nitrux-desktop-settings (7.0.4)  nitrux; urgency=medium
 
   * Restore desktop launchers for install scripts.
