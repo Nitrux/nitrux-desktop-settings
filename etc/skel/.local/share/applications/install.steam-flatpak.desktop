@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=false
+Icon=steam
+Name=Install Steam
+Exec=~/.local/bin/install-steam-flatpak
+Categories=Utility;

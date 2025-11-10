@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=false
+Icon=libreoffice-startcenter
+Name=Install LibreOffice (AppImage)
+Exec=~/.local/bin/install-libreoffice-appimage
+Categories=Office;
