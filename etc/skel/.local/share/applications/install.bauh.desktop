@@ -3,5 +3,5 @@ Type=Application
 Terminal=false
 Icon=appimage-cli-manager
 Name=Install Bauh (AppImage)
-Exec=~/.local/bin/install-bauh-appimage
+Exec=sh -c "$HOME/.local/bin/install-bauh-appimage"
 Categories=System;

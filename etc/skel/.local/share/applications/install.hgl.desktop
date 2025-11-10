@@ -3,5 +3,5 @@ Type=Application
 Terminal=false
 Icon=heroic
 Name=Install Heroic Games Laucnher
-Exec=~/.local/bin/install-hgl-flatpak
+Exec=sh -c "$HOME/.local/bin/install-hgl-flatpak"
 Categories=Utility;

@@ -3,5 +3,5 @@ Type=Application
 Terminal=false
 Icon=libreoffice-startcenter
 Name=Install LibreOffice (AppImage)
-Exec=~/.local/bin/install-libreoffice-appimage
+Exec=sh -c "$HOME/.local/bin/install-libreoffice-appimage"
 Categories=Office;

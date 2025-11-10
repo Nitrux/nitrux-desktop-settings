@@ -30,6 +30,8 @@ set -eu
 
 # -- Notify users that running the distribution on a VM or low-spec hardware is *NOT THE INTENDED USE CASE*.
 
+sleep 5
+
 if grep -q "EDK II" /var/log/syslog || grep -q "VMware, Inc" /var/log/syslog; then
     notify-send -a "System Message" -u critical --action=Understood -i "dialog-warning" "VM Detected" "Nitrux is running in a Virtual Machine. Performance will be severely affected. Issues regarding VM usage will be closed at bug tracker."
 fi
