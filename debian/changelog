@@ -163,7 +163,7 @@ nitrux-desktop-settings (6.8.2)  nitrux; urgency=medium
 nitrux-desktop-settings (6.8.1)  nitrux; urgency=medium
 
   * Reinstate the battery icon in waybar.
-  * Use different clors for different battery states in waybar.
+  * Use different colors for different battery states in waybar.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 20 Oct 2025 19:42:00 -0500
 
