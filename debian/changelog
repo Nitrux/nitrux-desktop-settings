@@ -477,7 +477,7 @@ nitrux-desktop-settings (6.3.3)  nitrux; urgency=medium
 nitrux-desktop-settings (6.3.2)  nitrux; urgency=medium
 
   * Update hyprland and waybar configuration.
-  * Add hypridlem hyprlock and wofi configuration.
+  * Add hypridle hyprlock and wofi configuration.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Fri, 22 Aug 2025 18:51:00 -0500
 
