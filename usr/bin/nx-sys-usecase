@@ -28,18 +28,65 @@
 set -eu
 
 
+# -- Environment variables.
+
+export QT_QUICK_CONTROLS_STYLE=org.kde.breeze
+
+
 # -- Notify users that running the distribution on a VM or low-spec hardware is *NOT THE INTENDED USE CASE*.
+
+IS_VM=0
+
+if [ -r /sys/class/dmi/id/product_name ]; then
+    PRODUCT_NAME=$(cat /sys/class/dmi/id/product_name)
+    if echo "$PRODUCT_NAME" | grep -qiE "VirtualBox|VMware|KVM|Bochs|QEMU|Standard PC|Virtual Machine"; then
+        IS_VM=1
+    fi
+fi
+
+if grep -q "hypervisor" /proc/cpuinfo; then
+    IS_VM=1
+fi
+
+if [ "$IS_VM" -eq 0 ]; then
+    TOTAL_RAM_MB=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024}')
+    PHYSICAL_CORES=$(lscpu | grep "^Core(s) per socket:" | awk '{print $4}')
+    THREADS=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
+
+    if (( $(echo "$TOTAL_RAM_MB < 4096" | bc -l) )) || (( PHYSICAL_CORES < 4 )) || (( THREADS < 4 )); then
+        notify-send \
+            -a "System Message" \
+            -u critical \
+            --action=Understood \
+            -i "dialog-warning" \
+            "System Specs Warning" \
+            "This system has less than 4GB of RAM, fewer than 4 physical cores, or fewer than 4 threads. Performance may be limited. Nitrux does not target low-spec hardware systems."
+    fi
+
+    exit 0
+fi
 
 sleep 5
 
-if grep -q "EDK II" /var/log/syslog || grep -q "VMware, Inc" /var/log/syslog; then
-    notify-send -a "System Message" -u critical --action=Understood -i "dialog-warning" "VM Detected" "Nitrux is running in a Virtual Machine. Performance will be severely affected. Issues regarding VM usage will be closed at bug tracker."
-fi
+notify-send \
+    --app-name="System Message" \
+    --urgency=critical \
+    --icon="dialog-warning" \
+    --wait \
+    --action="Understood=Understood" \
+    "VM Detected" \
+    "Nitrux is running in a Virtual Machine.\nPerformance will be severely affected.\n\nDismiss this notification to view the virtualization policy."
 
-TOTAL_RAM_MB=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024}')
-PHYSICAL_CORES=$(lscpu | grep "^Core(s) per socket:" | awk '{print $4}')
-THREADS=$(lscpu | grep "^CPU(s):" | awk '{print $2}')
+TITLE="Virtualizing Nitrux"
+MSG="Starting with Nitrux 5.0.0, we have decided to discontinue integration and support features intended for running Nitrux as a Guest OS. While Nitrux will continue to run in most hypervisors, components such as SPICE integration, the QXL X.Org driver, and the Hyper-V modules, daemons, and OpenRC services are no longer included.<br><br>"
+MSG+="Despite our previous efforts to provide guidance, we repeatedly encountered users applying incorrect configurations, further limiting performance in already-constrained virtualized environments, among other issues stemming from hypervisor quirks.<br><br>"
+MSG+="<b>We never intended for Nitrux to run inside a Virtual Machine.</b><br><br>"
+MSG+="Nitrux is tuned and optimized for physical systems, where users can experience its design, performance, and intent as we built it.<br><br>"
+MSG+="To install or test Nitrux, use a supported physical computer that meets the documented system requirements.<br><br>"
+MSG+="<b>See: https://nxos.org/tutorial/how-to-install-nitrux/#system-requirements</b><br><br>"
+MSG+="<font color='orange'><b>⚠️ Important:</b></font> Bug reports regarding running Nitrux as a virtual machine will be closed.<br><br>"
+MSG+="<hr><b>The system will now reboot.</b>"
 
-if (( $(echo "$TOTAL_RAM_MB < 4096" | bc -l) )) || (( PHYSICAL_CORES < 4 )) || (( THREADS < 4 )); then
-    notify-send -a "System Message" -u critical --action=Understood -i "dialog-warning" "System Specs Warning" "This system has less than 4GB of RAM, fewer than 4 physical cores, or fewer than 4 threads. Performance may be limited. Nitrux does not target low-spec hardware systems."
-fi
+kdialog --title "$TITLE" --msgbox "$MSG" --geometry 600x400
+
+loginctl reboot || hyprctl dispatch exit
