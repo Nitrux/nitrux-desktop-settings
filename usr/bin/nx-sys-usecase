@@ -60,7 +60,7 @@ if [ "$IS_VM" -eq 0 ]; then
             --action=Understood \
             -i "dialog-warning" \
             "System Specs Warning" \
-            "This system has less than 4GB of RAM, fewer than 4 physical cores, or fewer than 4 threads. Performance may be limited. Nitrux does not target low-spec hardware systems."
+            "This system has less than 4GB of RAM, 4 physical cores, or 4 threads. Performance will be limited. Nitrux does not target low-spec hardware."
     fi
 
     exit 0
@@ -75,7 +75,7 @@ notify-send \
     --wait \
     --action="Understood=Understood" \
     "VM Detected" \
-    "Nitrux is running in a Virtual Machine.\nPerformance will be severely affected.\n\nDismiss this notification to view the virtualization policy."
+    "Nitrux is running in a Virtual Machine; performance and experience will be severely limited.\n\nDismiss this notification to view the virtualization policy."
 
 TITLE="Virtualizing Nitrux"
 MSG="Starting with Nitrux 5.0.0, we have decided to discontinue integration and support features intended for running Nitrux as a Guest OS. While Nitrux will continue to run in most hypervisors, components such as SPICE integration, the QXL X.Org driver, and the Hyper-V modules, daemons, and OpenRC services are no longer included.<br><br>"

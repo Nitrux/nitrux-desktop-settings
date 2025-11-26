@@ -1,3 +1,11 @@
+nitrux-desktop-settings (7.1.1)  nitrux; urgency=medium
+
+  * Update crystal dock configuration.
+  * Rephrase wording in VM compliance check.
+  * Rephrase wording in hardware requirements check.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 26 Nov 2025 04:00:00 -0500
+
 nitrux-desktop-settings (7.1.0)  nitrux; urgency=medium
 
   * Improve VM compliance check.
