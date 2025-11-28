@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.1.2)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 28 Nov 2025 04:49:00 -0500
+
 nitrux-desktop-settings (7.1.1)  nitrux; urgency=medium
 
   * Update crystal dock configuration.
