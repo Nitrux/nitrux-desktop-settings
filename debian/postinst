@@ -56,11 +56,12 @@ sed -i 's+SHELL=/bin/sh+SHELL=/bin/zsh+g' /etc/default/useradd
 sed -i 's+DSHELL=/bin/bash+DSHELL=/bin/zsh+g' /etc/adduser.conf
 
 
-#	-- Force set nitrux_cursors as the default x-cursor-theme.
+# 1. Register the Nitrux cursor as a high-priority alternative
+# Syntax: install <link> <name> <path> <priority>
+update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme /usr/share/icons/nitrux_snow_cursors/index.theme 90
 
-cp /usr/share/icons/nitrux_snow_cursors/index.theme /etc/X11/cursors/nitrux_cursors.theme
-ln -svf /etc/X11/cursors/nitrux_cursors.theme /etc/alternatives/x-cursor-theme
-sed -i '$ a Inherits=nitrux_snow_cursors' /etc/X11/cursors/nitrux_cursors.theme
+# 2. Force set it as the selection
+update-alternatives --set x-cursor-theme /usr/share/icons/nitrux_snow_cursors/index.theme
 
 
 #	-- Overwrite file from bash.
