@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.1.6)  nitrux; urgency=medium
+
+  * Improve wording for HCEL.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 02 Dec 2025 02:12:00 -0500
+
 nitrux-desktop-settings (7.1.5)  nitrux; urgency=medium
 
   * Add package manager policy dialog.

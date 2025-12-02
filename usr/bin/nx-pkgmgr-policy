@@ -37,6 +37,7 @@ export QT_QUICK_CONTROLS_STYLE=org.kde.breeze
 
 CMD=$(basename "$0")
 
+
 # -- Identify the actual user (even if sudo was used).
 
 REAL_USER="${SUDO_USER:-$USER}"
@@ -58,14 +59,12 @@ fi
 TITLE="Command Blocked: $CMD"
 
 MSG="<b>Usage of <tt>$CMD</tt> is not supported on the host system.</b><br><br>"
-MSG+="Nitrux is a distribution that doesn’t revolve around a package manager like other distributions.<br><br>"
-MSG+="In Nitrux, the preferred way to install new software is the following:<br><br>"
+MSG+="Nitrux focuses on user-centric, rootless app management. In Nitrux, the preferred way to install new software is the following:<br><br>"
 MSG+="&nbsp;&bull;&nbsp;<b>AppBoxes</b> (For GUI applications, CLI tools, utils and some WMs)<br>"
 MSG+="&nbsp;&bull;&nbsp;<b>Flatpak</b> (For additional GUI applications)<br>"
 MSG+="&nbsp;&bull;&nbsp;<b>Distrobox</b> (For tasks requiring a package manager, i.e., compiling or workflow transition)<br><br>"
 MSG+="Please review the documentation:<br><br>"
 MSG+="<b>Software Management: https://nxos.org/tutorial/software-management/</b><br>"
-MSG+="<b>How to use Distrobox: https://nxos.org/tutorial/how-to-use-distrobox-in-nitrux/</b><br>"
 MSG+="<hr><b>The command was not executed.</b>"
 
 if [ -n "${DISPLAY-}" ] && command -v kdialog >/dev/null 2>&1; then
@@ -73,11 +72,9 @@ if [ -n "${DISPLAY-}" ] && command -v kdialog >/dev/null 2>&1; then
 else
     printf '\n'
     printf '!! COMMAND BLOCKED: %s !!\n' "$CMD"
-    printf 'Nitrux does not support using package managers on the host system.\n'
-    printf 'Please use AppImages or run this command inside a Distrobox container.\n\n'
-    printf 'Documentation:\n'
+    printf 'Nitrux focuses on user-centric, rootless app management.\n'
+    printf 'Please review the documentation:\n'
     printf ' - https://nxos.org/tutorial/software-management/\n'
-    printf ' - https://nxos.org/tutorial/how-to-use-distrobox-in-nitrux/\n\n'
 fi
 
 exit 1
