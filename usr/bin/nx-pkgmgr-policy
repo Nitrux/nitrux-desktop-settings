@@ -56,25 +56,63 @@ fi
 
 # -- Notify users that there is no system package manager and make them understand this is intentional.
 
+dist=$(grep -oP 'PRETTY_NAME=\K.*' /etc/os-release | tr -d '"')
+software_management_url='https://nxos.org/tutorial/software-management/'
+vendor='Nitrux Latinoamericana S.C.'
+fecha=$(date +%Y)
+
+BOLD='\e[1m'
+UNDERLINE='\e[4m'
+NF='\e[0m'
+
+WHITE='\033[1;37m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
 TITLE="Command Blocked: $CMD"
 
 MSG="<b>Usage of <tt>$CMD</tt> is not supported on the host system.</b><br><br>"
-MSG+="Nitrux focuses on user-centric, rootless app management. In Nitrux, the preferred way to install new software is the following:<br><br>"
-MSG+="&nbsp;&bull;&nbsp;<b>AppBoxes</b> (For GUI applications, CLI tools, utils and some WMs)<br>"
-MSG+="&nbsp;&bull;&nbsp;<b>Flatpak</b> (For additional GUI applications)<br>"
-MSG+="&nbsp;&bull;&nbsp;<b>Distrobox</b> (For tasks requiring a package manager, i.e., compiling or workflow transition)<br><br>"
-MSG+="Please review the documentation:<br><br>"
-MSG+="<b>Software Management: https://nxos.org/tutorial/software-management/</b><br>"
+MSG+="Nitrux focuses on user-centric, rootless software management. On Nitrux, the preferred ways to install new software are:<br><br>"
+MSG+="&nbsp;&bull;&nbsp;<b>AppBoxes</b> (GUI apps, CLI tools, utilities, some WMs)<br>"
+MSG+="&nbsp;&bull;&nbsp;<b>Flatpak</b> (additional GUI applications)<br>"
+MSG+="&nbsp;&bull;&nbsp;<b>Distrobox</b> (tasks requiring a package manager, such as compiling or workflow transition)<br><br>"
+MSG+="For details, see the documentation:<br><br>"
+MSG+="<b>Software Management: $software_management_url</b><br><br>"
 MSG+="<hr><b>The command was not executed.</b>"
 
-if [ -n "${DISPLAY-}" ] && command -v kdialog >/dev/null 2>&1; then
+if [ "$EUID" -ne 0 ] && [ -n "${DISPLAY-}" ] && command -v kdialog >/dev/null 2>&1; then
     kdialog --title "$TITLE" --msgbox "$MSG" --geometry 600x400
 else
-    printf '\n'
-    printf '!! COMMAND BLOCKED: %s !!\n' "$CMD"
-    printf 'Nitrux focuses on user-centric, rootless app management.\n'
-    printf 'Please review the documentation:\n'
-    printf ' - https://nxos.org/tutorial/software-management/\n'
+    echo ' '
+    echo '                          =                  '
+    echo '                          =     .            '
+    echo '                          =     .:::         '
+    echo '::+.      ....:......     =         :::      '
+    echo '%+-#=  ..:    :-:    .    =            :::.  '
+    echo '--#-=-- --    .:#---.     =            .=#%#='
+    echo '- .**=#= :      *    .    =         :+#%%%#=.'
+    echo '-   -# =#.    --     .    =      :+%%%%*-.   '
+    echo '        ..  ..  ....      =   -+%%%%*-       '
+    echo '                          =-*%%%%+:          '
+    echo '                          +%%#+:             '
+    echo ' '
+    echo ' '
+    echo -e "$dist"
+    echo ' '
+    echo -e "(c) $fecha Some Rights Reserved. Made by $vendor"
+    echo ' '
+    echo ' '
+    echo -e "${YELLOW}##############################################################${NC}"
+    echo -e "${YELLOW}# Usage of $CMD is not supported on the host system. #${NC}"
+    echo -e "${YELLOW}##############################################################${NC}"
+    echo ' '
+    echo -e "Nitrux focuses on user-centric, rootless software management."
+    echo ' '
+    echo -e "Use ${BOLD}AppBoxes${NF}, ${BOLD}Flatpak${NF}, or ${BOLD}Distrobox${NF} for tasks requiring a package manager, such as compiling or workflow transition."
+    echo ' '
+    echo -e "For details, see the documentation:"
+    echo -e "  ${WHITE}${UNDERLINE}$software_management_url${NC}${NF}"
+    echo ' '
 fi
 
 exit 1
