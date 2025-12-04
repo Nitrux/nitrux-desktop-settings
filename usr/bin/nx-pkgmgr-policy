@@ -102,9 +102,9 @@ else
     echo -e "(c) $fecha Some Rights Reserved. Made by $vendor"
     echo ' '
     echo ' '
-    echo -e "${YELLOW}##############################################################${NC}"
+    echo -e "${YELLOW}#####################################################${NC}"
     echo -e "${YELLOW}# Usage of $CMD is not supported on the host system. #${NC}"
-    echo -e "${YELLOW}##############################################################${NC}"
+    echo -e "${YELLOW}#####################################################${NC}"
     echo ' '
     echo -e "Nitrux focuses on user-centric, rootless software management."
     echo ' '
