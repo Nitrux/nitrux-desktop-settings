@@ -1,0 +1,295 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import Quickshell
+import Quickshell.Services.UPower
+import qs.Commons
+import qs.Modules.MainScreen
+import qs.Services.Hardware
+import qs.Services.Power
+import qs.Widgets
+
+SmartPanel {
+  id: root
+
+  preferredWidth: Math.round(360 * Style.uiScaleRatio)
+  preferredHeight: Math.round(460 * Style.uiScaleRatio)
+
+  readonly property var battery: UPower.displayDevice
+  readonly property bool isReady: battery && battery.ready && battery.isLaptopBattery && battery.isPresent
+  readonly property int percent: isReady ? Math.round(battery.percentage * 100) : -1
+  readonly property bool charging: isReady ? battery.state === UPowerDeviceState.Charging : false
+  readonly property bool healthAvailable: isReady && battery.healthSupported
+  readonly property int healthPercent: healthAvailable ? Math.round(battery.healthPercentage) : -1
+  readonly property bool powerProfileAvailable: PowerProfileService.available
+  readonly property var powerProfiles: [PowerProfile.PowerSaver, PowerProfile.Balanced, PowerProfile.Performance]
+  readonly property string timeText: {
+    if (!isReady)
+      return I18n.tr("battery.no-battery-detected");
+    if (charging && battery.timeToFull > 0) {
+      return I18n.tr("battery.time-until-full", {
+                       "time": Time.formatVagueHumanReadableDuration(battery.timeToFull)
+                     });
+    }
+    if (!charging && battery.timeToEmpty > 0) {
+      return I18n.tr("battery.time-left", {
+                       "time": Time.formatVagueHumanReadableDuration(battery.timeToEmpty)
+                     });
+    }
+    return I18n.tr("battery.idle");
+  }
+  readonly property string iconName: BatteryService.getIcon(percent, charging, isReady)
+  readonly property bool profilesAvailable: PowerProfileService.available
+  property int profileIndex: profileToIndex(PowerProfileService.profile)
+  property bool manualInhibitActive: manualInhibitorEnabled()
+
+  panelContent: Item {
+    property real contentPreferredHeight: mainLayout.implicitHeight + Style.marginL * 2
+
+    ColumnLayout {
+      id: mainLayout
+      anchors.fill: parent
+      anchors.margins: Style.marginL
+      spacing: Style.marginM
+
+      // HEADER
+      NBox {
+        Layout.fillWidth: true
+        implicitHeight: headerRow.implicitHeight + (Style.marginM * 2)
+
+        RowLayout {
+          id: headerRow
+          anchors.fill: parent
+          anchors.margins: Style.marginM
+          spacing: Style.marginM
+
+          NIcon {
+            pointSize: Style.fontSizeXXL
+            color: root.charging ? Color.mPrimary : Color.mOnSurface
+            icon: iconName
+          }
+
+          ColumnLayout {
+            spacing: Style.marginXXS
+            Layout.fillWidth: true
+
+            NText {
+              text: I18n.tr("battery.panel-title")
+              pointSize: Style.fontSizeL
+              font.weight: Style.fontWeightBold
+              color: Color.mOnSurface
+              Layout.fillWidth: true
+            }
+
+            NText {
+              text: timeText
+              pointSize: Style.fontSizeS
+              color: Color.mOnSurfaceVariant
+              wrapMode: Text.Wrap
+              Layout.fillWidth: true
+            }
+          }
+
+          NIconButton {
+            icon: "close"
+            tooltipText: I18n.tr("tooltips.close")
+            baseSize: Style.baseWidgetSize * 0.8
+            onClicked: root.close()
+          }
+        }
+      }
+
+      // Charge level + health/time
+      NBox {
+        Layout.fillWidth: true
+        height: chargeLayout.implicitHeight + Style.marginL * 2
+
+        ColumnLayout {
+          id: chargeLayout
+          anchors.fill: parent
+          anchors.margins: Style.marginL
+          spacing: Style.marginS
+
+          RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.marginS
+
+            ColumnLayout {
+              NText {
+                text: I18n.tr("battery.battery-level")
+                color: Color.mOnSurface
+                pointSize: Style.fontSizeS
+              }
+
+              Rectangle {
+                Layout.fillWidth: true
+                height: Math.round(8 * Style.uiScaleRatio)
+                radius: height / 2
+                color: Color.mSurfaceVariant
+
+                Rectangle {
+                  anchors.verticalCenter: parent.verticalCenter
+                  height: parent.height
+                  radius: parent.radius
+                  width: {
+                    var ratio = Math.max(0, Math.min(1, percent / 100));
+                    return parent.width * ratio;
+                  }
+                  color: Color.mPrimary
+                }
+              }
+            }
+
+            NText {
+              text: percent >= 0 ? `${percent}%` : "--"
+              color: Color.mOnSurface
+              pointSize: Style.fontSizeS
+              font.weight: Style.fontWeightBold
+            }
+          }
+
+          RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.marginL
+            visible: healthAvailable
+
+            NText {
+              text: I18n.tr("battery.health", {
+                              "percent": healthPercent
+                            })
+              color: Color.mOnSurface
+              pointSize: Style.fontSizeS
+              font.weight: Style.fontWeightMedium
+              Layout.fillWidth: true
+            }
+          }
+        }
+      }
+
+      // Power profile and idle inhibit controls
+      NBox {
+        Layout.fillWidth: true
+        height: controlsLayout.implicitHeight + Style.marginM * 2
+
+        ColumnLayout {
+          id: controlsLayout
+          anchors.fill: parent
+          anchors.margins: Style.marginM
+          spacing: Style.marginM
+
+          ColumnLayout {
+            id: ppd
+            visible: root.powerProfileAvailable
+
+            RowLayout {
+              Layout.fillWidth: true
+              spacing: Style.marginS
+              NIcon {
+                icon: PowerProfileService.getIcon()
+                pointSize: Style.fontSizeM
+                color: Color.mPrimary
+              }
+              NText {
+                text: I18n.tr("battery.power-profile")
+                font.weight: Style.fontWeightBold
+                color: Color.mOnSurface
+                Layout.fillWidth: true
+              }
+              NText {
+                text: PowerProfileService.getName(profileIndex)
+                color: Color.mOnSurfaceVariant
+              }
+            }
+
+            NValueSlider {
+              Layout.fillWidth: true
+              from: 0
+              to: 2
+              stepSize: 1
+              snapAlways: true
+              value: profileIndex
+              enabled: profilesAvailable
+              onPressedChanged: (pressed, v) => {
+                                  if (!pressed) {
+                                    setProfileByIndex(v);
+                                  }
+                                }
+              onMoved: v => {
+                         profileIndex = v;
+                       }
+            }
+          }
+
+          RowLayout {
+            Layout.fillWidth: true
+            spacing: Style.marginS
+
+            NIcon {
+              icon: manualInhibitActive ? "keep-awake-on" : "keep-awake-off"
+              pointSize: Style.fontSizeL
+              color: manualInhibitActive ? Color.mPrimary : Color.mOnSurfaceVariant
+              Layout.alignment: Qt.AlignVCenter
+            }
+
+            NToggle {
+              Layout.fillWidth: true
+              checked: manualInhibitActive
+              label: I18n.tr("battery.inhibit-idle-label")
+              description: I18n.tr("battery.inhibit-idle-description")
+              onToggled: function (checked) {
+                if (checked) {
+                  IdleInhibitorService.addManualInhibitor(null);
+                } else {
+                  IdleInhibitorService.removeManualInhibitor();
+                }
+                manualInhibitActive = checked;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function profileToIndex(p) {
+    return powerProfiles.indexOf(p) ?? 1;
+  }
+
+  function indexToProfile(idx) {
+    return powerProfiles[idx] ?? PowerProfile.Balanced;
+  }
+
+  function setProfileByIndex(idx) {
+    var prof = indexToProfile(idx);
+    profileIndex = idx;
+    PowerProfileService.setProfile(prof);
+  }
+
+  function manualInhibitorEnabled() {
+    return IdleInhibitorService.activeInhibitors && IdleInhibitorService.activeInhibitors.indexOf("manual") >= 0;
+  }
+
+  Connections {
+    target: IdleInhibitorService
+
+    function onIsInhibitedChanged() {
+      manualInhibitActive = manualInhibitorEnabled();
+    }
+  }
+
+  Timer {
+    id: inhibitorPoll
+    interval: 1000
+    repeat: true
+    running: true
+    onTriggered: manualInhibitActive = manualInhibitorEnabled()
+  }
+
+  Connections {
+    target: PowerProfileService
+
+    function onProfileChanged() {
+      profileIndex = profileToIndex(PowerProfileService.profile);
+    }
+  }
+}

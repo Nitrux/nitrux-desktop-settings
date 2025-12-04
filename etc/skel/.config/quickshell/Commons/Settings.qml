@@ -1,0 +1,1092 @@
+pragma Singleton
+
+import QtQuick
+import Quickshell
+import Quickshell.Io
+import "../Helpers/QtObj2JS.js" as QtObj2JS
+import qs.Commons
+import qs.Services.Power
+import qs.Services.System
+import qs.Services.UI
+
+Singleton {
+  id: root
+
+  property bool isLoaded: false
+  property bool directoriesCreated: false
+  property bool shouldOpenSetupWizard: false
+
+  /*
+  Shell directories.
+  - Default config directory: ~/.config/noctalia
+  - Default cache directory: ~/.cache/noctalia
+  */
+  readonly property alias data: adapter  // Used to access via Settings.data.xxx.yyy
+  readonly property int settingsVersion: 25
+  readonly property bool isDebug: Quickshell.env("NOCTALIA_DEBUG") === "1"
+  readonly property string shellName: "noctalia"
+  readonly property string configDir: Quickshell.env("NOCTALIA_CONFIG_DIR") || (Quickshell.env("XDG_CONFIG_HOME") || Quickshell.env("HOME") + "/.config") + "/" + shellName + "/"
+  readonly property string cacheDir: Quickshell.env("NOCTALIA_CACHE_DIR") || (Quickshell.env("XDG_CACHE_HOME") || Quickshell.env("HOME") + "/.cache") + "/" + shellName + "/"
+  readonly property string cacheDirImages: cacheDir + "images/"
+  readonly property string cacheDirImagesWallpapers: cacheDir + "images/wallpapers/"
+  readonly property string cacheDirImagesNotifications: cacheDir + "images/notifications/"
+  readonly property string settingsFile: Quickshell.env("NOCTALIA_SETTINGS_FILE") || (configDir + "settings.json")
+  readonly property string defaultLocation: "Tokyo"
+  readonly property string defaultAvatar: Quickshell.env("HOME") + "/.face"
+  readonly property string defaultVideosDirectory: Quickshell.env("HOME") + "/Videos"
+  readonly property string defaultWallpapersDirectory: Quickshell.env("HOME") + "/Pictures/Wallpapers"
+  readonly property string defaultWallpaper: Quickshell.shellDir + "/Assets/Wallpaper/noctalia.png"
+
+  // Signal emitted when settings are loaded after startupcale changes
+  signal settingsLoaded
+  signal settingsSaved
+
+  // -----------------------------------------------------
+  // -----------------------------------------------------
+  // Ensure directories exist before FileView tries to read files
+  Component.onCompleted: {
+    // ensure settings dir exists
+    Quickshell.execDetached(["mkdir", "-p", configDir]);
+    Quickshell.execDetached(["mkdir", "-p", cacheDir]);
+
+    Quickshell.execDetached(["mkdir", "-p", cacheDirImagesWallpapers]);
+    Quickshell.execDetached(["mkdir", "-p", cacheDirImagesNotifications]);
+
+    // Mark directories as created and trigger file loading
+    directoriesCreated = true;
+
+    // This should only be activated once when the settings structure has changed
+    // Then it should be commented out again, regular users don't need to generate
+    // default settings on every start
+    if (isDebug) {
+      generateDefaultSettings();
+    }
+
+    // Patch-in the local default, resolved to user's home
+    adapter.general.avatarImage = defaultAvatar;
+    adapter.screenRecorder.directory = defaultVideosDirectory;
+    adapter.wallpaper.directory = defaultWallpapersDirectory;
+
+    // Set the adapter to the settingsFileView to trigger the real settings load
+    settingsFileView.adapter = adapter;
+  }
+
+  // Don't write settings to disk immediately
+  // This avoid excessive IO when a variable changes rapidly (ex: sliders)
+  Timer {
+    id: saveTimer
+    running: false
+    interval: 1000
+    onTriggered: {
+      root.saveImmediate();
+    }
+  }
+
+  FileView {
+    id: settingsFileView
+    path: directoriesCreated ? settingsFile : undefined
+    printErrors: false
+    watchChanges: true
+    onFileChanged: reload()
+    onAdapterUpdated: saveTimer.start()
+
+    // Trigger initial load when path changes from empty to actual path
+    onPathChanged: {
+      if (path !== undefined) {
+        reload();
+      }
+    }
+    onLoaded: function () {
+      if (!isLoaded) {
+        Logger.i("Settings", "Settings loaded");
+
+        upgradeSettingsData();
+
+        root.isLoaded = true;
+
+        // Emit the signal
+        root.settingsLoaded();
+
+        // Finally, update our local settings version
+        adapter.settingsVersion = settingsVersion;
+      }
+    }
+    onLoadFailed: function (error) {
+      if (error.toString().includes("No such file") || error === 2) {
+        // File doesn't exist, create it with default values
+        writeAdapter();
+
+        // Also write to fallback if set
+        if (Quickshell.env("NOCTALIA_SETTINGS_FALLBACK")) {
+          settingsFallbackFileView.writeAdapter();
+        }
+
+        // We started without settings, we should open the setupWizard
+        root.shouldOpenSetupWizard = true;
+      }
+    }
+  }
+
+  // Fallback FileView for writing settings to alternate location
+  FileView {
+    id: settingsFallbackFileView
+    path: Quickshell.env("NOCTALIA_SETTINGS_FALLBACK") || ""
+    adapter: Quickshell.env("NOCTALIA_SETTINGS_FALLBACK") ? adapter : null
+    printErrors: false
+    watchChanges: false
+  }
+
+  JsonAdapter {
+    id: adapter
+
+    property int settingsVersion: root.settingsVersion
+
+    // bar
+    property JsonObject bar: JsonObject {
+      property string position: "top" // "top", "bottom", "left", or "right"
+      property real backgroundOpacity: 1.0
+      property list<string> monitors: []
+      property string density: "default" // "compact", "default", "comfortable"
+      property bool showCapsule: true
+      property real capsuleOpacity: 1.0
+
+      // Floating bar settings
+      property bool floating: false
+      property real marginVertical: 0.25
+      property real marginHorizontal: 0.25
+
+      // Bar outer corners (inverted/concave corners at bar edges when not floating)
+      property bool outerCorners: true
+
+      // Reserves space with compositor
+      property bool exclusive: true
+
+      // Widget configuration for modular bar system
+      property JsonObject widgets
+      widgets: JsonObject {
+        property list<var> left: [
+          {
+            "id": "ControlCenter"
+          },
+          {
+            "id": "SystemMonitor"
+          },
+          {
+            "id": "ActiveWindow"
+          },
+          {
+            "id": "MediaMini"
+          }
+        ]
+        property list<var> center: [
+          {
+            "id": "Workspace"
+          }
+        ]
+        property list<var> right: [
+          {
+            "id": "ScreenRecorder"
+          },
+          {
+            "id": "Tray"
+          },
+          {
+            "id": "NotificationHistory"
+          },
+          {
+            "id": "Battery"
+          },
+          {
+            "id": "Volume"
+          },
+          {
+            "id": "Brightness"
+          },
+          {
+            "id": "Clock"
+          }
+        ]
+      }
+    }
+
+    // general
+    property JsonObject general: JsonObject {
+      property string avatarImage: ""
+      property real dimmerOpacity: 0.6
+      property bool showScreenCorners: false
+      property bool forceBlackScreenCorners: false
+      property real scaleRatio: 1.0
+      property real radiusRatio: 1.0
+      property real screenRadiusRatio: 1.0
+      property real animationSpeed: 1.0
+      property bool animationDisabled: false
+      property bool compactLockScreen: false
+      property bool lockOnSuspend: true
+      property bool showHibernateOnLockScreen: false
+      property bool enableShadows: true
+      property string shadowDirection: "bottom_right"
+      property int shadowOffsetX: 2
+      property int shadowOffsetY: 3
+      property string language: ""
+      property bool allowPanelsOnScreenWithoutBar: true
+    }
+
+    // ui
+    property JsonObject ui: JsonObject {
+      property string fontDefault: "Roboto"
+      property string fontFixed: "DejaVu Sans Mono"
+      property real fontDefaultScale: 1.0
+      property real fontFixedScale: 1.0
+      property bool tooltipsEnabled: true
+      property real panelBackgroundOpacity: 1.0
+      property bool panelsAttachedToBar: true
+      property bool settingsPanelAttachToBar: false
+    }
+
+    // location
+    property JsonObject location: JsonObject {
+      property string name: defaultLocation
+      property bool weatherEnabled: true
+      property bool weatherShowEffects: true
+      property bool useFahrenheit: false
+      property bool use12hourFormat: false
+      property bool showWeekNumberInCalendar: false
+      property bool showCalendarEvents: true
+      property bool showCalendarWeather: true
+      property bool analogClockInCalendar: false
+      property int firstDayOfWeek: -1 // -1 = auto (use locale), 0 = Sunday, 1 = Monday, 6 = Saturday
+    }
+
+    // calendar
+    property JsonObject calendar: JsonObject {
+      property list<var> cards: [
+        {
+          "id": "banner-card",
+          "enabled": true
+        },
+        {
+          "id": "calendar-card",
+          "enabled": true
+        },
+        {
+          "id": "timer-card",
+          "enabled": true
+        },
+        {
+          "id": "weather-card",
+          "enabled": true
+        }
+      ]
+    }
+
+    // screen recorder
+    property JsonObject screenRecorder: JsonObject {
+      property string directory: ""
+      property int frameRate: 60
+      property string audioCodec: "opus"
+      property string videoCodec: "h264"
+      property string quality: "very_high"
+      property string colorRange: "limited"
+      property bool showCursor: true
+      property string audioSource: "default_output"
+      property string videoSource: "portal"
+    }
+
+    // wallpaper
+    property JsonObject wallpaper: JsonObject {
+      property bool enabled: true
+      property bool overviewEnabled: false
+      property string directory: ""
+      property bool enableMultiMonitorDirectories: false
+      property bool recursiveSearch: false
+      property bool setWallpaperOnAllMonitors: true
+      property string fillMode: "crop"
+      property color fillColor: "#000000"
+      property bool randomEnabled: false
+      property int randomIntervalSec: 300 // 5 min
+      property int transitionDuration: 1500 // 1500 ms
+      property string transitionType: "random"
+      property real transitionEdgeSmoothness: 0.05
+      property string panelPosition: "follow_bar"
+      property bool hideWallpaperFilenames: false
+      // Wallhaven settings
+      property bool useWallhaven: false
+      property string wallhavenQuery: ""
+      property string wallhavenSorting: "relevance"
+      property string wallhavenOrder: "desc"
+      property string wallhavenCategories: "111" // general,anime,people
+      property string wallhavenPurity: "100" // sfw only
+      property string wallhavenResolutionMode: "atleast" // "atleast" or "exact"
+      property string wallhavenResolutionWidth: ""
+      property string wallhavenResolutionHeight: ""
+
+      property string defaultWallpaper: "" // TODO REMOVE
+      property list<var> monitors: []  // TODO REMOVE
+    }
+
+    // applauncher
+    property JsonObject appLauncher: JsonObject {
+      property bool enableClipboardHistory: false
+      property bool enableClipPreview: true
+      // Position: center, top_left, top_right, bottom_left, bottom_right, bottom_center, top_center
+      property string position: "center"
+      property list<string> pinnedExecs: []
+      property bool useApp2Unit: false
+      property bool sortByMostUsed: true
+      property string terminalCommand: "xterm -e"
+      property bool customLaunchPrefixEnabled: false
+      property string customLaunchPrefix: ""
+      // View mode: "list" or "grid"
+      property string viewMode: "list"
+    }
+
+    // control center
+    property JsonObject controlCenter: JsonObject {
+      // Position: close_to_bar_button, center, top_left, top_right, bottom_left, bottom_right, bottom_center, top_center
+      property string position: "close_to_bar_button"
+      property JsonObject shortcuts
+      shortcuts: JsonObject {
+        property list<var> left: [
+          {
+            "id": "WiFi"
+          },
+          {
+            "id": "Bluetooth"
+          },
+          {
+            "id": "ScreenRecorder"
+          },
+          {
+            "id": "WallpaperSelector"
+          }
+        ]
+        property list<var> right: [
+          {
+            "id": "Notifications"
+          },
+          {
+            "id": "PowerProfile"
+          },
+          {
+            "id": "KeepAwake"
+          },
+          {
+            "id": "NightLight"
+          }
+        ]
+      }
+      property list<var> cards: [
+        {
+          "id": "profile-card",
+          "enabled": true
+        },
+        {
+          "id": "shortcuts-card",
+          "enabled": true
+        },
+        {
+          "id": "audio-card",
+          "enabled": true
+        },
+        {
+          "id": "weather-card",
+          "enabled": true
+        },
+        {
+          "id": "media-sysmon-card",
+          "enabled": true
+        }
+      ]
+    }
+
+    // system monitor
+    property JsonObject systemMonitor: JsonObject {
+      property int cpuWarningThreshold: 80
+      property int cpuCriticalThreshold: 90
+      property int tempWarningThreshold: 80
+      property int tempCriticalThreshold: 90
+      property int memWarningThreshold: 80
+      property int memCriticalThreshold: 90
+      property int diskWarningThreshold: 80
+      property int diskCriticalThreshold: 90
+      property bool useCustomColors: false
+      property string warningColor: ""
+      property string criticalColor: ""
+    }
+
+    // dock
+    property JsonObject dock: JsonObject {
+      property bool enabled: true
+      property string displayMode: "auto_hide" // "always_visible", "auto_hide", "exclusive"
+      property real backgroundOpacity: 1.0
+      property real radiusRatio: 0.1
+      property real floatingRatio: 1.0
+      property real size: 1
+      property bool onlySameOutput: true
+      property list<string> monitors: []
+      // Desktop entry IDs pinned to the dock (e.g., "org.kde.konsole", "firefox.desktop")
+      property list<string> pinnedApps: []
+      property bool colorizeIcons: false
+    }
+
+    // network
+    property JsonObject network: JsonObject {
+      property bool wifiEnabled: true
+    }
+
+    // session menu
+    property JsonObject sessionMenu: JsonObject {
+      property bool enableCountdown: true
+      property int countdownDuration: 10000
+      property string position: "center"
+      property bool showHeader: true
+      property list<var> powerOptions: [
+        {
+          "action": "lock",
+          "enabled": true
+        },
+        {
+          "action": "suspend",
+          "enabled": true
+        },
+        {
+          "action": "hibernate",
+          "enabled": true
+        },
+        {
+          "action": "reboot",
+          "enabled": true
+        },
+        {
+          "action": "logout",
+          "enabled": true
+        },
+        {
+          "action": "shutdown",
+          "enabled": true
+        }
+      ]
+    }
+
+    // notifications
+    property JsonObject notifications: JsonObject {
+      property bool enabled: true
+      property list<string> monitors: []
+      property string location: "top_right"
+      property bool overlayLayer: true
+      property real backgroundOpacity: 1.0
+      property bool respectExpireTimeout: false
+      property int lowUrgencyDuration: 3
+      property int normalUrgencyDuration: 8
+      property int criticalUrgencyDuration: 15
+      property bool enableKeyboardLayoutToast: true
+    }
+
+    // on-screen display
+    property JsonObject osd: JsonObject {
+      property bool enabled: true
+      property string location: "top_right"
+      property int autoHideMs: 2000
+      property bool overlayLayer: true
+      property real backgroundOpacity: 1.0
+      property list<var> enabledTypes: []
+      property list<string> monitors: []
+    }
+
+    // audio
+    property JsonObject audio: JsonObject {
+      property int volumeStep: 5
+      property bool volumeOverdrive: false
+      property int cavaFrameRate: 30
+      property string visualizerType: "linear"
+      property string visualizerQuality: "high"
+      property list<string> mprisBlacklist: []
+      property string preferredPlayer: ""
+      property string externalMixer: "pwvucontrol || pavucontrol"
+    }
+
+    // brightness
+    property JsonObject brightness: JsonObject {
+      property int brightnessStep: 5
+      property bool enforceMinimum: true
+      property bool enableDdcSupport: false
+    }
+
+    property JsonObject colorSchemes: JsonObject {
+      property bool useWallpaperColors: false
+      property string predefinedScheme: "Noctalia (default)"
+      property bool darkMode: true
+      property string schedulingMode: "off"
+      property string manualSunrise: "06:30"
+      property string manualSunset: "18:30"
+      property string matugenSchemeType: "scheme-fruit-salad"
+      property bool generateTemplatesForPredefined: true
+    }
+
+    // templates toggles
+    property JsonObject templates: JsonObject {
+      property bool gtk: false
+      property bool qt: false
+      property bool kcolorscheme: false
+      property bool alacritty: false
+      property bool kitty: false
+      property bool ghostty: false
+      property bool foot: false
+      property bool wezterm: false
+      property bool fuzzel: false
+      property bool discord: false
+      property bool pywalfox: false
+      property bool vicinae: false
+      property bool walker: false
+      property bool code: false
+      property bool spicetify: false
+      property bool telegram: false
+      property bool cava: false
+      property bool enableUserTemplates: false
+    }
+
+    // night light
+    property JsonObject nightLight: JsonObject {
+      property bool enabled: false
+      property bool forced: false
+      property bool autoSchedule: true
+      property string nightTemp: "4000"
+      property string dayTemp: "6500"
+      property string manualSunrise: "06:30"
+      property string manualSunset: "18:30"
+    }
+
+    property JsonObject changelog: JsonObject {
+      property string lastSeenVersion: ""
+    }
+
+    // hooks
+    property JsonObject hooks: JsonObject {
+      property bool enabled: false
+      property string wallpaperChange: ""
+      property string darkModeChange: ""
+    }
+  }
+
+  // -----------------------------------------------------
+  // Function to preprocess paths by expanding "~" to user's home directory
+  function preprocessPath(path) {
+    if (typeof path !== "string" || path === "") {
+      return path;
+    }
+
+    // Expand "~" to user's home directory
+    if (path.startsWith("~/")) {
+      return Quickshell.env("HOME") + path.substring(1);
+    } else if (path === "~") {
+      return Quickshell.env("HOME");
+    }
+
+    return path;
+  }
+
+  // -----------------------------------------------------
+  // Public function to trigger immediate settings saving
+  function saveImmediate() {
+    settingsFileView.writeAdapter();
+    // Write to fallback location if set
+    if (Quickshell.env("NOCTALIA_SETTINGS_FALLBACK")) {
+      settingsFallbackFileView.writeAdapter();
+    }
+    root.settingsSaved(); // Emit signal after saving
+  }
+
+  // -----------------------------------------------------
+  // Generate default settings at the root of the repo
+  function generateDefaultSettings() {
+    try {
+      Logger.d("Settings", "Generating settings-default.json");
+
+      // Prepare a clean JSON
+      var plainAdapter = QtObj2JS.qtObjectToPlainObject(adapter);
+      var jsonData = JSON.stringify(plainAdapter, null, 2);
+
+      var defaultPath = Quickshell.shellDir + "/Assets/settings-default.json";
+
+      // Encode transfer it has base64 to avoid any escaping issue
+      var base64Data = Qt.btoa(jsonData);
+      Quickshell.execDetached(["sh", "-c", `echo "${base64Data}" | base64 -d > "${defaultPath}"`]);
+    } catch (error) {
+      Logger.e("Settings", "Failed to generate default settings file: " + error);
+    }
+  }
+
+  // -----------------------------------------------------
+  // Function to clean up deprecated user/custom bar widgets settings
+  function upgradeWidget(widget) {
+    // Backup the widget definition before altering
+    const widgetBefore = JSON.stringify(widget);
+
+    // Get all existing custom settings keys
+    const keys = Object.keys(BarWidgetRegistry.widgetMetadata[widget.id]);
+
+    // Delete deprecated user settings from the wiget
+    for (const k of Object.keys(widget)) {
+      if (k === "id" || k === "allowUserSettings") {
+        continue;
+      }
+      if (!keys.includes(k)) {
+        delete widget[k];
+      }
+    }
+
+    // Inject missing default setting (metaData) from BarWidgetRegistry
+    for (var i = 0; i < keys.length; i++) {
+      const k = keys[i];
+      if (k === "id" || k === "allowUserSettings") {
+        continue;
+      }
+
+      if (widget[k] === undefined) {
+        widget[k] = BarWidgetRegistry.widgetMetadata[widget.id][k];
+      }
+    }
+
+    // Compare settings, to detect if something has been upgraded
+    const widgetAfter = JSON.stringify(widget);
+    return (widgetAfter !== widgetBefore);
+  }
+
+  // -----------------------------------------------------
+  // If the settings structure has changed, ensure
+  // backward compatibility by upgrading the settings
+  function upgradeSettingsData() {
+    // Wait for BarWidgetRegistry to be ready
+    if (!BarWidgetRegistry.widgets || Object.keys(BarWidgetRegistry.widgets).length === 0) {
+      Logger.w("Settings", "BarWidgetRegistry not ready, deferring upgrade");
+      Qt.callLater(upgradeSettingsData);
+      return;
+    }
+
+    const sections = ["left", "center", "right"];
+
+    // -----------------
+    // 1st. convert old widget id to new id
+    for (var s = 0; s < sections.length; s++) {
+      const sectionName = sections[s];
+      for (var i = 0; i < adapter.bar.widgets[sectionName].length; i++) {
+        var widget = adapter.bar.widgets[sectionName][i];
+
+        switch (widget.id) {
+        case "DarkModeToggle":
+          widget.id = "DarkMode";
+          break;
+        case "PowerToggle":
+          widget.id = "SessionMenu";
+          break;
+        case "ScreenRecorderIndicator":
+          widget.id = "ScreenRecorder";
+          break;
+        case "SidePanelToggle":
+          widget.id = "ControlCenter";
+          break;
+        }
+      }
+    }
+
+    // -----------------
+    // 2nd. remove any non existing widget type
+    var removedWidget = false;
+    for (var s = 0; s < sections.length; s++) {
+      const sectionName = sections[s];
+      const widgets = adapter.bar.widgets[sectionName];
+      // Iterate backward through the widgets array, so it does not break when removing a widget
+      for (var i = widgets.length - 1; i >= 0; i--) {
+        var widget = widgets[i];
+        if (!BarWidgetRegistry.hasWidget(widget.id)) {
+          Logger.w(`Settings`, `Deleted invalid widget ${widget.id}`);
+          widgets.splice(i, 1);
+          removedWidget = true;
+        }
+      }
+    }
+
+    // -----------------
+    // 3nd. upgrade widget settings
+    for (var s = 0; s < sections.length; s++) {
+      const sectionName = sections[s];
+      for (var i = 0; i < adapter.bar.widgets[sectionName].length; i++) {
+        var widget = adapter.bar.widgets[sectionName][i];
+
+        // Check if widget registry supports user settings, if it does not, then there is nothing to do
+        const reg = BarWidgetRegistry.widgetMetadata[widget.id];
+        if ((reg === undefined) || (reg.allowUserSettings === undefined) || !reg.allowUserSettings) {
+          continue;
+        }
+
+        if (upgradeWidget(widget)) {
+          Logger.d("Settings", `Upgraded ${widget.id} widget:`, JSON.stringify(widget));
+        }
+      }
+    }
+
+    // -----------------
+    // 4th. safety check
+    // if a widget was deleted, ensure we still have a control center
+    if (removedWidget) {
+      var gotControlCenter = false;
+      for (var s = 0; s < sections.length; s++) {
+        const sectionName = sections[s];
+        for (var i = 0; i < adapter.bar.widgets[sectionName].length; i++) {
+          var widget = adapter.bar.widgets[sectionName][i];
+          if (widget.id === "ControlCenter") {
+            gotControlCenter = true;
+            break;
+          }
+        }
+      }
+
+      if (!gotControlCenter) {
+        //const obj = JSON.parse('{"id": "ControlCenter"}');
+        adapter.bar.widgets["right"].push(({
+                                             "id": "ControlCenter"
+                                           }));
+        Logger.w("Settings", "Added a ControlCenter widget to the right section");
+      }
+    }
+
+    // -----------------
+    // TEMP Normalize OSD enabled types and migrate legacy show* toggles
+    try {
+      var osdRawJson = settingsFileView.text();
+      if (osdRawJson) {
+        var osdParsed = JSON.parse(osdRawJson);
+        if (osdParsed.osd) {
+          var legacyHandled = false;
+
+          if (osdParsed.osd.enabledTypes === undefined) {
+            // Some configurations (<= v23) stored booleans like showVolume/showBrightness/etc.
+            // Convert them into the new enabledTypes array as soon as we detect the legacy shape.
+            var legacyOsd = osdParsed.osd;
+            var typeMappings = [
+                  {
+                    key: "showVolume",
+                    type: 0
+                  },
+                  {
+                    key: "showInputVolume",
+                    type: 1
+                  },
+                  {
+                    key: "showBrightness",
+                    type: 2
+                  },
+                  {
+                    key: "showLockKey",
+                    type: 3
+                  }
+                ];
+
+            var migratedTypes = [];
+            var sawLegacyKey = false;
+
+            for (var i = 0; i < typeMappings.length; i++) {
+              var mapping = typeMappings[i];
+              if (legacyOsd[mapping.key] !== undefined)
+                sawLegacyKey = true;
+
+              var enabled = legacyOsd[mapping.key];
+              if (enabled === undefined)
+                enabled = true; // default behaviour before enabledTypes existed
+
+              if (enabled && migratedTypes.indexOf(mapping.type) === -1)
+                migratedTypes.push(mapping.type);
+            }
+
+            if (legacyOsd.showLockKeyNotifications !== undefined) {
+              sawLegacyKey = true;
+              if (legacyOsd.showLockKeyNotifications) {
+                if (migratedTypes.indexOf(3) === -1)
+                  migratedTypes.push(3);
+              } else {
+                migratedTypes = migratedTypes.filter(function (type) {
+                  return type !== 3;
+                });
+              }
+            }
+
+            if (sawLegacyKey) {
+              if (migratedTypes.length === 0) {
+                migratedTypes = [0, 1, 2, 3];
+              }
+              adapter.osd.enabledTypes = migratedTypes;
+              Logger.i("Settings", "Migrated legacy OSD toggles to enabledTypes = " + JSON.stringify(migratedTypes));
+              legacyHandled = true;
+            }
+          }
+
+          // No matter which format the JSON used, hydrate the runtime value from disk so we don't
+          // accidentally keep the default [0,1,2,3] array after a restart.
+          if (!legacyHandled && osdParsed.osd.enabledTypes !== undefined) {
+            var parsedTypes = osdParsed.osd.enabledTypes;
+            if (Array.isArray(parsedTypes)) {
+              adapter.osd.enabledTypes = parsedTypes.slice();
+            } else if (parsedTypes && typeof parsedTypes === "object" && parsedTypes.length !== undefined) {
+              // QJsonArray can materialise as a list-like object; convert it to a plain array
+              var normalized = [];
+              for (var idx = 0; idx < parsedTypes.length; idx++) {
+                var value = parsedTypes[idx];
+                if (value !== undefined)
+                  normalized.push(value);
+              }
+              adapter.osd.enabledTypes = normalized;
+            }
+          }
+        }
+      }
+    } catch (error) {
+      Logger.w("Settings", "Failed to normalize OSD enabledTypes:", error);
+    }
+
+    // -----------------
+    // Migrate ShellState-related files from old cache files to ShellState
+    // This consolidates migrations that were previously in individual files
+    if (adapter.settingsVersion < 25) {
+      // Only migrate the settings once!
+      if (ShellState?.isLoaded) {
+        migrateShellStateFiles();
+      } else {
+        // Wait for ShellState to be ready
+        Qt.callLater(() => {
+                       if (ShellState?.isLoaded) {
+                         migrateShellStateFiles();
+                       }
+                     });
+      }
+    }
+  }
+
+  // -----------------------------------------------------
+  function buildStateSnapshot() {
+    try {
+      const settingsData = QtObj2JS.qtObjectToPlainObject(adapter);
+      const shellStateData = ShellState?.data ? QtObj2JS.qtObjectToPlainObject(ShellState.data) || {} : {};
+
+      return {
+        settings: settingsData,
+        state: {
+          doNotDisturb: NotificationService.doNotDisturb,
+          noctaliaPerformanceMode: PowerProfileService.noctaliaPerformanceMode,
+          barVisible: BarService.isVisible,
+          display: shellStateData.display || {},
+          wallpapers: shellStateData.wallpapers || {},
+          notificationsState: shellStateData.notificationsState || {},
+          changelogState: shellStateData.changelogState || {},
+          colorSchemesList: shellStateData.colorSchemesList || {}
+        }
+      };
+    } catch (error) {
+      Logger.e("Settings", "Failed to build state snapshot:", error);
+      return null;
+    }
+  }
+
+  // -----------------------------------------------------
+  // --- TO BE REMOVED
+  // -----------------------------------------------------
+  // Migrate old cache files to ShellState
+  function migrateShellStateFiles() {
+    // Migrate display.json → ShellState (CompositorService)
+    migrateDisplayFile();
+
+    // Migrate notifications-state.json → ShellState (NotificationService)
+    migrateNotificationsStateFile();
+
+    // Migrate changelog-state.json → ShellState (UpdateService)
+    migrateChangelogStateFile();
+
+    // Migrate color-schemes-list.json → ShellState (SchemeDownloader)
+    migrateColorSchemesListFile();
+
+    // Migrate wallpaper paths from Settings → ShellState (WallpaperService)
+    migrateWallpaperPaths();
+  }
+
+  // -----------------------------------------------------
+  function migrateDisplayFile() {
+    // Check if ShellState already has display data
+    const cached = ShellState.getDisplay();
+    if (cached && Object.keys(cached).length > 0) {
+      return; // Already migrated
+    }
+
+    const oldDisplayPath = cacheDir + "display.json";
+    const migrationFileView = Qt.createQmlObject(`
+      import QtQuick
+      import Quickshell.Io
+      import qs.Commons
+      FileView {
+        id: migrationView
+        path: "${oldDisplayPath}"
+        printErrors: false
+        adapter: JsonAdapter {
+          property var displays: ({})
+        }
+        onLoaded: {
+          if (adapter.displays && Object.keys(adapter.displays).length > 0) {
+            ShellState.setDisplay(adapter.displays);
+            Logger.i("Settings", "Migrated display.json to ShellState");
+          }
+          migrationView.destroy();
+        }
+        onLoadFailed: {
+          migrationView.destroy();
+        }
+      }
+    `, root, "displayMigrationView");
+  }
+
+  // -----------------------------------------------------
+  function migrateNotificationsStateFile() {
+    // Check if ShellState already has notifications state
+    const cached = ShellState.getNotificationsState();
+    if (cached && cached.lastSeenTs && cached.lastSeenTs > 0) {
+      return; // Already migrated
+    }
+
+    // Also check Settings for lastSeenTs
+    if (adapter.notifications && adapter.notifications.lastSeenTs) {
+      ShellState.setNotificationsState({
+                                         lastSeenTs: adapter.notifications.lastSeenTs
+                                       });
+      Logger.i("Settings", "Migrated notifications lastSeenTs from Settings to ShellState");
+      return;
+    }
+
+    const oldStatePath = cacheDir + "notifications-state.json";
+    const migrationFileView = Qt.createQmlObject(`
+      import QtQuick
+      import Quickshell.Io
+      import qs.Commons
+      FileView {
+        id: migrationView
+        path: "${oldStatePath}"
+        printErrors: false
+        adapter: JsonAdapter {
+          property real lastSeenTs: 0
+        }
+        onLoaded: {
+          if (adapter.lastSeenTs && adapter.lastSeenTs > 0) {
+            ShellState.setNotificationsState({
+              lastSeenTs: adapter.lastSeenTs
+            });
+            Logger.i("Settings", "Migrated notifications-state.json to ShellState");
+          }
+          migrationView.destroy();
+        }
+        onLoadFailed: {
+          migrationView.destroy();
+        }
+      }
+    `, root, "notificationsMigrationView");
+  }
+
+  function migrateChangelogStateFile() {
+    // Check if ShellState already has changelog state
+    const cached = ShellState.getChangelogState();
+    if (cached && cached.lastSeenVersion && cached.lastSeenVersion !== "") {
+      return; // Already migrated
+    }
+
+    // Also check Settings for lastSeenVersion
+    if (adapter.changelog && adapter.changelog.lastSeenVersion) {
+      ShellState.setChangelogState({
+                                     lastSeenVersion: adapter.changelog.lastSeenVersion
+                                   });
+      Logger.i("Settings", "Migrated changelog lastSeenVersion from Settings to ShellState");
+      return;
+    }
+
+    const oldChangelogPath = cacheDir + "changelog-state.json";
+    const migrationFileView = Qt.createQmlObject(`
+      import QtQuick
+      import Quickshell.Io
+      import qs.Commons
+      FileView {
+        id: migrationView
+        path: "${oldChangelogPath}"
+        printErrors: false
+        adapter: JsonAdapter {
+          property string lastSeenVersion: ""
+        }
+        onLoaded: {
+          if (adapter.lastSeenVersion && adapter.lastSeenVersion !== "") {
+            ShellState.setChangelogState({
+              lastSeenVersion: adapter.lastSeenVersion
+            });
+            Logger.i("Settings", "Migrated changelog-state.json to ShellState");
+          }
+          migrationView.destroy();
+        }
+        onLoadFailed: {
+          migrationView.destroy();
+        }
+      }
+    `, root, "changelogMigrationView");
+  }
+
+  function migrateColorSchemesListFile() {
+    // Check if ShellState already has color schemes list
+    const cached = ShellState.getColorSchemesList();
+    if (cached && cached.schemes && cached.schemes.length > 0) {
+      return; // Already migrated
+    }
+
+    const oldSchemesPath = cacheDir + "color-schemes-list.json";
+    const migrationFileView = Qt.createQmlObject(`
+      import QtQuick
+      import Quickshell.Io
+      import qs.Commons
+      FileView {
+        id: migrationView
+        path: "${oldSchemesPath}"
+        printErrors: false
+        adapter: JsonAdapter {
+          property var schemes: []
+          property real timestamp: 0
+        }
+        onLoaded: {
+          if (adapter.schemes && adapter.schemes.length > 0) {
+            ShellState.setColorSchemesList({
+              schemes: adapter.schemes,
+              timestamp: adapter.timestamp || 0
+            });
+            Logger.i("Settings", "Migrated color-schemes-list.json to ShellState");
+          }
+          migrationView.destroy();
+        }
+        onLoadFailed: {
+          migrationView.destroy();
+        }
+      }
+    `, root, "schemesMigrationView");
+  }
+
+  function migrateWallpaperPaths() {
+    // Check if ShellState already has wallpaper paths
+    const cached = ShellState.getWallpapers();
+    if (cached && Object.keys(cached).length > 0) {
+      return; // Already migrated
+    }
+
+    // Migrate from Settings wallpaper.monitors
+    var monitors = adapter.wallpaper.monitors || [];
+    if (monitors.length > 0) {
+      var wallpapers = {};
+      for (var i = 0; i < monitors.length; i++) {
+        if (monitors[i].name && monitors[i].wallpaper) {
+          wallpapers[monitors[i].name] = monitors[i].wallpaper;
+        }
+      }
+      if (Object.keys(wallpapers).length > 0) {
+        ShellState.setWallpapers(wallpapers);
+        Logger.i("Settings", "Migrated wallpaper paths from Settings to ShellState");
+      }
+    }
+  }
+}
