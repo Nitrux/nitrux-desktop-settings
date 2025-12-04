@@ -40,13 +40,16 @@ if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v dbus-launch >/dev/null; 
   eval "$(dbus-launch --sh-syntax)"
 fi
 
+
 # -- 1. Start the Polkit Agent (Password prompts).
 
 pgrep -xu "$USER" polkit-kde-authentication-agent-1 >/dev/null || "$POLKIT_AGENT" &
 
+
 # -- 2. Start the Wallet Daemon (Password storage).
 
 pgrep -xu "$USER" kwalletd6 >/dev/null || kwalletd6 >/dev/null 2>&1 &
+
 
 # -- 3. Start kded6 (Network logic) but ensure the Tray Watcher is DISABLED
 #   -- We explicitly set autoload=false to prevent it from stealing the tray from Waybar.
