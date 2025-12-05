@@ -1,16 +1,16 @@
 {
   "$schema": "/etc/xdg/swaync/configSchema.json",
-  "control-center-height": 300,
+  "control-center-height": 680,
   "control-center-layer": "overlay",
-  "control-center-margin-bottom": 20,
+  "control-center-margin-bottom": 10,
   "control-center-margin-left": 0,
-  "control-center-margin-right": 0,
-  "control-center-margin-top": 0,
-  "control-center-width": 500,
+  "control-center-margin-right": 10, 
+  "control-center-margin-top": 10,
+  "control-center-width": 480,
   "control-center-positionX": "right",
   "control-center-positionY": "top",
   "cssPriority": "application",
-  "fit-to-screen": true,
+  "fit-to-screen": false,
   "hide-on-action": false,
   "hide-on-clear": true,
   "image-visibility": "when-available",
@@ -23,10 +23,12 @@
   "positionX": "right",
   "positionY": "top",
   "script-fail-notify": true,
-  "timeout": 10,
-  "timeout-critical": 0,
-  "timeout-low": 5,
-  "transition-time": 100,
+  "widgets": [
+    "title",
+    "dnd",
+    "mpris",
+    "notifications"
+  ],
   "widget-config": {
     "title": {
       "text": "Notifications",
@@ -38,19 +40,8 @@
     },
     "mpris": {
       "loop-carousel": true,
-      "show-album-art": "when-available"
-    },
-    "volume": {
-      "label": "",
-      "show-per-app": true,
-      "show-per-app-icon": true,
-      "show-per-app-label": true
+      "show-album-art": true,
+      "show-prev-next": true
     }
-  },
-  "widgets": [
-    "title",
-    "dnd",
-    "notifications",
-    "mpris"
-  ]
+  }
 }
