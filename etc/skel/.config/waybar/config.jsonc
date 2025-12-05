@@ -33,12 +33,12 @@
     "max-length": 50
   },
   "clock": {
-    "format": "<span foreground='#f5c2e7'>📆  </span>{:%a %d %H:%M}",
+    "format": "<big>•📆•</big> {:%a %d %H:%M}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
   },
   "battery": {
     "states": { "warning": 30, "critical": 15 },
-    "format": "{icon}  {capacity}%",
+    "format": "<big>•{icon}•</big> {capacity}%",
     "format-warning": "{icon}  {capacity}%",
     "format-critical": "{icon}  {capacity}%",
     "format-charging": "  {capacity}%",
@@ -49,24 +49,24 @@
     "tooltip-format": "{time}"
   },
   "bluetooth": {
-    "format": "  {status}",
+    "format": "<big>••</big> {status}",
     "format-disabled": "", // Hides if disabled
-    "format-connected": " {num_connections}",
+    "format-connected": "<big>••</big> {num_connections}",
     "tooltip-format": "{controller_alias}\t{controller_address}",
     "on-click": "bluedevil-wizard",
     "on-click-middle": "kcmshell6 kcm_bluetooth"
   },
   "network": {
-    "format-wifi": "<span foreground='#f5e0dc'></span> {essid}",
-    "format-ethernet": "<span foreground='#f5e0dc'></span>🖥️   {ifname} ",
-    "format-linked": "{ifname} (No IP) ",
-    "format-disconnected": "<span foreground='#f5e0dc'></span> Disconnected",
+    "format-wifi": "<big>••</big> {essid}",
+    "format-ethernet": "<big>•🖥️•</big> {ifname}",
+    "format-linked": "<big>••</big> {ifname} (No IP)",
+    "format-disconnected": "<big>••</big> Disconnected<.tt>",
     "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
     "on-click": "kcmshell6 kcm_networkmanagement"
   },
   "pulseaudio": {
-    "format": "{icon}  {volume}%",
-    "format-muted": "🚫🔈",
+    "format": "<big>•{icon}•</big> {volume}%",
+    "format-muted": "<big>•🚫🔈•</big>",
     "format-icons": {
         "default": ["🔈", "🔉"]
     },
@@ -74,7 +74,7 @@
   },
   // New Backlight Module
   "backlight": {
-    "format": "{icon} {percent}%",
+    "format": "<big>•{icon}•</big> {percent}%",
     "format-icons": ["🌕", "🌔", "🌓", "🌒", "🌑"]
   },
   // New Tray Module
@@ -84,7 +84,7 @@
   },
   "power-profiles-daemon": {
     "swap-icon-label": true,
-    "format": "{icon}  {profile}",
+    "format": "<big>•{icon}•</big> {profile}",
     "format-icons": {
       "default": "🛩︎",
       "performance": "🚀",
@@ -94,7 +94,7 @@
   },
   "custom/swaync": {
     "tooltip": true,
-    "format": "<span font-size='large'>{icon}</span>",
+    "format": "<big>•{icon}•</big>",
     "format-icons": {
       "notification": "🔔",
       "none": "🔕",
