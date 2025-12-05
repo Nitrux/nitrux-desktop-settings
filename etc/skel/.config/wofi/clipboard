@@ -1,0 +1,8 @@
+width=800
+location=center
+prompt=Search clipboard..
+allow-images=false
+lines=12
+hide_search=false
+no_actions=true
+allow_markup=true

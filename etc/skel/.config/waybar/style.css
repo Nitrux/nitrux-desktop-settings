@@ -57,7 +57,7 @@ window#waybar {
 }
 
 #window {
-    background-color: @mantle;
+    background-color: @base;
 }
 
 /* --- RIGHT SIDE MODULES --- */

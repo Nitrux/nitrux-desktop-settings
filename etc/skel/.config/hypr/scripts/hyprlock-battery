@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+info=$(acpi -b 2>/dev/null | head -n1)
+if [ -z "$info" ]; then
+    echo "🔋 n/a"
+    exit 0
+fi
+percent=$(printf '%s\n' "$info" | awk -F', ' '{print $2}')
+status=$(printf '%s\n' "$info" | awk -F': ' '{print $2}' | awk -F', ' '{print $1}')
+echo "🔋 $percent ($status)"

@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+names=$(gdbus call --session \
+    --dest org.freedesktop.DBus \
+    --object-path /org/freedesktop/DBus \
+    --method org.freedesktop.DBus.ListNames 2>/dev/null || echo "")
+
+bus=$(printf '%s\n' "$names" | grep -o "org.mpris.MediaPlayer2[^']*" | head -n1)
+
+if [ -z "$bus" ]; then
+    case "$1" in
+        --title|--artist|--album|--length|--status|--source|--summary) echo "" ;;
+        --art) ;;
+        *) echo "No media playing" ;;
+    esac
+    exit 0
+fi
+
+if [ "$1" = "--status" ]; then
+    status=$(gdbus call --session \
+        --dest "$bus" \
+        --object-path /org/mpris/MediaPlayer2 \
+        --method org.freedesktop.DBus.Properties.Get \
+        org.mpris.MediaPlayer2.Player PlaybackStatus 2>/dev/null)
+    value=$(printf '%s\n' "$status" | sed -n "s/.*'\([^']*\)'.*/\1/p")
+    echo "$value"
+    exit 0
+fi
+
+meta=$(gdbus call --session \
+    --dest "$bus" \
+    --object-path /org/mpris/MediaPlayer2 \
+    --method org.freedesktop.DBus.Properties.Get \
+    org.mpris.MediaPlayer2.Player Metadata 2>/dev/null)
+
+title=$(printf '%s\n' "$meta" | sed -n "s/.*'xesam:title': <'\([^']*\)'.*/\1/p")
+artist=$(printf '%s\n' "$meta" | sed -n "s/.*'xesam:artist': <\['\([^']*\)'.*/\1/p")
+album=$(printf '%s\n' "$meta" | sed -n "s/.*'xesam:album': <'\([^']*\)'.*/\1/p")
+length_raw=$(printf '%s\n' "$meta" | sed -n "s/.*'mpris:length': <int64 \([0-9]*\).*/\1/p")
+arturl=$(printf '%s\n' "$meta" | sed -n "s/.*'mpris:artUrl': <'\([^']*\)'.*/\1/p")
+source="${bus#org.mpris.MediaPlayer2.}"
+
+case "$1" in
+    --title)
+        echo "$title"
+        ;;
+    --artist)
+        echo "$artist"
+        ;;
+    --album)
+        echo "$album"
+        ;;
+    --source)
+        echo "$source"
+        ;;
+    --length)
+        if [ -n "$length_raw" ]; then
+            secs=$((length_raw / 1000000))
+            min=$((secs / 60))
+            sec=$((secs % 60))
+            printf "%d:%02d\n" "$min" "$sec"
+        else
+            echo ""
+        fi
+        ;;
+    --summary)
+        if [ -n "$title" ] && [ -n "$artist" ]; then
+            printf "%s — %s\n" "$title" "$artist"
+        elif [ -n "$title" ]; then
+            echo "$title"
+        else
+            echo ""
+        fi
+        ;;
+    --art)
+        out="$2"
+        if [ -n "$arturl" ] && [ -n "$out" ]; then
+            if printf '%s' "$arturl" | grep -q '^file://'; then
+                file=${arturl#file://}
+                cp "$file" "$out" 2>/dev/null || true
+            elif command -v curl >/dev/null 2>&1; then
+                curl -Lfs "$arturl" -o "$out" 2>/dev/null || true
+            elif command -v wget >/dev/null 2>&1; then
+                wget -qO "$out" "$arturl" 2>/dev/null || true
+            fi
+        fi
+        ;;
+    *)
+        if [ -n "$title" ] && [ -n "$artist" ]; then
+            printf "🎵 %s — %s\n" "$title" "$artist"
+        elif [ -n "$title" ]; then
+            echo "🎵 $title"
+        else
+            echo "No media playing"
+        fi
+        ;;
+esac
