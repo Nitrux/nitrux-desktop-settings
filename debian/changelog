@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.2.3)  nitrux; urgency=medium
+
+  * Update waybar configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 04 Dec 2025 00:28:00 -0500
+
 nitrux-desktop-settings (7.2.2)  nitrux; urgency=medium
 
   * Prevent kded6 from stealing system tray from waybar and still allow to use network module, again.

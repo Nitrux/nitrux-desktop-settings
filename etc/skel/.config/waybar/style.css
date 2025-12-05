@@ -1,7 +1,7 @@
 @import "mocha.css"; 
 
 * {
-    font-family: "Switzer", "Noto Color Emoji", sans-serif;
+    font-family: "Switzer", "Noto Color Emoji", "Symbols Nerd Font Mono", "Font Awesome Free 6 Solid", sans-serif;
     font-size: 13px;
     font-weight: bold;
     min-height: 0;
