@@ -56,7 +56,7 @@ fi
 
 # -- 1. Start the Polkit Agent (Password prompts).
 
-pgrep -xu "$USER" polkit-kde-authentication-agent-1 >/dev/null || "$POLKIT_AGENT" &
+pgrep -fu "$USER" polkit-kde-authentication-agent-1 >/dev/null || "$POLKIT_AGENT" &
 
 
 # -- 2. Start the Wallet Daemon (Password storage).
