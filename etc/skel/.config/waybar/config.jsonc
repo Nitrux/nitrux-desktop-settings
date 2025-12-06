@@ -60,7 +60,7 @@
     "format-wifi": "<big>••</big> {essid}",
     "format-ethernet": "<big>•🖥️•</big> {ifname}",
     "format-linked": "<big>••</big> {ifname} (No IP)",
-    "format-disconnected": "<big>••</big> Disconnected<.tt>",
+    "format-disconnected": "<big>••</big> Disconnected",
     "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
     "on-click": "kcmshell6 kcm_networkmanagement"
   },
