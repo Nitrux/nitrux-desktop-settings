@@ -1,3 +1,10 @@
+nitrux-desktop-settings (7.2.7)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+  * Move dbus-activation command to autostart-xdg-portals.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 06 Dec 2025 01:16:00 -0500
+
 nitrux-desktop-settings (7.2.6)  nitrux; urgency=medium
 
   * Update waybar configuration.

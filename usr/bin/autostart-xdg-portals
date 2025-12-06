@@ -75,6 +75,8 @@ start_stack() {
 #   -- XDG portals need to be initialized in a very specific order. First, the Hyprland portal; then the KDE portal; then the main portal; and finally the helpers.
 #   -- If the KDE portal fails to start, the main portal and the helpers will start, but functionality will be missing, such as file chooser and open with «xdg-open» dialogs.
 
+dbus-update-activation-environment 
+
 max=6
 i=1
 ok=0
