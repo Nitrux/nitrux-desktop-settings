@@ -74,7 +74,9 @@
   },
   // New Backlight Module
   "backlight": {
+    "tooltip": false,
     "format": "<big>•{icon}•</big> {percent}%",
+    "format-disabled": "", // Hides if disabled
     "format-icons": ["🌕", "🌔", "🌓", "🌒", "🌑"]
   },
   // New Tray Module
