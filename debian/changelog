@@ -1,6 +1,6 @@
 nitrux-desktop-settings (7.2.9)  nitrux; urgency=medium
 
-  * Move package manager policy, use case and overlayr-envycontrol scripts to systems package..
+  * Move package manager policy, use case and overlayr-envycontrol scripts to systems package.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Sat, 06 Dec 2025 07:25:00 -0500
 
