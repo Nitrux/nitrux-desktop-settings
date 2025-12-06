@@ -44,7 +44,7 @@
     "format-charging": "<big>••</big> {capacity}%",
     "format-plugged": "<big>••</big> {capacity}%",
     "format-full": " {capacity}%",
-    "format-alt": "<big>•{icon}•</big>  {time}",
+    "format-alt": "<big>•{icon}•</big> {time}",
     "format-icons": ["", "", "", "", ""],
     "tooltip-format": "{time}"
   },
