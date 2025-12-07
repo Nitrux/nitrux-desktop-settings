@@ -1,4 +1,4 @@
-@import "mocha.css"; 
+@import "mocha.css";
 
 * {
     font-family: "Switzer", "Noto Color Emoji", "Symbols Nerd Font Mono", "Font Awesome Free 6 Solid", sans-serif;
@@ -18,21 +18,21 @@ window#waybar {
 /* --- THE ISLANDS --- */
 #workspaces,
 #window,
-#status {
+.modules-right {
     background-color: @base;
     border-radius: 12px;
     padding: 0px 14px;
     margin: 10px 10px;
-    
+
     /* Smooth Shadow */
-    box-shadow: 
+    box-shadow:
         0 0 0 1px rgba(17, 17, 27, 0.6),
         0 0 0 2px rgba(17, 17, 27, 0.5),
         0 0 0 3px rgba(17, 17, 27, 0.4),
         0 0 0 4px rgba(17, 17, 27, 0.3),
         0 0 0 5px rgba(17, 17, 27, 0.2),
         0 0 0 6px rgba(17, 17, 27, 0.1);
-        
+
     border: 1px solid @surface0;
 }
 
@@ -60,7 +60,7 @@ window#waybar {
     background-color: @base;
 }
 
-/* --- RIGHT SIDE MODULES --- */
+/* --- RIGHT SIDE MODULES (inside the pill) --- */
 #network,
 #bluetooth,
 #pulseaudio,
@@ -84,13 +84,14 @@ window#waybar {
 /* Audio (Speakers) */
 #pulseaudio { color: @teal; }
 
-/* Audio (Mic) - Using a distinct color */
+/* Audio (Mic) */
 #pulseaudio.microphone { color: @maroon; }
 
 #battery { color: @green; }
 #battery.warning { color: @yellow; }
 #battery.critical { color: @red; }
-#battery.charging, #battery.plugged { color: @teal; }
+#battery.charging,
+#battery.plugged { color: @teal; }
 
 /* Backlight */
 #backlight { color: @peach; }
@@ -103,11 +104,13 @@ window#waybar {
 
 /* Tray specific adjustments */
 #tray {
-    padding-right: 8px; /* Give it some space from the next module */
+    padding-right: 8px;
 }
+
 #tray > .passive {
     -gtk-icon-effect: dim;
 }
+
 #tray > .needs-attention {
     -gtk-icon-effect: highlight;
     background-color: @red;

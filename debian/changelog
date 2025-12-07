@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.3.1)  nitrux; urgency=medium
+
+  * Update waybar configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 07 Dec 2025 05:18:00 -0500
+
 nitrux-desktop-settings (7.3.0)  nitrux; urgency=medium
 
   * Disable scroling on the power-profiles-daemon module because it crashes Waybar.

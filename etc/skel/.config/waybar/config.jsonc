@@ -3,25 +3,20 @@
   "layer": "top",
   "margin-top": 0,
   "margin-bottom": 0,
+  "spacing": 0,
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["group/status"], 
-
-  // --- THE UNIFIED RIGHT GROUP ---
-  "group/status": {
-    "orientation": "horizontal",
-    "modules": [
-        "tray",             // Added System Tray
-        "network", 
-        "bluetooth",
-        "power-profiles-daemon",
-        "battery", 
-        "backlight",        // Added Brightness
-        "pulseaudio",       // Speaker Volume
-        "clock", 
-        "custom/swaync"     // Notifications
-    ]
-  },
+  "modules-right": [
+    "tray",
+    "network",
+    "bluetooth",
+    "power-profiles-daemon",
+    "battery",
+    "backlight",
+    "pulseaudio",
+    "clock",
+    "custom/swaync"
+  ],
 
   // --- MODULE CONFIGURATIONS ---
   "hyprland/workspaces": {
@@ -49,6 +44,8 @@
     "tooltip-format": "{time}"
   },
   "bluetooth": {
+    "on-scroll-up": "true",
+    "on-scroll-down": "true",
     "format": "<big>••</big> {status}",
     "format-disabled": "", // Hides if disabled
     "format-connected": "<big>••</big> {num_connections}",
@@ -57,6 +54,8 @@
     "on-click-middle": "kcmshell6 kcm_bluetooth"
   },
   "network": {
+    "on-scroll-up": "true",
+    "on-scroll-down": "true",
     "format-wifi": "<big>••</big> {essid}",
     "format-ethernet": "<big>•🖥️•</big> {ifname}",
     "format-linked": "<big>••</big> {ifname} (No IP)",
@@ -81,14 +80,16 @@
   },
   // New Tray Module
   "tray": {
+    "on-scroll-up": "true",
+    "on-scroll-down": "true",
     "icon-size": 18,
     "spacing": 10
   },
   "power-profiles-daemon": {
     "swap-icon-label": true,
     "format": "<big>•{icon}•</big> {profile}",
-    "on-scroll-up": "",
-    "on-scroll-down": "",
+    "on-scroll-up": "true",
+    "on-scroll-down": "true",
     "format-icons": {
       "default": "🛩︎",
       "performance": "🚀",
