@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.3.0)  nitrux; urgency=medium
+
+  * Disable scroling on the power-profiles-daemon module because it crashes Waybar.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 07 Dec 2025 23:56:00 -0500
+
 nitrux-desktop-settings (7.2.9)  nitrux; urgency=medium
 
   * Move package manager policy, use case and overlayr-envycontrol scripts to systems package.

@@ -87,6 +87,8 @@
   "power-profiles-daemon": {
     "swap-icon-label": true,
     "format": "<big>•{icon}•</big> {profile}",
+    "on-scroll-up": "",
+    "on-scroll-down": "",
     "format-icons": {
       "default": "🛩︎",
       "performance": "🚀",
