@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.3.9)  nitrux; urgency=medium
+
+  * Update autostart-kde-polkit to start ksecretd.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 20 Dec 2025 08:56:00 -0500
+
 nitrux-desktop-settings (7.3.7)  nitrux; urgency=medium
 
   * Update plasma-systemmonitor configuration.
