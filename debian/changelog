@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.3.7)  nitrux; urgency=medium
+
+  * Update plasma-systemmonitor configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 20 Dec 2025 08:15:00 -0500
+
 nitrux-desktop-settings (7.3.6)  nitrux; urgency=medium
 
   * Update gamemode configuration.
