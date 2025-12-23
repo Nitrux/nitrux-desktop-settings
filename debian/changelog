@@ -1,3 +1,13 @@
+nitrux-desktop-settings (7.4.0)  nitrux; urgency=medium
+
+  * Update libreoffce and bauh install scripts.
+  * Update grimshot.
+  * Update autostart-pipewire script.
+  * Use spdx headers.
+  * Move crystal dock configuration to new path.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 23 Dec 2025 11:51:00 -0500
+
 nitrux-desktop-settings (7.3.9)  nitrux; urgency=medium
 
   * Update autostart-kde-polkit to start ksecretd.

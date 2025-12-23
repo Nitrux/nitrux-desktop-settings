@@ -12,16 +12,17 @@ set -eu
 # -- The script has two flags: -f for full-screen and -s for region selection (via slurp). It saves to ~/Pictures/, copies to the clipboard, and shows a styled notification.
 
 mode=""
-while getopts "fs" opt; do
+while getopts "fsw" opt; do
     case "$opt" in
         f) mode="full";;
         s) mode="select";;
-        *) echo "Usage: $0 [-f | -s]"; exit 2;;
+        w) mode="window";;
+        *) echo "Usage: $0 [-f | -s | -w]"; exit 2;;
     esac
 done
 
 if [ -z "${mode}" ]; then
-    echo "Usage: $0 [-f | -s]"
+    echo "Usage: $0 [-f | -s | -w]"
     exit 2
 fi
 
@@ -44,16 +45,22 @@ if [ "$mode" = "full" ]; then
         exit 1
     fi
 else
-    geom="$(slurp -w 0 || true)"
+    if [ "$mode" = "window" ]; then
+        geom="$(slurp -w || true)"
+    else
+        geom="$(slurp || true)"
+    fi
+
     if [ -z "${geom}" ]; then
-        notify-send -a "Grimshot" -u low -i "dialog-information" "Screenshot Cancelled" "No region selected."
+        notify-send -a "Grimshot" -u low -i "dialog-information" "Screenshot Cancelled" "No selection made."
         exit 1
     fi
+
     if grim -g "$geom" "$outfile"; then
         wl-copy -t image/png < "$outfile"
         notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
     else
-        notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture selected region."
+        notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture selected area."
         exit 1
     fi
 fi

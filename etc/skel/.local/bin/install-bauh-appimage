@@ -1,26 +1,7 @@
 #!/usr/bin/env bash
 
-#############################################################################################################################################################################
-#   The license used for this file and its contents is: BSD-3-Clause                                                                                                        #
-#                                                                                                                                                                           #
-#   Copyright <2024> <Uri Herrera <uri_herrera@nxos.org>>                                                                                                                   #
-#                                                                                                                                                                           #
-#   Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:                          #
-#                                                                                                                                                                           #
-#    1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.                                        #
-#                                                                                                                                                                           #
-#    2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer                                      #
-#       in the documentation and/or other materials provided with the distribution.                                                                                         #
-#                                                                                                                                                                           #
-#    3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software                    #
-#       without specific prior written permission.                                                                                                                          #
-#                                                                                                                                                                           #
-#    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,                      #
-#    THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS                  #
-#    BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE                 #
-#    GOODS OR SERVICES; LOSS OF USE, DATA,   OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,                      #
-#    STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.   #
-#############################################################################################################################################################################
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
 
 # -- Exit on errors.
@@ -35,7 +16,8 @@ download_appimage() {
     local url
     local temp_dir
     local destination
-    
+    local user_agent
+
     name="$1"
     url="$2"
     temp_dir=$(mktemp -d)
@@ -61,7 +43,7 @@ notify-send -a "System Message" -i "appimage-cli-manager" "Installing Bauh (AppI
 
 appimage_file=$(download_appimage "bauh-0.10.7-x86_64.AppImage" "https://github.com/vinifmor/bauh/releases/download/0.10.7/bauh-0.10.7-x86_64.AppImage")
 
-mv "$appimage_file" "$HOME/Applications/"
+mv -f -- "$appimage_file" "$HOME/Applications/"
 
 
 # -- Add flathub.
@@ -76,12 +58,15 @@ APPIMAGE_PATH="$HOME/Applications/bauh-0.10.7-x86_64.AppImage"
 
 # -- Create a desktop launcher for Bauh.
 
-cat > "$HOME/.local/share/applications/Bauh.desktop" << EOF
+DESKTOP_DIR="$HOME/.local/share/applications"
+DESKTOP_FILE="$DESKTOP_DIR/Bauh.desktop"
+
+cat >"$DESKTOP_FILE" <<EOF
 [Desktop Entry]
 Name=Bauh
 Comment=Install and remove applications (AppImage, Arch, Flatpak, Snap, Web)
-Exec=$APPIMAGE_PATH %U
-TryExec=$APPIMAGE_PATH
+Exec=${APPIMAGE_PATH} %U
+TryExec=${APPIMAGE_PATH}
 Keywords=bauh;software;repository;package;install;remove;update;apps;applications;appimage;
 Terminal=false
 Type=Application
@@ -91,6 +76,12 @@ StartupNotify=true
 Icon=appimage-cli-manager
 MimeType=application/vnd.appimage;application/x-executable;
 EOF
+
+chmod 0644 "$DESKTOP_FILE"
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database "$DESKTOP_DIR" >/dev/null 2>&1 || true
+fi
 
 notify-send -a "System Message" -i "appimage-cli-manager" "Desktop launcher for Bauh has been created successfully. Installation complete."
 
