@@ -5,10 +5,16 @@ export GPG_TTY=$TTY
 set_glx_vendor() {
     if lspci 2>/dev/null | grep -iq "nvidia"; then
         export __GLX_VENDOR_LIBRARY_NAME=nvidia
+        export GBM_BACKEND=nvidia-drm
+        export __NV_PRIME_RENDER_OFFLOAD=1 
     elif lspci 2>/dev/null | grep -iq "amd" || lspci 2>/dev/null | grep -iq "radeon"; then
         export __GLX_VENDOR_LIBRARY_NAME=mesa
+        unset GBM_BACKEND
+        unset __NV_PRIME_RENDER_OFFLOAD
     else
         export __GLX_VENDOR_LIBRARY_NAME=mesa
+        unset GBM_BACKEND
+        unset __NV_PRIME_RENDER_OFFLOAD
     fi
 }
 
@@ -227,10 +233,6 @@ export PATH="/Applications:$PATH"
 
 # Add $PATH for sbin
 export PATH="/usr/local/sbin:/usr/sbin:/sbin:$PATH"
-
-# Add environment variables for Wayland to use NVIDIA GBM
-export GBM_BACKEND=nvidia-drm
-export __NV_PRIME_RENDER_OFFLOAD=1
 
 # Add Flatpak environment variables to XDG_DATA_DIRS
 export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:$HOME/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
