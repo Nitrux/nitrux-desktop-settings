@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+# Copyright 2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
 
 # -- Exit on errors.
@@ -46,7 +46,7 @@ if [ "$mode" = "full" ]; then
     fi
 else
     if [ "$mode" = "window" ]; then
-        geom="$(slurp -w || true)"
+        geom="$(hyprctl clients -j | jq -r ".[] | select(.workspace.id == $(hyprctl activeworkspace -j | jq '.id')) | \"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])\"" | slurp || true)"
     else
         geom="$(slurp || true)"
     fi

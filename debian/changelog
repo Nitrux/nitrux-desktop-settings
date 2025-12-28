@@ -1,6 +1,13 @@
+nitrux-desktop-settings (7.4.3)  nitrux; urgency=medium
+
+  * Update grimshot to support window selection.
+  * Updated hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 28 Dec 2025 15:17:00 -0500
+
 nitrux-desktop-settings (7.4.2)  nitrux; urgency=medium
 
-  * Dybamically set environment variables for NVIDIA GPUs for Wayland in zshrc.
+  * Dynamically set environment variables for NVIDIA GPUs for Wayland in zshrc.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Thu, 26 Dec 2025 11:27:00 -0500
 
