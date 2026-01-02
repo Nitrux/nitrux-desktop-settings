@@ -4,5 +4,7 @@ bluez_monitor.properties = {
   ["bluez5.enable-hfp-hf"] = false,
   ["bluez5.enable-hfp-ag"] = false,
   ["bluez5.headset-roles"] = "[ ]",
-  ["bluez5.codecs"] = "[ sbc sbc_xq aac ldac aptx aptx_hd ]"
+  ["bluez5.enable-msbc"] = false,
+  ["bluez5.sbc-quality"] = 3
+  ["bluez5.codecs"] = "[aac sbc sbc_xq ldac aptx aptx_hd ]"
 }
