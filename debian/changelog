@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.4.5)  nitrux; urgency=medium
+
+  * Stop the audio stack from offering HFP.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2025 18:46:00 -0500
+
 nitrux-desktop-settings (7.4.4)  nitrux; urgency=medium
 
   * Updated hyprland configuration.
