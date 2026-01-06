@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.4.8)  nitrux; urgency=medium
+
+  * Adjust quantum size for Pipewire low-latency profile.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2025 21:33:00 -0500
+
 nitrux-desktop-settings (7.4.7)  nitrux; urgency=medium
 
   * Adjust quantum size for Pipewire low-latency profile.
