@@ -53,12 +53,41 @@ pgrep -xu "$USER" kwalletd6 >/dev/null || kwalletd6 >/dev/null 2>&1 &
 # -- 3. Start kded6 for network logic, but ensure the tray watcher is DISABLED.
 #   -- We explicitly set autoload=false to prevent it from stealing the tray from Waybar.
 
-pgrep -xu "$USER" kded6 >/dev/null && killall kded6 || true
-
-if wait_for_waybar && ! pgrep -xu "$USER" kded6 >/dev/null; then
-    kwriteconfig6 --file kded6rc --group Module-statusnotifierwatcher --key autoload false
-    kded6 --replace >/dev/null 2>&1 &
+if pgrep -xu "$USER" kded6 >/dev/null; then
+    killall kded6 || true
 fi
+
+if wait_for_waybar; then
+    
+    # -- Set the config BEFORE checking if kded6 is running.
+
+    kwriteconfig6 --file kded6rc --group Module-statusnotifierwatcher --key autoload false
+
+    # -- Give the filesystem time to sync the config change.
+
+    sleep 0.5
+
+    # -- Start kded6 only if it's not running.
+
+    if ! pgrep -xu "$USER" kded6 >/dev/null; then
+        kded6 --replace >/dev/null 2>&1 &
+
+        # -- Wait for kded6 to fully initialize.
+
+        sleep 1
+
+        # -- Explicitly unload the statusnotifierwatcher module if it somehow loaded.
+
+        if [ -n "$QDBUS" ]; then
+            for _ in $(seq 1 20); do
+                "$QDBUS" 2>/dev/null | grep -q org.kde.kded6 && break
+                sleep 0.25
+            done
+            "$QDBUS" org.kde.kded6 /kded org.kde.kded6.unloadModule statusnotifierwatcher 2>/dev/null || true
+        fi
+    fi
+fi
+
 
 # 4. Load the Network Management module.
 
