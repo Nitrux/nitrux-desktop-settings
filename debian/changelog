@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.5.0)  nitrux; urgency=medium
+
+  * Move qtgreet settings to the proper package.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 21 Jan 2025 06:17:00 -0500
+
 nitrux-desktop-settings (7.4.9)  nitrux; urgency=medium
 
   * Fixed a race condition in autostart-kde-polkit.
