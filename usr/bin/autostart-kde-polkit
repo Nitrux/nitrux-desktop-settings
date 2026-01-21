@@ -30,8 +30,14 @@ POLKIT_AGENT="/usr/lib/x86_64-linux-gnu/libexec/polkit-kde-authentication-agent-
 
 [ -x "$POLKIT_AGENT" ] || POLKIT_AGENT="/usr/lib/polkit-kde-authentication-agent-1"
 
-if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ] && command -v dbus-launch >/dev/null; then
-    eval "$(dbus-launch --sh-syntax)"
+
+# -- Run the KWallet PAM handoff helper only when the PAM variables exist.
+
+USER_UID="$(id -u)"
+KWALLET_SOCKET="/run/user/${USER_UID}/kwallet5.socket"
+
+if [ -n "${DBUS_SESSION_BUS_ADDRESS:-}" ] && [ -n "${PAM_KWALLET5_LOGIN:-}" ] && [ -S "$KWALLET_SOCKET" ]; then
+    /usr/share/libpam-kwallet-common/pam_kwallet_init || true
 fi
 
 
@@ -43,11 +49,6 @@ pgrep -fu "$USER" polkit-kde-authentication-agent-1 >/dev/null || "$POLKIT_AGENT
 # -- 2. Start the Secrets Daemon (Password storage).
 
 pgrep -xu "$USER" ksecretd >/dev/null || ksecretd >/dev/null 2>&1 &
-
-
-# -- 3. Start the Wallet Daemon (Password storage).
-
-pgrep -xu "$USER" kwalletd6 >/dev/null || kwalletd6 >/dev/null 2>&1 &
 
 
 # -- 3. Start kded6 for network logic, but ensure the tray watcher is DISABLED.
