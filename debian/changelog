@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.5.5)  nitrux; urgency=medium
+
+  * Update hyprpaper config.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 30 Jan 2026 06:42:00 -0500
+
 nitrux-desktop-settings (7.5.4)  nitrux; urgency=medium
 
   * Add hyprsunset config.
