@@ -1,45 +1,51 @@
+nitrux-desktop-settings (7.5.2)  nitrux; urgency=medium
+
+  * Update hyprland.conf.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 30 Jan 2026 01:50:00 -0500
+
 nitrux-desktop-settings (7.5.1)  nitrux; urgency=medium
 
   * Update autostart-kde-polkit.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Wed, 21 Jan 2025 06:41:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 21 Jan 2026 06:41:00 -0500
 
 nitrux-desktop-settings (7.5.0)  nitrux; urgency=medium
 
   * Move qtgreet settings to the proper package.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Wed, 21 Jan 2025 06:17:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 21 Jan 2026 06:17:00 -0500
 
 nitrux-desktop-settings (7.4.9)  nitrux; urgency=medium
 
   * Fixed a race condition in autostart-kde-polkit.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Tue, 13 Jan 2025 14:37:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 13 Jan 2026 14:37:00 -0500
 
 nitrux-desktop-settings (7.4.8)  nitrux; urgency=medium
 
   * Adjust quantum size for Pipewire low-latency profile.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2025 21:33:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2026 21:33:00 -0500
 
 nitrux-desktop-settings (7.4.7)  nitrux; urgency=medium
 
   * Adjust quantum size for Pipewire low-latency profile.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2025 21:33:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2026 21:33:00 -0500
 
 nitrux-desktop-settings (7.4.6)  nitrux; urgency=medium
 
   * Tune Bluez in Wireplumber to disable the headset profile and expose only high-quality codecs.
   * Tune Pipewire for reasonable low-latency profile.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2025 18:49:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2026 18:49:00 -0500
 
 nitrux-desktop-settings (7.4.5)  nitrux; urgency=medium
 
   * Stop the audio stack from offering HFP.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2025 18:46:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 01 Jan 2026 18:46:00 -0500
 
 nitrux-desktop-settings (7.4.4)  nitrux; urgency=medium
 
