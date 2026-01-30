@@ -28,7 +28,7 @@
   --crust: #11111b;
 
   --low: var(--surface0);
-  --normal: var(--surface2); 
+  --normal: var(--surface1); 
   --critical: var(--red);
 }
 
@@ -41,6 +41,11 @@
 }
 
 /* --- MAIN CONTROL CENTER --- */
+/* Ensure the outer window container is completely transparent */
+window#swaync-control-center {
+    background: transparent;
+}
+
 .control-center {
   background-color: var(--base);
   border-radius: 12px;
@@ -242,12 +247,23 @@
 /* Hide the empty placeholder to collapse the gap */
 .widget-notifications .empty-text,
 .widget-notifications .empty-icon {
-    display: none;
+    opacity: 0;
+    min-width: 0;
+    min-height: 0;
+    font-size: 0px;
+    margin: 0;
+    padding: 0;
+    -gtk-icon-size: 0px;
 }
 
 /* In some versions/themes, the placeholder is a Label inside the box */
 .widget-notifications > box > label {
-    display: none;
+    opacity: 0;
+    min-width: 0;
+    min-height: 0;
+    font-size: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 /* --- MEDIA PLAYER --- */
