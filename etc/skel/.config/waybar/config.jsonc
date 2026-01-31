@@ -44,24 +44,24 @@
     "tooltip-format": "{time}"
   },
   "bluetooth": {
-    "on-scroll-up": "true",
-    "on-scroll-down": "true",
-    "format": "<big>•  </big> {status}",
-    "format-disabled": "", // Hides if disabled
-    "format-connected": "<big>•  </big> {num_connections}",
-    "tooltip-format": "{controller_alias}\t{controller_address}",
-    "on-click": "bluedevil-wizard",
-    "on-click-middle": "kcmshell6 kcm_bluetooth"
+      "on-scroll-up": true,
+      "on-scroll-down": true,
+      "format": "<span weight='bold'><big>• 󰂯 </big></span> {status}",
+      "format-disabled": "", 
+      "format-connected": "<span weight='bold'><big>• 󰂱 </big></span> {num_connections}",
+      "tooltip-format": "{controller_alias}\t{controller_address}",
+      "on-click": "bluedevil-wizard",
+      "on-click-middle": "kcmshell6 kcm_bluetooth"
   },
   "network": {
-    "on-scroll-up": "true",
-    "on-scroll-down": "true",
-    "format-wifi": "<big>•  </big> {essid}",
-    "format-ethernet": "<big>• 🌐 </big> {ifname}",
-    "format-linked": "<big>••</big> {ifname} (No IP)",
-    "format-disconnected": "<big>••</big> Disconnected",
-    "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
-    "on-click": "kcmshell6 kcm_networkmanagement"
+      "on-scroll-up": true,
+      "on-scroll-down": true,
+      "format-wifi": "<span weight='bold'><big>•  </big></span> {essid}",
+      "format-ethernet": "<span weight='bold'><big>• 󰈀 </big></span> {ifname}",
+      "format-linked": "<span weight='bold'><big>• 󰈁 </big></span> {ifname} (No IP)",
+      "format-disconnected": "<span weight='bold'><big>• 󰈂 </big></span> Disconnected",
+      "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
+      "on-click": "kcmshell6 kcm_networkmanagement"
   },
   "pulseaudio": {
       "format": "<span weight='bold'><big>• {icon} </big></span> {volume}%",
