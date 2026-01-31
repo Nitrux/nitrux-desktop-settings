@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+# Copyright 2025-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
 bat=""
 for d in /sys/class/power_supply/*; do
@@ -13,6 +13,7 @@ for d in /sys/class/power_supply/*; do
     fi
 done
 
+
 if [ -n "$bat" ]; then
     capacity=$(cat "$bat/capacity" 2>/dev/null)
     status=$(cat "$bat/status" 2>/dev/null)
@@ -21,6 +22,7 @@ if [ -n "$bat" ]; then
         exit 0
     fi
 fi
+
 
 if command -v acpi >/dev/null 2>&1; then
     info=$(acpi -b 2>/dev/null | head -n1)
@@ -32,4 +34,6 @@ if command -v acpi >/dev/null 2>&1; then
     fi
 fi
 
+
+printf "🔌 AC Power\n"
 exit 0

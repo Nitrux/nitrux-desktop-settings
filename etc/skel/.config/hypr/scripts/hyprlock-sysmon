@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2025-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+
+cpu_load=$(top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print 100 - $1}')
+
+ram_percent=$(free | awk '/^Mem:/{printf "%.0f", $3/$2*100}')
+
+CACHE="/tmp/hyprlock-net"
+INTERFACE=""
+INTERFACE=$(awk 'NR>2 && $1!~"lo"{print $1}' /proc/net/dev | cut -d: -f1 | head -n1)
+
+rx_kbs=0
+tx_kbs=0
+
+if [ -n "$INTERFACE" ]; then
+    line=$(grep "$INTERFACE" /proc/net/dev)
+    rx_now=$(echo "$line" | awk '{print $2}')
+    tx_now=$(echo "$line" | awk '{print $10}')
+    now=$(date +%s)
+
+    if [ -f "$CACHE" ]; then
+        read -r last_rx last_tx last_time < "$CACHE"
+        dt=$((now - last_time))
+        if [ "$dt" -gt 0 ]; then
+            rx_kbs=$(( (rx_now - last_rx) / 1024 / dt ))
+            tx_kbs=$(( (tx_now - last_tx) / 1024 / dt ))
+        fi
+    fi
+    echo "$rx_now $tx_now $now" > "$CACHE"
+fi
+
+if [ -n "$INTERFACE" ] && [ "$rx_now" -gt 0 ]; then
+    printf "💻 CPU %2.0f%%  |  🧠 RAM %s%%  |  🌐 %s: ⬇️ %d KB/s  |  ⬆️ %d KB/s\n" \
+        "$cpu_load" "$ram_percent" "$INTERFACE" "$rx_kbs" "$tx_kbs"
+else
+    printf "💻 CPU %2.0f%%  |  🧠 RAM %s%%  |  🌐 Offline\n" \
+        "$cpu_load" "$ram_percent"
+fi
