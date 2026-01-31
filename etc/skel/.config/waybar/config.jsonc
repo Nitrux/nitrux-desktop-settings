@@ -77,14 +77,12 @@
       },
       "on-click": "kcmshell6 kcm_pulseaudio"
   },
-  // New Backlight Module
   "backlight": {
-    "tooltip": false,
-    "format": "<big>• {icon} </big> {percent}%",
-    "format-disabled": "", // Hides if disabled
-    "format-icons": ["🌕", "🌔", "🌓", "🌒", "🌑"]
+      "tooltip": false,
+      "format": "<span weight='bold'><big>• {icon} </big></span> {percent}%",
+      "format-disabled": "", 
+      "format-icons": ["󰃞", "󰃟", "󰃠"]
   },
-  // New Tray Module
   "tray": {
     "on-scroll-up": "true",
     "on-scroll-down": "true",
