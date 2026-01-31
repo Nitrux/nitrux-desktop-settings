@@ -1,6 +1,6 @@
-# NX Desktop Settings
+# Nitrux Desktop Settings
 
-Custom settings for NX Desktop.
+Custom settings for Nitrux.
 
 # Issues
 If you find problems with the contents of this repository please create an issue.
