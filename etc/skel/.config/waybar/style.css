@@ -87,6 +87,9 @@ window#waybar {
 
 /* PPD */
 #power-profiles-daemon { color: @sapphire; }
+#power-profiles-daemon.performance { color: @red; }
+#power-profiles-daemon.balanced { color: @mauve; }
+#power-profiles-daemon.power-saver { color: @green; }
 
 /* Audio (Speakers) */
 #pulseaudio { color: @sky; }
