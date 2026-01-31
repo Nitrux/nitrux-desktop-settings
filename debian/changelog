@@ -1,3 +1,10 @@
+nitrux-desktop-settings (7.5.6)  nitrux; urgency=medium
+
+  * Update hyprand.conf.
+  * Update autostart-kde-polkit to ensure it starts kwalled6. 
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 31 Jan 2026 00:39:00 -0500
+
 nitrux-desktop-settings (7.5.5)  nitrux; urgency=medium
 
   * Update hyprpaper config.
