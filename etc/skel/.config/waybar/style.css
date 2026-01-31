@@ -3,7 +3,7 @@
 * {
     font-family: "Switzer", "Noto Color Emoji", "Symbols Nerd Font Mono", "Font Awesome Free 6 Solid", sans-serif;
     font-size: 13px;
-    font-weight: bold;
+    font-weight: 700;
     min-height: 0;
 }
 
@@ -78,29 +78,38 @@ window#waybar {
 }
 
 /* Module Colors */
-#network { color: @yellow; }
+
+/* Network */
+#network { color: @lavender; }
+
+/* Bluetooth */
 #bluetooth { color: @blue; }
 
+/* PPD */
+#power-profiles-daemon { color: @sapphire; }
+
 /* Audio (Speakers) */
-#pulseaudio { color: @teal; }
+#pulseaudio { color: @sky; }
 
 /* Audio (Mic) */
-#pulseaudio.microphone { color: @maroon; }
+#pulseaudio.microphone { color: @sky; }
 
-#battery { color: @green; }
+/* Battery */
+#battery { color: @teal; }
 #battery.warning { color: @yellow; }
 #battery.critical { color: @red; }
 #battery.charging,
 #battery.plugged { color: @teal; }
 
 /* Backlight */
-#backlight { color: @peach; }
+#backlight { color: @green; }
 
-#clock { color: @maroon; }
-#clock.date { color: @mauve; }
-#custom-swaync { color: @flamingo; }
+/* Clock */
+#clock { color: @yellow; }
+#clock.date { color: @yellow; }
 
-#power-profiles-daemon { color: @rosewater; }
+/* SwayNC */
+#custom-swaync { color: @peach; }
 
 /* Tray specific adjustments */
 #tray {

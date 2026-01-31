@@ -14,8 +14,8 @@
     "battery",
     "backlight",
     "pulseaudio",
-    "clock",
-    "custom/swaync"
+    "custom/swaync",
+    "clock"
   ],
 
   // --- MODULE CONFIGURATIONS ---
@@ -28,27 +28,27 @@
     "max-length": 50
   },
   "clock": {
-    "format": "<big>•📆•</big> {:%a %d %H:%M}",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+    "format": "<big>• </big> {:%a %d %H:%M}",
+    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><big>{calendar}</big></tt>"
   },
   "battery": {
     "states": { "warning": 30, "critical": 15 },
-    "format": "<big>•{icon}•</big> {capacity}%",
-    "format-warning": "<big>•{icon}•</big> {capacity}%",
-    "format-critical": "<big>•{icon}•</big> {capacity}%",
-    "format-charging": "<big>••</big> {capacity}%",
-    "format-plugged": "<big>••</big> {capacity}%",
+    "format": "<big>• {icon} </big> {capacity}%",
+    "format-warning": "<big>•{icon} </big> {capacity}%",
+    "format-critical": "<big>•{icon} </big> {capacity}%",
+    "format-charging": "<big>•  </big> {capacity}%",
+    "format-plugged": "<big>•  </big> {capacity}%",
     "format-full": " {capacity}%",
-    "format-alt": "<big>•{icon}•</big> {time}",
+    "format-alt": "<big>• {icon} </big> {time}",
     "format-icons": ["", "", "", "", ""],
     "tooltip-format": "{time}"
   },
   "bluetooth": {
     "on-scroll-up": "true",
     "on-scroll-down": "true",
-    "format": "<big>••</big> {status}",
+    "format": "<big>•  </big> {status}",
     "format-disabled": "", // Hides if disabled
-    "format-connected": "<big>••</big> {num_connections}",
+    "format-connected": "<big>•  </big> {num_connections}",
     "tooltip-format": "{controller_alias}\t{controller_address}",
     "on-click": "bluedevil-wizard",
     "on-click-middle": "kcmshell6 kcm_bluetooth"
@@ -56,25 +56,31 @@
   "network": {
     "on-scroll-up": "true",
     "on-scroll-down": "true",
-    "format-wifi": "<big>••</big> {essid}",
-    "format-ethernet": "<big>•🖥️•</big> {ifname}",
+    "format-wifi": "<big>•  </big> {essid}",
+    "format-ethernet": "<big>• 🌐 </big> {ifname}",
     "format-linked": "<big>••</big> {ifname} (No IP)",
     "format-disconnected": "<big>••</big> Disconnected",
     "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
     "on-click": "kcmshell6 kcm_networkmanagement"
   },
   "pulseaudio": {
-    "format": "<big>•{icon}•</big> {volume}%",
-    "format-muted": "<big>•🚫🔈•</big>",
-    "format-icons": {
-        "default": ["🔈", "🔉"]
-    },
-    "on-click": "kcmshell6 kcm_pulseaudio"
+      "format": "<span weight='bold'><big>• {icon} </big></span> {volume}%",
+      "format-muted": "<span weight='bold'><big>• 󰝟 </big></span> Muted",
+      "format-icons": {
+          "headphone": "",
+          "hands-free": "󰋎",
+          "headset": "󰋎",
+          "phone": "",
+          "portable": "",
+          "car": "",
+          "default": ["󰕿", "󰖀", "󰕾"]
+      },
+      "on-click": "kcmshell6 kcm_pulseaudio"
   },
   // New Backlight Module
   "backlight": {
     "tooltip": false,
-    "format": "<big>•{icon}•</big> {percent}%",
+    "format": "<big>• {icon} •</big> {percent}%",
     "format-disabled": "", // Hides if disabled
     "format-icons": ["🌕", "🌔", "🌓", "🌒", "🌑"]
   },
@@ -86,25 +92,24 @@
     "spacing": 10
   },
   "power-profiles-daemon": {
-    "swap-icon-label": true,
-    "format": "<big>•{icon}•</big> {profile}",
-    "on-scroll-up": "true",
-    "on-scroll-down": "true",
-    "format-icons": {
-      "default": "🛩︎",
-      "performance": "🚀",
-      "balanced": "🛩︎",
-      "power-saver": "🌿"
-    }
+      "format": "<span weight='bold'><big>• {icon} </big></span> {profile}",
+      "on-scroll-up": true,
+      "on-scroll-down": true,
+      "format-icons": {
+        "default": "󰾅",
+        "performance": "󰓅",
+        "balanced": "󰾅",
+        "power-saver": "󰌪"
+      }
   },
   "custom/swaync": {
     "tooltip": true,
-    "format": "<big>•{icon}•</big>",
+    "format": "<big>• {icon} </big> {}",
     "format-icons": {
-      "notification": "🔔",
-      "none": "🔕",
-      "dnd-notification": "🔔",
-      "dnd-none": "🔕"
+      "notification": "󰂚",
+      "none": "󱏨",
+      "dnd-notification": "󰂚",
+      "dnd-none": "󱏨"
     },
     "return-type": "json",
     "exec-if": "which swaync-client",
