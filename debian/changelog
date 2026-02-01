@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.6.2)  nitrux; urgency=medium
+
+  * Update Waybar configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 01 Feb 2026 04:51:00 -0500
+
 nitrux-desktop-settings (7.6.1)  nitrux; urgency=medium
 
   * Update hyprland.conf.

@@ -56,8 +56,8 @@
   "network": {
       "on-scroll-up": true,
       "on-scroll-down": true,
-      "format-wifi": "<span weight='bold'><big>•  </big></span> {essid}",
-      "format-ethernet": "<span weight='bold'><big>• 󰈀 </big></span> {ifname}",
+      "format-wifi": "<span weight='bold'><big>•   </big></span> {essid}",
+      "format-ethernet": "<span weight='bold'><big>•  󰈀 </big></span> {ifname}",
       "format-linked": "<span weight='bold'><big>• 󰈁 </big></span> {ifname} (No IP)",
       "format-disconnected": "<span weight='bold'><big>• 󰈂 </big></span> Disconnected",
       "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
@@ -90,7 +90,7 @@
     "spacing": 10
   },
   "power-profiles-daemon": {
-      "format": "<span weight='bold'><big>• {icon} </big></span> {profile}",
+      "format": "<span weight='bold'><big>•  {icon} </big></span> {profile}",
       "on-scroll-up": true,
       "on-scroll-down": true,
       "format-icons": {
