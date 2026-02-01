@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+# Copyright 2024-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
 
 # -- Exit on errors.
@@ -9,20 +9,80 @@
 set -eu
 
 
-# -- Start PipeWire processes.
+# -- Logging function.
 
-for process in pipewire pipewire-pulse wireplumber; do
-    nohup "$process" >/dev/null 2>&1 &
+log() {
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >&2
+}
+
+
+# -- Start PipeWire processes with proper ordering and checks.
+
+start_process() {
+    local process="$1"
+    local wait_time="${2:-1}"
+
+    if pgrep -x "$process" >/dev/null 2>&1; then
+        log "$process is already running"
+        return 0
+    fi
+
+    log "Starting $process..."
+    if ! "$process" >/dev/null 2>&1 & then
+        log "Failed to start $process"
+        return 1
+    fi
+
+    sleep "$wait_time"
+
+    if pgrep -x "$process" >/dev/null 2>&1; then
+        log "$process started successfully"
+        return 0
+    else
+        log "Failed to verify $process is running"
+        return 1
+    fi
+}
+
+start_process pipewire 2
+start_process pipewire-pulse 1
+start_process wireplumber 2
+
+
+# -- Wait for PipeWire to be fully ready.
+
+log "Waiting for PipeWire to be ready..."
+max_attempts=10
+attempt=0
+
+while [ $attempt -lt $max_attempts ]; do
+    if pactl info >/dev/null 2>&1; then
+        log "PipeWire is ready"
+        break
+    fi
+    attempt=$((attempt + 1))
+    sleep 1
 done
 
+if [ $attempt -eq $max_attempts ]; then
+    log "Warning: PipeWire may not be fully ready"
+fi
 
-# -- Use file to test with aplay.
 
-audio_sample=""
+# -- Use file to test with aplay (optional, only if audio sample exists).
 
+audio_sample="/usr/share/sounds/freedesktop/stereo/service-login.oga"
 
-# -- Reproduce sound to make PipeWire work.
+if [ -f "$audio_sample" ]; then
+    log "Playing test sound..."
+    for device in default sysdefault pipewire; do
+        if aplay -D "$device" "$audio_sample" >/dev/null 2>&1; then
+            log "Successfully played test sound on device: $device"
+            break
+        fi
+    done
+else
+    log "Audio sample not found at $audio_sample, skipping test playback"
+fi
 
-for device in default sysdefault pipewire; do
-    nohup aplay -D "$device" "$audio_sample" >/dev/null 2>&1 &
-done
+log "PipeWire autostart completed"

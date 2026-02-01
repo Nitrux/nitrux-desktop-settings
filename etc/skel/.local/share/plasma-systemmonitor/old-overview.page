@@ -21,8 +21,8 @@ showTitle=false
 
 [Face-94410254040128][org.kde.ksysguard.processtable][General]
 askWhenKilling=false
-columnDisplay={"command":"text","ioCharactersActuallyReadRate":"text","ioCharactersActuallyWrittenRate":"text","netInbound":"text","netOutbound":"text","numThreads":"text","usage":"lineScaled","vmPSS":"text"}
-sortedColumns=name,usage,vmPSS,ioCharactersActuallyReadRate,ioCharactersActuallyWrittenRate,sysTime,totalUserUsage,canUserLogin,command,egid,numThreads,userUsage,vmSize,ioWriteSyscalls,scheduler,uid,vmShared,ioPriorityClass,ioReadSyscallsRate,vmURSS,ioCharactersRead,tracerpid,tty,username,sgid,fsgid,startTime,ioCharactersActuallyRead,gid,ioniceLevel,pid,parentPid,ioCharactersWritten,ioReadSyscalls,totalSysUsage,niceLevel,status,euid,sysUsage,ioCharactersReadRate,ioCharactersWrittenRate,fsuid,totalUsage,suid,login,userTime,name
+columnDisplay={"command":"text","ioCharactersActuallyReadRate":"text","ioCharactersActuallyWrittenRate":"text","netInbound":"text","netOutbound":"text","numThreads":"text","usage":"lineScaled","memory":"text"}
+sortedColumns=name,usage,memory,ioCharactersActuallyReadRate,ioCharactersActuallyWrittenRate,sysTime,totalUserUsage,canUserLogin,command,egid,numThreads,userUsage,vmSize,ioWriteSyscalls,scheduler,uid,vmShared,ioPriorityClass,ioReadSyscallsRate,vmURSS,ioCharactersRead,tracerpid,tty,username,sgid,fsgid,startTime,ioCharactersActuallyRead,gid,ioniceLevel,pid,parentPid,ioCharactersWritten,ioReadSyscalls,totalSysUsage,niceLevel,status,euid,sysUsage,ioCharactersReadRate,ioCharactersWrittenRate,fsuid,totalUsage,suid,login,userTime,name
 userFilterMode=3
 
 [Face-94410261307168][SensorColors]

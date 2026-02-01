@@ -30,6 +30,7 @@ cpu/cpu0/name=218,38,150
 highPrioritySensorIds=["cpu/all/averageFrequency","cpu/all/maximumFrequency","cpu/all/minimumFrequency"]
 
 [Face-94107109903664][Appearance]
+chartFace=org.kde.ksysguard.linechart
 showTitle=false
 
 [Face-94107109903664][SensorColors]
@@ -65,6 +66,10 @@ lineChartFillOpacity=30
 lineChartStacked=false
 rangeAutoY=false
 
+[Face-94107115022400][Appearance]
+chartFace=org.kde.ksysguard.linechart
+showTitle=false
+
 [Face-94107115022400][SensorColors]
 memory/physical/application=55,38,218
 memory/physical/buffer=218,38,87
@@ -75,9 +80,16 @@ memory/swap/used=218,58,38
 [Face-94107115022400][Sensors]
 highPrioritySensorIds=["memory/physical/used","memory/physical/cache","memory/physical/buffer","memory/physical/application"]
 
+[Face-94107150101264][Appearance]
+chartFace=org.kde.ksysguard.linechart
+showTitle=false
+
 [Face-94107150101264][SensorColors]
 network/all/download=38,198,218
 network/all/upload=218,58,38
+
+[Face-94107150101264][Sensors]
+highPrioritySensorIds=["network/all/download","network/all/upload"]
 
 [Face-94452953865520][Appearance]
 chartFace=org.kde.ksysguard.linechart
@@ -157,11 +169,34 @@ highPrioritySensorIds=["cpu/all/averageTemperature","cpu/all/maximumTemperature"
 rangeAutoY=false
 
 [page]
-Title=Historial
+Title=History
 actionsFace=
+icon=office-chart-line
+loadType=onstart
+margin=2
+version=1
+
+[page][row-0]
+Title=CPU
+heightMode=minimum
+isTitle=true
+name=row-0
 
 [page][row-1]
 Title=falso
+heightMode=balanced
+isTitle=false
+name=row-1
+
+[page][row-1][column-0]
+name=column-0
+noMargins=false
+showBackground=true
+
+[page][row-1][column-0][section-0]
+face=Face-94107109903664
+isSeparator=false
+name=section-0
 
 [page][row-1][column-1]
 name=column-1
@@ -183,8 +218,46 @@ face=Face-100247295312800
 isSeparator=false
 name=section-0
 
+[page][row-2]
+Title=Memory
+heightMode=minimum
+isTitle=true
+name=row-2
+
 [page][row-3]
 Title=falso
+heightMode=balanced
+isTitle=false
+name=row-3
+
+[page][row-3][column-0]
+name=column-0
+noMargins=false
+showBackground=true
+
+[page][row-3][column-0][section-0]
+face=Face-94107115022400
+isSeparator=false
+name=section-0
+
+[page][row-4]
+Title=Network
+heightMode=minimum
+isTitle=true
+name=row-4
 
 [page][row-5]
 Title=falso
+heightMode=balanced
+isTitle=false
+name=row-5
+
+[page][row-5][column-0]
+name=column-0
+noMargins=false
+showBackground=true
+
+[page][row-5][column-0][section-0]
+face=Face-94107150101264
+isSeparator=false
+name=section-0
