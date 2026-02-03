@@ -3,14 +3,18 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2024-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
+
 # -- Exit strictly on errors (command not found, etc).
+
 set -u
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >&2
 }
 
-# -- 1. CRITICAL: Pre-flight Binary Check
+
+# -- 1. CRITICAL: Pre-flight check.
+
 check_binary() {
     if ! command -v "$1" >/dev/null 2>&1; then
         log "FATAL: Executable '$1' not found in \$PATH."
@@ -23,9 +27,10 @@ check_binary pipewire
 check_binary pipewire-pulse
 check_binary wireplumber
 
-# -- 2. Environment Safety Checks
+
+# -- 2. Environment checks.
+
 if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
-    # SC2155 Fix: valid_id is assigned separately so we catch failures from 'id'
     valid_id=$(id -u)
     
     if [ -e "/run/user/${valid_id}/bus" ]; then
@@ -37,11 +42,11 @@ if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
     fi
 fi
 
-# -- 3. Robust Process Starter
+
+# -- 3. Robust process starter.
+
 start_process() {
     local process="$1"
-    # 'shift' removes $1 (the process name) from the argument list.
-    # The remaining arguments (if any) are now in "$@".
     shift 
 
     local max_retries=3
@@ -54,10 +59,7 @@ start_process() {
 
     log "Starting $process..."
 
-    # Fix: Use arithmetic context ((...)) for numbers to satisfy ShellCheck
     while (( attempt <= max_retries )); do
-        # Fix: "$@" expands to separate, safely quoted arguments.
-        # If there are no arguments, it expands to nothing (safe).
         nohup "$process" "$@" >/dev/null 2>&1 &
         local pid=$!
         
@@ -79,17 +81,20 @@ start_process() {
     return 0
 }
 
-# -- 4. Execution Order
+
+# -- 4. Execution.
+
 start_process pipewire
 start_process pipewire-pulse
 
 sleep 1
 start_process wireplumber
 
-# -- 5. Verification
+
+# -- 5. Verification.
+
 log "Waiting for PipeWire to be ready..."
 
-# SC2034 Fix: Using '_' indicates we intentionally ignore the loop variable
 for _ in {1..5}; do
     if pactl info >/dev/null 2>&1; then
         log "PipeWire is fully operational."
@@ -98,19 +103,17 @@ for _ in {1..5}; do
     sleep 1
 done
 
-# -- 6. Audio Test (Non-blocking)
-# We use 'pw-play' (native) or 'paplay' (pulse) because 'aplay' cannot play .oga files.
+
+# -- 6. Audio Test.
+
 audio_sample="/usr/share/sounds/freedesktop/stereo/service-login.oga"
 
 if [ -f "$audio_sample" ]; then
     log "Playing test sound..."
     
-    # Check for a compatible player
     if command -v pw-play >/dev/null 2>&1; then
-        # Native PipeWire player
         timeout 2s pw-play "$audio_sample" >/dev/null 2>&1 && log "Audio test passed (pw-play)."
     elif command -v paplay >/dev/null 2>&1; then
-        # PulseAudio compatibility player
         timeout 2s paplay "$audio_sample" >/dev/null 2>&1 && log "Audio test passed (paplay)."
     else
         log "WARNING: No suitable player (pw-play/paplay) found for .oga files."
