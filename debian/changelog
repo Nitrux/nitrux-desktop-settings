@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.6.4)  nitrux; urgency=medium
+
+  * Make autostart-pipewire even more robust.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 03 Feb 2026 06:19:00 -0500
+
 nitrux-desktop-settings (7.6.3)  nitrux; urgency=medium
 
   * Make autostart-pipewire more robust.
