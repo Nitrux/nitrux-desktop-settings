@@ -1,8 +1,8 @@
-nitrux-desktop-settings (7.6.6)  nitrux; urgency=medium
+nitrux-desktop-settings (7.6.7)  nitrux; urgency=medium
 
-  * Update nota configuration.
+  * Update pipewire configuration with better latency values for target hardware.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Wed, 04 Mar 2026 20:57:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 04 Mar 2026 22:11:00 -0500
 
 nitrux-desktop-settings (7.6.5)  nitrux; urgency=medium
 
