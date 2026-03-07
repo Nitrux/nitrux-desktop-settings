@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.6.8)  nitrux; urgency=medium
+
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 07 Mar 2026 05:29:00 -0500
+
 nitrux-desktop-settings (7.6.7)  nitrux; urgency=medium
 
   * Update pipewire configuration with better latency values for target hardware.
