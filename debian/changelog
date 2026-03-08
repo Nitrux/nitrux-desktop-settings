@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.7.3)  nitrux; urgency=medium
+
+  * Update hyprscreend and hyprextscreend to set scale to 1 when monitor has less than 120 PPI.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 08 Mar 2026 14:05:00 -0500
+
 nitrux-desktop-settings (7.7.2)  nitrux; urgency=medium
 
   * Update hyprscreend and hyprextscreend to also adjust scaling for high-dpi monitors.

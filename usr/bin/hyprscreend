@@ -86,7 +86,7 @@ compute_scale() {
     if      (ppi >= 200) print "2"
     else if (ppi >= 150) print "1.5"
     else if (ppi >= 120) print "1.25"
-    else                 print fallback
+    else                 print "1"
   }')"
 
   echo "${scale:-$SCALE_FACTOR}"
