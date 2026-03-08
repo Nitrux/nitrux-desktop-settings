@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.7.2)  nitrux; urgency=medium
+
+  * Update hyprscreend and hyprextscreend to also adjust scaling for high-dpi monitors.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 08 Mar 2026 04:48:00 -0500
+
 nitrux-desktop-settings (7.7.1)  nitrux; urgency=medium
 
   * Update waybar configuration.

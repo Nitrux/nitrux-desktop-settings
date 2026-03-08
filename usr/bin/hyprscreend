@@ -43,6 +43,55 @@ need upower
 
 load_config
 
+get_phys_mm_from_sysfs() {
+  local name="$1" card w_cm h_cm
+  for card in /sys/class/drm/card*-"${name}"; do
+    [ -r "$card/edid" ] || continue
+    w_cm=$(od -An -j21 -N1 -tu1 "$card/edid" 2>/dev/null | tr -d ' \n')
+    h_cm=$(od -An -j22 -N1 -tu1 "$card/edid" 2>/dev/null | tr -d ' \n')
+    [ -n "$w_cm" ] && [ -n "$h_cm" ] && [ "$w_cm" -gt 0 ] 2>/dev/null && [ "$h_cm" -gt 0 ] 2>/dev/null && {
+      echo "$((w_cm * 10)) $((h_cm * 10))"
+      return 0
+    }
+  done
+  return 1
+}
+
+compute_scale() {
+  local name="$1" px_w px_h mm_w mm_h scale phys
+
+  read -r px_w px_h < <(
+    hyprctl monitors -j 2>/dev/null | jq -r --arg name "$name" '
+      (map(select(.name==$name)) | .[0]) as $m
+      | if $m==null then "0 0"
+        elif ($m.availableModes | type == "array" and length > 0) then
+          ($m.availableModes
+           | map(capture("^(?<w>\\d+)x(?<h>\\d+)@(?<r>[0-9.]+)Hz$")
+                 | {w: (.w|tonumber), h: (.h|tonumber)})
+           | max_by([.w, .h])
+           | "\(.w) \(.h)")
+        else "\($m.width) \($m.height)"
+        end
+    '
+  ) || true
+
+  phys="$(get_phys_mm_from_sysfs "$name" 2>/dev/null)" || { echo "$SCALE_FACTOR"; return; }
+  read -r mm_w mm_h <<< "$phys"
+
+  scale="$(awk -v pw="${px_w:-0}" -v ph="${px_h:-0}" \
+               -v mw="${mm_w:-0}" -v mh="${mm_h:-0}" \
+               -v fallback="$SCALE_FACTOR" 'BEGIN {
+    if (pw <= 0 || mw <= 0 || mh <= 0) { print fallback; exit }
+    ppi = sqrt(pw*pw + ph*ph) / (sqrt(mw*mw + mh*mh) / 25.4)
+    if      (ppi >= 200) print "2"
+    else if (ppi >= 150) print "1.5"
+    else if (ppi >= 120) print "1.25"
+    else                 print fallback
+  }')"
+
+  echo "${scale:-$SCALE_FACTOR}"
+}
+
 acquire_lock() {
   while ! mkdir "$LOCKFILE" 2>/dev/null; do
     sleep 0.1
@@ -123,9 +172,11 @@ apply_ac() {
   m=""
   if ! m="$(pick_mode hi 2>/dev/null)"; then m=""; fi
   [ -n "$m" ] || { log "AC" "no valid mode"; return 1; }
-  if upsert_config_line "$m" "$SCALE_FACTOR"; then
+  local scale
+  scale="$(compute_scale "$INTERNAL_SCREEN")"
+  if upsert_config_line "$m" "$scale"; then
     hyprctl reload >/dev/null 2>&1 || true
-    log "AC" "applied $m, scale $SCALE_FACTOR"
+    log "AC" "applied $m, scale $scale"
     return 0
   fi
   return 1
@@ -135,9 +186,11 @@ apply_battery() {
   m=""
   if ! m="$(pick_mode lo 2>/dev/null)"; then m=""; fi
   [ -n "$m" ] || { log "BAT" "no valid mode"; return 1; }
-  if upsert_config_line "$m" "$SCALE_FACTOR"; then
+  local scale
+  scale="$(compute_scale "$INTERNAL_SCREEN")"
+  if upsert_config_line "$m" "$scale"; then
     hyprctl reload >/dev/null 2>&1 || true
-    log "BAT" "applied $m, scale $SCALE_FACTOR"
+    log "BAT" "applied $m, scale $scale"
     return 0
   fi
   return 1
