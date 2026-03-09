@@ -85,8 +85,7 @@ compute_scale() {
     if (pw <= 0 || mw <= 0 || mh <= 0) { print fallback; exit }
     ppi = sqrt(pw*pw + ph*ph) / (sqrt(mw*mw + mh*mh) / 25.4)
     if      (ppi >= 200) print "2"
-    else if (ppi >= 150) print "1.5"
-    else if (ppi >= 120) print "1.25"
+    else if (ppi >= 160) print "1.5"
     else                 print "1"
   }')"
 
