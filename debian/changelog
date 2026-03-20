@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.7.5)  nitrux; urgency=medium
+
+  * Update fiery config.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 20 Mar 2026 00:48:00 -0500
+
 nitrux-desktop-settings (7.7.4)  nitrux; urgency=medium
 
   * Adjust hyprscreend and hyprextscreend not apply scaling to monitors with less than 160 PPI.
