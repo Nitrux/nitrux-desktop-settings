@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.7.6)  nitrux; urgency=medium
+
+  * Update fiery config.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 24 Mar 2026 14:16:00 -0500
+
 nitrux-desktop-settings (7.7.5)  nitrux; urgency=medium
 
   * Update fiery config.
