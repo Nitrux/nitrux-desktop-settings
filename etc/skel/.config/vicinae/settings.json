@@ -23,6 +23,9 @@
          "icon_theme": "Lüv"
       }
    },
+   "telemetry": {
+      "system_info": false
+   },
    "launcher_window": {
       "opacity": 0.9,
       "client_side_decorations": {
