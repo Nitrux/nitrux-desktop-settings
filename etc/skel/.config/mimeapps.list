@@ -1,0 +1,6 @@
+[Default Applications]
+application/vnd.debian.binary-package=nx-file-interceptor.desktop
+application/x-debian-package=nx-file-interceptor.desktop
+application/x-rpm=nx-file-interceptor.desktop
+application/x-iso9660-appimage=nx-file-interceptor.desktop
+application/vnd.appimage=nx-file-interceptor.desktop
