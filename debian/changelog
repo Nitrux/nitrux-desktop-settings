@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.7.9)  nitrux; urgency=medium
+
+  * Update fiery config.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 12 Apr 2026 18:11:00 -0500
+
 nitrux-desktop-settings (7.7.8)  nitrux; urgency=medium
 
   * Add mimeapps.list.
