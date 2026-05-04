@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Uri Herrera <uri_herrera@nxos.org>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.2
-Homepage: http://nx-desktop.org
+Homepage: http://nxos.org
 
 
 Package: nitrux-desktop-settings
