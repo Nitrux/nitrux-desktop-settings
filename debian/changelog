@@ -1,3 +1,11 @@
+nitrux-desktop-settings (7.8.1)  nitrux; urgency=medium
+
+  * Improve hyprlock-player's detection of MPRIS active players and its timestamp tracking.
+  * Update hyprland configuration to new syntax and add Lua configuration.
+  * Update maui apps configuration files.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 15 May 2026 03:54:00 -0500
+
 nitrux-desktop-settings (7.8.0)  nitrux; urgency=medium
 
   * Update fiery config.

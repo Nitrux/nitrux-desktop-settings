@@ -3,13 +3,32 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2025-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
+STATE_FILE="/tmp/hyprlock-player-state"
+
 names=$(gdbus call --session \
     --dest org.freedesktop.DBus \
     --object-path /org/freedesktop/DBus \
     --method org.freedesktop.DBus.ListNames 2>/dev/null || echo "")
 
-bus=$(printf '%s\n' "$names" | grep -o "org.mpris.MediaPlayer2[^']*" | head -n1)
-
+bus=""
+bus_status=""
+for candidate in $(printf '%s\n' "$names" | grep -o "org.mpris.MediaPlayer2[^']*"); do
+    s=$(gdbus call --session \
+        --dest "$candidate" \
+        --object-path /org/mpris/MediaPlayer2 \
+        --method org.freedesktop.DBus.Properties.Get \
+        org.mpris.MediaPlayer2.Player PlaybackStatus 2>/dev/null | \
+        sed -n "s/.*'\([^']*\)'.*/\1/p")
+    if [ "$s" = "Playing" ]; then
+        bus="$candidate"
+        bus_status="$s"
+        break
+    fi
+    if [ -z "$bus" ]; then
+        bus="$candidate"
+        bus_status="$s"
+    fi
+done
 
 if [ -z "$bus" ]; then
     case "$1" in
@@ -26,24 +45,15 @@ if [ -z "$bus" ]; then
     exit 0
 fi
 
-
 if [ "$1" = "--status" ]; then
-    status_raw=$(gdbus call --session \
-        --dest "$bus" \
-        --object-path /org/mpris/MediaPlayer2 \
-        --method org.freedesktop.DBus.Properties.Get \
-        org.mpris.MediaPlayer2.Player PlaybackStatus 2>/dev/null)
-    value=$(printf '%s\n' "$status_raw" | sed -n "s/.*'\([^']*\)'.*/\1/p")
-    
-    case "$value" in
+    case "$bus_status" in
         "Playing") echo "▶️ Playing" ;;
         "Paused")  echo "⏸️ Paused"  ;;
         "Stopped") echo "⏹️ Stopped" ;;
-        *)         echo "⏹️ $value"  ;;
+        *)         echo "⏹️ $bus_status" ;;
     esac
     exit 0
 fi
-
 
 meta=$(gdbus call --session \
     --dest "$bus" \
@@ -51,19 +61,11 @@ meta=$(gdbus call --session \
     --method org.freedesktop.DBus.Properties.Get \
     org.mpris.MediaPlayer2.Player Metadata 2>/dev/null)
 
-pos_raw=$(gdbus call --session \
-    --dest "$bus" \
-    --object-path /org/mpris/MediaPlayer2 \
-    --method org.freedesktop.DBus.Properties.Get \
-    org.mpris.MediaPlayer2.Player Position 2>/dev/null | sed -n "s/.*int64 \([0-9]*\).*/\1/p")
-
 format_time() {
     local usecs=$1
-    if [ -n "$usecs" ]; then
+    if [ -n "$usecs" ] && [ "$usecs" -gt 0 ] 2>/dev/null; then
         local secs=$((usecs / 1000000))
-        local min=$((secs / 60))
-        local sec=$((secs % 60))
-        printf "%d:%02d" "$min" "$sec"
+        printf "%d:%02d" "$((secs / 60))" "$((secs % 60))"
     else
         echo "0:00"
     fi
@@ -76,6 +78,7 @@ length_raw=$(printf '%s\n' "$meta" | sed -n "s/.*'mpris:length': <int64 \([0-9]*
 arturl=$(printf '%s\n' "$meta" | sed -n "s/.*'mpris:artUrl': <'\([^']*\)'.*/\1/p")
 source="${bus#org.mpris.MediaPlayer2.}"
 
+track_id="${title}|${artist}"
 
 case "$1" in
     --title)
@@ -91,9 +94,69 @@ case "$1" in
         echo "${source:-None}"
         ;;
     --length)
-        current=$(format_time "$pos_raw")
-        total=$(format_time "$length_raw")
-        echo "${current} / ${total}"
+        pos_from_mpris=$(gdbus call --session \
+            --dest "$bus" \
+            --object-path /org/mpris/MediaPlayer2 \
+            --method org.freedesktop.DBus.Properties.Get \
+            org.mpris.MediaPlayer2.Player Position 2>/dev/null | \
+            sed -n "s/.*int64 \([0-9]*\).*/\1/p")
+
+        NOW_NS=$(date +%s%N)
+        current_status="$bus_status"
+        computed_pos=0
+
+        stored_bus="" stored_track="" stored_status="" stored_pos=0 stored_ts=""
+        if [ -f "$STATE_FILE" ]; then
+            stored_bus=$(sed -n '1p' "$STATE_FILE")
+            stored_track=$(sed -n '2p' "$STATE_FILE")
+            stored_status=$(sed -n '3p' "$STATE_FILE")
+            stored_pos=$(sed -n '4p' "$STATE_FILE")
+            stored_ts=$(sed -n '5p' "$STATE_FILE")
+        fi
+
+        if [ "$stored_bus" = "$bus" ] && [ "$stored_track" = "$track_id" ]; then
+            if [ "$current_status" = "Playing" ]; then
+                if [ "$stored_status" = "Playing" ] && [ -n "$stored_ts" ]; then
+                    elapsed_us=$(( (NOW_NS - stored_ts) / 1000 ))
+                    extrapolated=$((stored_pos + elapsed_us))
+                else
+                    extrapolated="${stored_pos:-0}"
+                fi
+
+                if [ -n "$pos_from_mpris" ] && [ "$pos_from_mpris" != "0" ]; then
+                    diff=$(( pos_from_mpris - extrapolated ))
+                    [ "$diff" -lt 0 ] && diff=$(( -diff ))
+                    if [ "$diff" -gt 3000000 ]; then
+                        computed_pos="$pos_from_mpris"
+                    else
+                        computed_pos="$extrapolated"
+                    fi
+                else
+                    computed_pos="$extrapolated"
+                fi
+
+            elif [ "$current_status" = "Paused" ]; then
+                if [ -n "$pos_from_mpris" ] && [ "$pos_from_mpris" != "0" ]; then
+                    computed_pos="$pos_from_mpris"
+                else
+                    computed_pos="${stored_pos:-0}"
+                fi
+
+            else
+                computed_pos=0
+            fi
+        else
+            computed_pos="${pos_from_mpris:-0}"
+        fi
+
+        if [ -n "$length_raw" ] && [ "$length_raw" -gt 0 ] 2>/dev/null; then
+            [ "$computed_pos" -gt "$length_raw" ] 2>/dev/null && computed_pos="$length_raw"
+        fi
+
+        printf '%s\n%s\n%s\n%s\n%s\n' \
+            "$bus" "$track_id" "$current_status" "${computed_pos}" "$NOW_NS" > "$STATE_FILE"
+
+        echo "$(format_time "${computed_pos}") / $(format_time "${length_raw}")"
         ;;
     --summary)
         if [ -n "$title" ] && [ -n "$artist" ]; then
@@ -106,8 +169,7 @@ case "$1" in
         out="$2"
         if [ -n "$arturl" ] && [ -n "$out" ]; then
             if printf '%s' "$arturl" | grep -q '^file://'; then
-                file=${arturl#file://}
-                cp "$file" "$out" 2>/dev/null || true
+                cp "${arturl#file://}" "$out" 2>/dev/null || true
             elif command -v curl >/dev/null 2>&1; then
                 curl -Lfs "$arturl" -o "$out" 2>/dev/null || true
             fi
