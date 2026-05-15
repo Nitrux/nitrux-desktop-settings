@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.8.2)  nitrux; urgency=medium
+
+  * Update maui apps configuration files.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 15 May 2026 13:31:00 -0500
+
 nitrux-desktop-settings (7.8.1)  nitrux; urgency=medium
 
   * Improve hyprlock-player's detection of MPRIS active players and its timestamp tracking.
