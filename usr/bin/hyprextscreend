@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+# Copyright 2025-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
 
 # -- Exit on errors.
@@ -11,7 +11,7 @@ set -euo pipefail
 
 # -- Configuration.
 
-CONFIG_FILE="/etc/hyprscreen.conf"
+CONFIG_FILE="/etc/hyprscreend.conf"
 
 
 # -- Functions.
@@ -158,32 +158,128 @@ upsert_external_below_edp1() {
   mon="$1"
   mode_str="$2"
   scale="$3"
-  exact="monitor = $mon, $mode_str, auto, $scale"
   if [ "$mon" = "eDP-1" ]; then
     release_lock
     return 0
   fi
-  if grep -Fqx "$exact" "$HYPR_CONFIG" 2>/dev/null; then
-    release_lock
-    return 0
-  fi
-  tmp="$(mktemp)"
-  awk -v edp="eDP-1" -v mon="$mon" -v newline="$exact" '
+  if awk -v mon="$mon" -v mode="$mode_str" -v scale="$scale" '
+    function flush_block(    s_ok) {
+      if (out == mon && pos == "auto" && md == mode) {
+        s_ok = (sc != "" && (sc + 0) == (scale + 0))
+        if (s_ok) found = 1
+      }
+      in_block = 0
+      out = ""
+      md = ""
+      pos = ""
+      sc = ""
+    }
     BEGIN {
-      gsub(/^[ \t]+|[ \t]+$/, "", newline)
-      re_generic="^[ \t]*monitor[ \t]*=[ \t]*,[ \t]*preferred[ \t]*,[ \t]*auto[ \t]*,[ \t]*[0-9.]+"
-      re_edp="^[ \t]*monitor[ \t]*=[ \t]*" edp "[ \t]*,"
-      re_mon="^[ \t]*monitor[ \t]*=[ \t]*" mon "[ \t]*,"
-      did_insert=0
+      found = 0
+      in_block = 0
+      out = ""
+      md = ""
+      pos = ""
+      sc = ""
     }
     {
-      if ($0 ~ re_generic && $0 !~ /^[ \t]*#/) { print "# " $0; next }
-      if ($0 ~ re_edp) { print $0; if (did_insert==0) { print newline; did_insert=1 }; next }
-      if ($0 ~ re_mon) { next }
+      if (in_block) {
+        if ($0 ~ /^[ \t]*output[ \t]*=[ \t]*\"[^\"]*\"[ \t]*,?[ \t]*$/) {
+          t = $0
+          sub(/^[^"]*"/, "", t)
+          sub(/".*$/, "", t)
+          out = t
+        } else if ($0 ~ /^[ \t]*mode[ \t]*=[ \t]*\"[^\"]*\"[ \t]*,?[ \t]*$/) {
+          t = $0
+          sub(/^[^"]*"/, "", t)
+          sub(/".*$/, "", t)
+          md = t
+        } else if ($0 ~ /^[ \t]*position[ \t]*=[ \t]*\"[^\"]*\"[ \t]*,?[ \t]*$/) {
+          t = $0
+          sub(/^[^"]*"/, "", t)
+          sub(/".*$/, "", t)
+          pos = t
+        } else if ($0 ~ /^[ \t]*scale[ \t]*=[ \t]*[-0-9.]+[ \t]*,?[ \t]*$/) {
+          t = $0
+          sub(/^[^=]*=[ \t]*/, "", t)
+          sub(/[ \t]*,?[ \t]*$/, "", t)
+          sc = t
+        }
+        if ($0 ~ /^[ \t]*\}\)[ \t]*,?[ \t]*$/) flush_block()
+        next
+      }
+      if ($0 ~ /^[ \t]*hl\.monitor\(\{[ \t]*$/) {
+        in_block = 1
+        out = ""
+        md = ""
+        pos = ""
+        sc = ""
+      }
+    }
+    END { exit(found ? 0 : 1) }
+  ' "$HYPR_CONFIG"; then
+    release_lock
+    return 1
+  fi
+
+  tmp="$(mktemp)"
+  awk -v edp="eDP-1" -v mon="$mon" -v mode="$mode_str" -v scale="$scale" '
+    function print_new_block() {
+      print "hl.monitor({"
+      print "    output = \"" mon "\","
+      print "    mode = \"" mode "\","
+      print "    position = \"auto\","
+      print "    scale = " scale ","
+      print "})"
+    }
+    function flush_block(   i) {
+      if (out == mon) {
+        dropped_target = 1
+      } else {
+        for (i = 1; i <= blen; i++) print blk[i]
+        if (out == edp && !inserted) {
+          print_new_block()
+          inserted = 1
+        }
+      }
+      in_block = 0
+      blen = 0
+      out = ""
+    }
+    BEGIN {
+      inserted = 0
+      dropped_target = 0
+      in_block = 0
+      blen = 0
+      out = ""
+    }
+    {
+      if (in_block) {
+        blk[++blen] = $0
+        if ($0 ~ /^[ \t]*output[ \t]*=[ \t]*\"[^\"]*\"[ \t]*,?[ \t]*$/) {
+          t = $0
+          sub(/^[^"]*"/, "", t)
+          sub(/".*$/, "", t)
+          out = t
+        }
+        if ($0 ~ /^[ \t]*\}\)[ \t]*,?[ \t]*$/) flush_block()
+        next
+      }
+
+      if ($0 ~ /^[ \t]*hl\.monitor\(\{[ \t]*$/) {
+        in_block = 1
+        blen = 1
+        blk[1] = $0
+        out = ""
+        next
+      }
+
+      if ($0 ~ /^[ \t]*monitor[ \t]*=/ && $0 !~ /^[ \t]*#/) next
       print
     }
     END {
-      if (did_insert==0) print newline
+      if (in_block) flush_block()
+      if (!inserted) print_new_block()
     }
   ' "$HYPR_CONFIG" >"$tmp" && mv -f -- "$tmp" "$HYPR_CONFIG"
   release_lock
