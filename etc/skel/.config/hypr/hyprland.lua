@@ -33,6 +33,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("autostart-kde-polkit & xdg-user-dirs-update & autostart-pipewire & autostart-xdg-portals")
     hl.exec_cmd("waybar & hyprpaper & hypridle & swaync & crystal-dock & nwg-look -a & swaync-client -R & swaync-client -rs & wl-paste --watch clipvault store")
     hl.exec_cmd("nx-apphubd & gamemoded -d & openrazer-daemon -F & nx-sys-usecase & nx-dynamic-ppd & nx-battery-notify & nudge-osd --emoji & vicinae server")
+    hl.exec_cmd("dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
 end)
 
 

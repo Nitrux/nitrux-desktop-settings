@@ -1,3 +1,10 @@
+nitrux-desktop-settings (7.8.4)  nitrux; urgency=medium
+
+  * Update hyprland config.
+  * Remove legacy hyprland.conf.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 16 May 2026 13:00:00 -0500
+
 nitrux-desktop-settings (7.8.3)  nitrux; urgency=medium
 
   * Update hyprland config.
