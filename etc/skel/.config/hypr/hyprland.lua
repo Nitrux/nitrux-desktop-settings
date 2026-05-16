@@ -204,7 +204,7 @@ hl.bind("Print", hl.dsp.exec_cmd("grimshot -f"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -s"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -w"))
 
-hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://extensions/vicinae/clipboard/history"))
+hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall crystal-dock && crystal-dock"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("autostart-kde-polkit"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall waybar || true && waybar"))
