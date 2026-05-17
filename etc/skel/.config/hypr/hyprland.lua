@@ -227,6 +227,36 @@ hl.window_rule({
     suppress_event = "maximize",
 })
 
+-- Fiery (XWayland) dropdown/pop-up mitigation:
+-- keep tiny popup windows interactive and visible enough to click.
+-- Note: this is a compositor-side workaround, not a real fix for the
+-- upstream Qt/Wayland popup geometry issue.
+hl.window_rule({
+    name = "fiery-popup-focus",
+    match = {
+        class = "^fiery$",
+        title = "^Fiery$",
+        xwayland = true,
+        float = true,
+    },
+    stay_focused = true,
+    min_size = { 1, 1 },
+    focus_on_activate = true,
+})
+
+-- Apply placement only to modal Fiery popups to avoid affecting the main
+-- browser window (which can share the same initial title/class).
+hl.window_rule({
+    name = "fiery-modal-popup-center",
+    match = {
+        class = "^fiery$",
+        xwayland = true,
+        float = true,
+        modal = true,
+    },
+    center = true,
+})
+
 hl.layer_rule({
     match = { namespace = "logout_dialog" },
     blur = true,
