@@ -21,7 +21,7 @@ local terminal = "station"
 local fileManager = "index"
 local menu = "vicinae toggle"
 local lockScreen = "hyprlock"
-local webBrowser = "flatpak run com.brave.Browser"
+local webBrowser = "fiery"
 
 
 -------------------
