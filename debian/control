@@ -9,5 +9,5 @@ Homepage: http://nxos.org
 
 Package: nitrux-desktop-settings
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, git, zsh, brightnessctl, jq, playerctl
+Depends: ${shlibs:Depends}, ${misc:Depends}, git, zsh, brightnessctl, playerctl
 Description: Defaults settings for Nitrux.

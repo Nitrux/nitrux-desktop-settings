@@ -759,7 +759,7 @@ nitrux-desktop-settings (6.6.6)  nitrux; urgency=medium
 
 nitrux-desktop-settings (6.6.5)  nitrux; urgency=medium
 
-  * Fix path to hyrpland desktop portal in autostart script.
+  * Fix path to hyprland desktop portal in autostart script.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Wed, 17 Sep 2025 13:39:00 -0500
 
