@@ -1,7 +1,8 @@
 nitrux-desktop-settings (7.8.9)  nitrux; urgency=medium
 
-  * Update p10k configuration.
-  * Update station configuration.
+  * Update p10k config.
+  * Update station config.
+  * Update crystal dock config.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 18 May 2026 03:34:00 -0500
 
