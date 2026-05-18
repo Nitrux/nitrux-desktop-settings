@@ -1,3 +1,10 @@
+nitrux-desktop-settings (7.8.9)  nitrux; urgency=medium
+
+  * Update p10k configuration.
+  * Update station configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 18 May 2026 03:34:00 -0500
+
 nitrux-desktop-settings (7.8.8)  nitrux; urgency=medium
 
   * Move hyprscreend to separate package.
