@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.8.8)  nitrux; urgency=medium
+
+  * Move hyprscreend to separate package.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 17 May 2026 22:35:00 -0500
+
 nitrux-desktop-settings (7.8.7)  nitrux; urgency=medium
 
   * Update hyprland config.
