@@ -20,10 +20,16 @@ set_glx_vendor() {
 
 set_glx_vendor
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Detect Linux TTY early so we can avoid loading Nerd Font prompt bits there.
+IS_LINUX_TTY=false
+if [[ "$TERM" == "linux" || "$TTY" == /dev/tty<-> ]]; then
+  IS_LINUX_TTY=true
+fi
+
+# Enable Powerlevel10k instant prompt only outside Linux TTY.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+if [[ "$IS_LINUX_TTY" != true ]] && [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
@@ -33,11 +39,13 @@ fi
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
+# Set theme dynamically by terminal type.
+# Use a simple ASCII-friendly theme on Linux TTY and p10k elsewhere.
+if [[ "$IS_LINUX_TTY" == true ]]; then
+  ZSH_THEME="robbyrussell"
+else
+  ZSH_THEME="powerlevel10k/powerlevel10k"
+fi
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -226,9 +234,11 @@ function cat() {
 }
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+if [[ "$IS_LINUX_TTY" != true ]]; then
+  [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
 
-# Add $PATH for system AppImages
+# Add $PATH for system bundles
 export PATH="/Applications:$PATH"
 
 # Add $PATH for sbin
