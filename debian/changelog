@@ -1,3 +1,10 @@
+nitrux-desktop-settings (7.9.4)  nitrux; urgency=medium
+
+  * Improve autostart-pipewire recovery logic for stale session processes after logout/login.
+  * Update wlogout to kill the Hyprland process directly, bypassing the dispatch API entirely.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 20 May 2026 14:36:00 -0500
+
 nitrux-desktop-settings (7.9.3)  nitrux; urgency=medium
 
   * Port WirePlumber Bluetooth policy from legacy Lua config to wireplumber.conf.d format.

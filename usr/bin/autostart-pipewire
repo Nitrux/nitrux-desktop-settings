@@ -3,14 +3,15 @@
 # SPDX-License-Identifier: BSD-3-Clause
 # Copyright 2024-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
-
-# -- Exit strictly on errors (command not found, etc).
-
 set -u
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >&2
 }
+
+current_user="${USER:-$(id -un)}"
+current_uid="$(id -u)"
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/${current_uid}}"
 
 
 # -- 1. CRITICAL: Pre-flight check.
@@ -31,16 +32,49 @@ check_binary wireplumber
 # -- 2. Environment checks.
 
 if [ -z "${DBUS_SESSION_BUS_ADDRESS:-}" ]; then
-    valid_id=$(id -u)
-    
-    if [ -e "/run/user/${valid_id}/bus" ]; then
-        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/${valid_id}/bus"
+    if [ -e "${runtime_dir}/bus" ]; then
+        DBUS_SESSION_BUS_ADDRESS="unix:path=${runtime_dir}/bus"
         export DBUS_SESSION_BUS_ADDRESS
         log "inferred DBUS_SESSION_BUS_ADDRESS"
     else
         log "WARNING: DBUS_SESSION_BUS_ADDRESS is unset. PipeWire may fail."
     fi
 fi
+
+is_running() {
+    pgrep -u "${current_user}" -x "$1" >/dev/null 2>&1
+}
+
+is_audio_stack_ready() {
+    if ! timeout 2s pactl info >/dev/null 2>&1; then
+        return 1
+    fi
+
+    if command -v wpctl >/dev/null 2>&1; then
+        timeout 2s wpctl status >/dev/null 2>&1
+        return $?
+    fi
+
+    return 0
+}
+
+cleanup_audio_stack() {
+    log "Cleaning up stale PipeWire/WirePlumber processes..."
+    pkill -u "${current_user}" -x wireplumber >/dev/null 2>&1 || true
+    sleep 1
+    pkill -u "${current_user}" -x pipewire-pulse >/dev/null 2>&1 || true
+    sleep 1
+    pkill -u "${current_user}" -x pipewire >/dev/null 2>&1 || true
+    sleep 1
+
+    if ! is_running pipewire; then
+        rm -f "${runtime_dir}/pipewire-0" "${runtime_dir}/pipewire-0.lock" >/dev/null 2>&1 || true
+    fi
+
+    if ! is_running pipewire-pulse; then
+        rm -f "${runtime_dir}/pulse/native" "${runtime_dir}/pulse/pid" >/dev/null 2>&1 || true
+    fi
+}
 
 
 # -- 3. Robust process starter.
@@ -52,7 +86,7 @@ start_process() {
     local max_retries=3
     local attempt=1
 
-    if pgrep -u "$USER" -x "$process" >/dev/null 2>&1; then
+    if is_running "$process"; then
         log "$process is already running."
         return 0
     fi
@@ -70,38 +104,56 @@ start_process() {
             return 0
         else
             log "WARNING: $process failed to start (Attempt $attempt/$max_retries). Cleaning up..."
-            pkill -u "$USER" -x "$process" || true
+            pkill -u "${current_user}" -x "$process" >/dev/null 2>&1 || true
             sleep 1
         fi
         
         attempt=$((attempt + 1))
     done
 
-    log "ERROR: Could not start $process after $max_retries attempts. Continuing anyway."
-    return 0
+    log "ERROR: Could not start $process after $max_retries attempts."
+    return 1
 }
 
 
 # -- 4. Execution.
 
-start_process pipewire
-start_process pipewire-pulse
+if is_audio_stack_ready; then
+    log "PipeWire audio stack is already operational."
+else
+    log "PipeWire stack is not healthy. Attempting recovery..."
 
-sleep 1
-start_process wireplumber
+    stack_ok=false
+    for attempt in 1 2 3; do
+        log "Recovery attempt $attempt/3..."
+        cleanup_audio_stack
+
+        start_process pipewire || true
+        start_process pipewire-pulse || true
+        sleep 1
+        start_process wireplumber || true
+
+        log "Waiting for PipeWire to be ready..."
+        if is_audio_stack_ready; then
+            log "PipeWire recovered successfully."
+            stack_ok=true
+            break
+        fi
+    done
+
+    if [ "$stack_ok" = false ]; then
+        log "ERROR: Audio stack is still not operational after recovery attempts."
+    fi
+fi
 
 
 # -- 5. Verification.
 
-log "Waiting for PipeWire to be ready..."
-
-for _ in {1..5}; do
-    if pactl info >/dev/null 2>&1; then
-        log "PipeWire is fully operational."
-        break
-    fi
-    sleep 1
-done
+if is_audio_stack_ready; then
+    log "PipeWire is fully operational."
+else
+    log "WARNING: PipeWire verification failed."
+fi
 
 
 # -- 6. Audio Test.
