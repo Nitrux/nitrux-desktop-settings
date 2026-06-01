@@ -1,3 +1,9 @@
+nitrux-desktop-settings (7.9.6)  nitrux; urgency=medium
+
+  * Add capture retries and validation to prevent black/tiny screenshots to grimshot.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 01 Jun 2026 17:06:00 -0500
+
 nitrux-desktop-settings (7.9.5)  nitrux; urgency=medium
 
   * Update maui-manager config.

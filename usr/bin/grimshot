@@ -35,18 +35,74 @@ fi
 outdir="${XDG_PICTURES_DIR:-$HOME/Pictures}"
 mkdir -p "$outdir"
 outfile="$outdir/screenshot-$(date +'%Y%m%d-%H%M%S').png"
+tmpfile=""
+
+cleanup() {
+    if [ -n "${tmpfile}" ] && [ -f "${tmpfile}" ]; then
+        rm -f "${tmpfile}"
+    fi
+}
+trap cleanup EXIT
+
+notify_success() {
+    wl-copy -t image/png < "$outfile"
+    notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\n\nAlso copied to clipboard."
+}
+
+validate_capture() {
+    local img="$1"
+    local dims
+    local width
+    local height
+
+    [ -s "$img" ] || return 1
+
+    dims="$(file "$img" 2>/dev/null | sed -n 's/.*PNG image data, \([0-9][0-9]*\) x \([0-9][0-9]*\).*/\1 \2/p' || true)"
+
+    if [ -z "$dims" ]; then
+        return 0
+    fi
+
+    width="${dims% *}"
+    height="${dims#* }"
+
+    [ "$width" -gt 2 ] && [ "$height" -gt 2 ]
+}
+
+capture_with_retries() {
+    local attempts=4
+    local attempt=1
+    local delay="0.12"
+
+    tmpfile="$(mktemp "${outdir}/.grimshot-XXXXXX.png")"
+
+    while [ "$attempt" -le "$attempts" ]; do
+        # Let selection overlays/animations settle before reading the frame.
+        sleep "$delay"
+        if grim "$@" "$tmpfile" && validate_capture "$tmpfile"; then
+            mv "$tmpfile" "$outfile"
+            tmpfile=""
+            return 0
+        fi
+
+        attempt=$((attempt + 1))
+        sleep "$delay"
+    done
+
+    return 1
+}
 
 if [ "$mode" = "full" ]; then
-    if grim "$outfile"; then
-        wl-copy -t image/png < "$outfile"
-        notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
+    if capture_with_retries; then
+        notify_success
     else
         notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture full-screen image."
         exit 1
     fi
 else
     if [ "$mode" = "window" ]; then
-        geom="$(hyprctl clients -j | jq -r ".[] | select(.workspace.id == $(hyprctl activeworkspace -j | jq '.id')) | \"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])\"" | slurp || true)"
+        active_workspace="$(hyprctl activeworkspace -j | jq '.id')"
+        geom="$(hyprctl clients -j | jq -r ".[] | select(.workspace.id == ${active_workspace} and .size[0] > 2 and .size[1] > 2) | \"\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])\"" | slurp || true)"
     else
         geom="$(slurp || true)"
     fi
@@ -56,9 +112,8 @@ else
         exit 1
     fi
 
-    if grim -g "$geom" "$outfile"; then
-        wl-copy -t image/png < "$outfile"
-        notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\nAlso copied to clipboard."
+    if capture_with_retries -g "$geom"; then
+        notify_success
     else
         notify-send -a "Grimshot" -u critical -i "dialog-error" "Screenshot Failed" "Could not capture selected area."
         exit 1
