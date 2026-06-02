@@ -31,7 +31,7 @@ local webBrowser = "fiery"
 hl.on("hyprland.start", function()
     hl.exec_cmd("brightnessctl -s set 48000 & hyprscreend & hyprextscreend & hyprsunset")
     hl.exec_cmd("autostart-kde-polkit & xdg-user-dirs-update & autostart-pipewire & autostart-xdg-portals")
-    hl.exec_cmd("waybar & hyprpaper & hypridle & swaync & crystal-dock & nwg-look -a & swaync-client -R & swaync-client -rs & wl-paste --watch clipvault store")
+    hl.exec_cmd("waybar & hyprpaper & hypridle & swaync & crystal-dock & nwg-look -a & swaync-client -R & swaync-client -rs)
     hl.exec_cmd("nx-apphubd & gamemoded -d & openrazer-daemon -F & nx-sys-usecase & nx-dynamic-ppd & nx-battery-notify & nudge-osd --emoji & vicinae server")
     hl.exec_cmd("dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
 end)
@@ -282,21 +282,6 @@ hl.layer_rule({
 hl.layer_rule({
     match = { namespace = "^wofi$" },
     ignore_alpha = 0.4,
-})
-
-hl.window_rule({
-    name = "nudge-osd",
-    match = { class = "^(nudge-osd)$" },
-    float = true,
-    size = "300 70",
-    move = "(monitor_w/2-150) (monitor_h-180)",
-    decorate = false,
-    no_shadow = true,
-    no_blur = true,
-    no_focus = true,
-    no_initial_focus = true,
-    pin = true,
-    opacity = "1.0 override 1.0 override",
 })
 
 hl.layer_rule({
