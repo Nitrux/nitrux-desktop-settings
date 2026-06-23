@@ -1,9 +1,0 @@
-width=600
-location=center
-prompt=Search for apps...
-allow-images=true
-lines=10
-hide_search=false
-no_actions=true
-show_all=true
-allow_markup=true

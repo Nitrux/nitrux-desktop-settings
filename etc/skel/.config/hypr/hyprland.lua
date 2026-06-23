@@ -31,7 +31,7 @@ local webBrowser = "fiery"
 hl.on("hyprland.start", function()
     hl.exec_cmd("brightnessctl -s set 48000 & hyprscreend & hyprextscreend & hyprsunset")
     hl.exec_cmd("autostart-kde-polkit & xdg-user-dirs-update & autostart-pipewire & autostart-xdg-portals")
-    hl.exec_cmd("waybar & hyprpaper & hypridle & swaync & crystal-dock & nwg-look -a & swaync-client -R & swaync-client -rs")
+    hl.exec_cmd("hyprpaper & hypridle & swaync & crystal-dock & nwg-look -a")
     hl.exec_cmd("nx-apphubd & gamemoded -d & openrazer-daemon -F & nx-sys-usecase & nx-dynamic-ppd & nx-battery-notify & nudge-osd --emoji & vicinae server")
     hl.exec_cmd("dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
 end)
@@ -69,8 +69,8 @@ hl.env("XDG_SESSION_TYPE", "wayland")
 
 hl.config({
     general = {
-        gaps_in = 5,
-        gaps_out = 10,
+        gaps_in = 4,
+        gaps_out = 8,
         border_size = 1,
         col = {
             active_border = { colors = { "rgba(33ccffee)", "rgba(00ff99ee)" }, angle = 45 },
@@ -208,7 +208,6 @@ hl.bind("SHIFT + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -w"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall crystal-dock && crystal-dock"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("autostart-kde-polkit"))
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall waybar || true && waybar"))
 
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
@@ -260,27 +259,24 @@ hl.window_rule({
 hl.layer_rule({
     match = { namespace = "logout_dialog" },
     blur = true,
-})
-hl.layer_rule({
-    match = { namespace = "logout_dialog" },
     ignore_alpha = 0.4,
 })
 
 hl.layer_rule({
     match = { namespace = "^window$" },
     blur = true,
-})
-hl.layer_rule({
-    match = { namespace = "^window$" },
     ignore_alpha = 0.4,
 })
 
 hl.layer_rule({
     match = { namespace = "^wofi$" },
     blur = true,
+    ignore_alpha = 0.4,
 })
+
 hl.layer_rule({
-    match = { namespace = "^wofi$" },
+    match = { namespace = "^org.maui.valenz$" },
+    blur = true,
     ignore_alpha = 0.4,
 })
 
