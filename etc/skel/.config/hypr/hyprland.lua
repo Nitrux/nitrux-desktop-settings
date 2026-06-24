@@ -208,12 +208,11 @@ hl.bind("SHIFT + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -w"))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
 hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall crystal-dock && crystal-dock"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("autostart-kde-polkit"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall valenz || true && valenz"))
 
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"))
-
-hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("swaync-client -R -rs"))
 
 
 --------------------------------
