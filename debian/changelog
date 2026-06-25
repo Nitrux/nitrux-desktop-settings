@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.0.3)  nitrux; urgency=medium
+
+  * Update valenz configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 25 Jun 2026 00:02:00 -0500
+
 nitrux-desktop-settings (8.0.2)  nitrux; urgency=medium
 
   * Update hyprland configuration.
