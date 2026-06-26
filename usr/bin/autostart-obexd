@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+
+
+# -- Exit on errors.
+
+set -eu
+
+
+# -- Variables.
+
+OBEXD_BIN="/usr/libexec/bluetooth/obexd"
+
+
+# -- Check if obexd is running and avoid launching a second obexd for the same user.
+
+if ! command -v "$OBEXD_BIN" >/dev/null 2>&1; then
+    exit 0
+fi
+
+if pgrep -u "$(id -u)" -x obexd >/dev/null 2>&1; then
+    exit 0
+fi
+
+
+# -- Check if the target directory exists, if not create it.
+
+if command -v xdg-user-dir >/dev/null 2>&1; then
+    DOWNLOAD_DIR="$(xdg-user-dir DOWNLOAD 2>/dev/null || true)"
+else
+    DOWNLOAD_DIR=""
+fi
+
+if [ -z "${DOWNLOAD_DIR}" ]; then
+    DOWNLOAD_DIR="${HOME}/Downloads"
+fi
+
+mkdir -p "$DOWNLOAD_DIR"
+
+
+# -- Start obexd.
+
+exec "$OBEXD_BIN" \
+    -n \
+    -a \
+    --symlinks \
+    --noplugin=pbap,mas \
+    --root="$DOWNLOAD_DIR"
