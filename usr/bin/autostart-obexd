@@ -13,13 +13,16 @@ set -eu
 
 AGENT_BIN="/usr/bin/maui-bluetooth-obex-agent"
 OBEXD_BIN="/usr/libexec/bluetooth/obexd"
+STATE_DIR="$HOME"
+LOG_FILE="${STATE_DIR}/maui-bluetooth-obex-agent.log"
 
 
 # -- Prefer the MauiKit OBEX agent when available.
 # -- It is responsible for starting obexd and registering the receive agent.
 
 if command -v "$AGENT_BIN" >/dev/null 2>&1; then
-    exec "$AGENT_BIN"
+    mkdir -p "$STATE_DIR"
+    exec "$AGENT_BIN" >> "$LOG_FILE" 2>&1
 fi
 
 
