@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.0.7)  nitrux; urgency=medium
+
+  * Update autostart-obexd.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 26 Jun 2026 14:46:00 -0500
+
 nitrux-desktop-settings (8.0.6)  nitrux; urgency=medium
 
   * Update autostart-obexd.
