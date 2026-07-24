@@ -189,12 +189,12 @@ end
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("nudge-osd --volume-down 5"))
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("nudge-osd --volume-up 5"))
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("nudge-osd --volume-down"))
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("nudge-osd --volume-up"))
 hl.bind("XF86AudioMute", hl.dsp.exec_cmd("nudge-osd --volume-mute"))
 
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("nudge-osd --brightness-up 10"))
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("nudge-osd --brightness-down 10"))
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("nudge-osd --brightness-up"))
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("nudge-osd --brightness-down"))
 
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(lockScreen))
 hl.bind("switch:" .. laptopLid, hl.dsp.exec_cmd(lockScreen), { locked = true })
