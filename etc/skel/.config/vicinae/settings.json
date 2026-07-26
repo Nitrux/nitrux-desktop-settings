@@ -12,6 +12,7 @@
    "$schema": "https://vicinae.com/schemas/config.json",
    "close_on_focus_loss": false,
    "font": {
+      "rendering": "qt",
       "normal": {
          "family": "Switzer",
          "size": 10
@@ -29,6 +30,11 @@
    "launcher_window": {
       "opacity": 0.9,
       "client_side_decorations": {
+         "enabled": true,
+         "border_width": 1,
+         "shadow_size": 16
+      },
+      "compact_mode": {
          "enabled": true
       }
    },
@@ -41,10 +47,43 @@
                "/home/uri/.local/share/flatpak/exports/share/applications",
                "/usr/share/applications"
             ]
+         },
+         "entrypoints": {
+            "app-launcher": {
+               "enabled": false
+            }
          }
       },
       "browser-extension": {
          "enabled": false
+      },
+      "clipboard": {
+         "preferences": {
+            "encryption": false,
+            "eraseOnStartup": false,
+            "ignorePasswords": true,
+            "monitoring": true
+         }
+      },
+      "core": {
+         "enabled": false,
+         "entrypoints": {
+            "documentation": {
+               "enabled": true
+            },
+            "list-extensions": {
+               "enabled": true
+            },
+            "search-emojis": {
+               "enabled": true
+            },
+            "settings": {
+               "enabled": true
+            },
+            "store": {
+               "enabled": true
+            }
+         }
       },
       "developer": {
          "enabled": false
@@ -59,7 +98,17 @@
          "enabled": false
       },
       "raycast-compat": {
+         "enabled": true
+      },
+      "snippets": {
          "enabled": false
+      },
+      "system": {
+         "entrypoints": {
+            "run": {
+               "enabled": false
+            }
+         }
       },
       "wm": {
          "enabled": false

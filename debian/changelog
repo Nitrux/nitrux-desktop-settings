@@ -1,3 +1,11 @@
+nitrux-desktop-settings (8.1.1)  nitrux; urgency=medium
+
+  * Update vicinae configuration.
+  * Update valenz configuration.
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 26 Jul 2026 15:07:00 -0500
+
 nitrux-desktop-settings (8.1.0)  nitrux; urgency=medium
 
   * Update install scripts to only install the intended apps.

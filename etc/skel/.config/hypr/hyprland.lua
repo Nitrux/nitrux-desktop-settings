@@ -206,7 +206,7 @@ hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -s"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -w"))
 
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall crystal-dock && crystal-dock"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall marina && marina"))
 hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("autostart-kde-polkit"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall valenz || true && valenz"))
 
@@ -274,7 +274,15 @@ hl.layer_rule({
 })
 
 hl.layer_rule({
+    name = "valenz-blur",
     match = { namespace = "^org.maui.valenz$" },
+    blur = true,
+    ignore_alpha = 0.4,
+})
+
+hl.layer_rule({
+    name = "marina-blur",
+    match = { namespace = "^org.maui.marina$" },
     blur = true,
     ignore_alpha = 0.4,
 })
