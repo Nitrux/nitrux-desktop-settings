@@ -1,4 +1,4 @@
-nitrux-desktop-settings (8.1.6)  nitrux; urgency=medium
+nitrux-desktop-settings (8.1.7)  nitrux; urgency=medium
 
   * Clean up kdeglobals, match the file to the expected defaults, and remove unused keys.
 
