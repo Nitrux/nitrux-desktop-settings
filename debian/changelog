@@ -1,5 +1,12 @@
 nitrux-desktop-settings (8.1.4)  nitrux; urgency=medium
 
+  * Add flatpak global overrides for gtk theming.
+  * Update scripts to install steam, hgl, and bottles to also install the breeze gtk theme runtime.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 27 Jul 2026 13:42:00 -0500
+
+nitrux-desktop-settings (8.1.4)  nitrux; urgency=medium
+
   * Update autostart-xdg-portals.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Mon, 27 Jul 2026 13:02:00 -0500

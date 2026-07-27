@@ -9,9 +9,29 @@
 set -eu
 
 
+# -- Functions.
+
+ensure_breeze_runtimes() {
+    local missing=()
+    for theme in "org.gtk.Gtk3theme.Breeze" "org.gtk.Gtk3theme.Breeze-Dark"; do
+        if ! flatpak list --runtime --columns=application | grep -q "^${theme}$"; then
+            missing+=("$theme")
+        fi
+    done
+
+    if [ ${#missing[@]} -gt 0 ]; then
+        flatpak install -y --user flathub "${missing[@]}"
+    fi
+}
+
 # -- Add flathub.
 
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+
+# -- Ensure GTK theme runtimes.
+
+ensure_breeze_runtimes
 
 
 # -- Install Steam flatpak.
