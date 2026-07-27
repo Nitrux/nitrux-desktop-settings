@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.1.6)  nitrux; urgency=medium
+
+  * Add xdg-desktop-portal-kderc.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 27 Jul 2026 13:50:00 -0500
+
 nitrux-desktop-settings (8.1.5)  nitrux; urgency=medium
 
   * Add flatpak global overrides for gtk theming.
