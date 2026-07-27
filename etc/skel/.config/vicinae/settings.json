@@ -28,6 +28,7 @@
       "system_info": false
    },
    "launcher_window": {
+      "rounding": 22,
       "opacity": 0.9,
       "client_side_decorations": {
          "enabled": true,
