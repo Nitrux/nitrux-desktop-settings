@@ -1,106 +1,98 @@
 #!/usr/bin/env bash
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2024-2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+# Copyright 2024-2025 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
 
 
-# -- Exit on unset variables.
+# -- Exit on errors.
 
-set -u
+set -eu
 
 
-# -- Constants.
+# -- Write to log.
 
-readonly log_tag="autostart-xdg-portals"
-readonly portal_bus_name="org.freedesktop.portal.Desktop"
-readonly portal_object_path="/org/freedesktop/portal/desktop"
-readonly max_attempts=10
-
-readonly -a required_interfaces=(
-    FileChooser
-    OpenURI
-    ScreenCast
-    Screenshot
-    Settings
-)
+logger -t autostart-xdg-portals "(Re)Starting XDG portals"
 
 
 # -- Functions.
 
-log() {
-    logger -t "$log_tag" -- "$*"
+have_interfaces() {
+    gdbus introspect --session --dest org.freedesktop.portal.Desktop \
+        --object-path /org/freedesktop/portal/desktop 2>/dev/null | \
+            grep -E 'OpenURI|FileChooser' >/dev/null
 }
 
-fail() {
-    log "Error: $*"
-    exit 1
-}
+start_stack() {
+    killall xdg-desktop-portal xdg-desktop-portal-kde xdg-desktop-portal-hyprland \
+        xdg-desktop-portal-gnome xdg-desktop-portal-wlr 2>/dev/null || true
 
-
-# -- Validate the runtime environment.
-
-for required_command in dbus-update-activation-environment gdbus grep killall logger sleep timeout; do
-    command -v "$required_command" >/dev/null 2>&1 ||
-        fail "Required command not found: $required_command"
-done
-
-if [[ -z ${DBUS_SESSION_BUS_ADDRESS:-} && -z ${XDG_RUNTIME_DIR:-} ]]; then
-    fail "No D-Bus session address or XDG runtime directory is available"
-fi
-
-
-# -- Update the environment used to D-Bus-activate the portal services.
-#   -- Publishing the complete session environment preserves Qt and KDE theme
-#      variables that the portal backends inherited when launched directly.
-
-export QT_QPA_PLATFORMTHEME="${QT_QPA_PLATFORMTHEME:-kde}"
-
-log "Restarting XDG desktop portals"
-
-if ! dbus-update-activation-environment --all; then
-    fail "Could not update the D-Bus activation environment"
-fi
-
-
-# -- Stop stale portal processes, then let D-Bus reactivate the configured stack.
-
-timeout 5s killall --wait xdg-desktop-portal xdg-desktop-portal-kde \
-    xdg-desktop-portal-hyprland 2>/dev/null || true
-
-
-# -- Wait for the configured portal interfaces.
-
-declare portal_info=""
-declare -a missing_interfaces=()
-
-for ((attempt = 1; attempt <= max_attempts; attempt++)); do
-    log "Checking portal interfaces (attempt $attempt/$max_attempts)"
-
-    if portal_info=$(timeout 5s gdbus introspect --session \
-        --dest "$portal_bus_name" \
-        --object-path "$portal_object_path" 2>/dev/null); then
-        missing_interfaces=()
-
-        for interface in "${required_interfaces[@]}"; do
-            if ! grep -Fq "interface org.freedesktop.portal.$interface" \
-                <<<"$portal_info"; then
-                missing_interfaces+=("$interface")
-            fi
-        done
-
-        if ((${#missing_interfaces[@]} == 0)); then
-            log "XDG desktop portals are ready"
-            exit 0
+    /usr/libexec/xdg-desktop-portal-hyprland &
+    sleep 0.2
+        if pgrep -f '(^|/)xdg-desktop-portal-hyprland(\s|$)' >/dev/null; then
+            logger -t autostart-xdg-portals "Started xdg-desktop-portal-hyprland"
+        else
+            logger -t autostart-xdg-portals "Failed to start xdg-desktop-portal-hyprland"
         fi
 
-        log "Interfaces not ready: ${missing_interfaces[*]}"
-    else
-        log "The portal service has not acquired its D-Bus name yet"
-    fi
+    /usr/lib/x86_64-linux-gnu/libexec/xdg-desktop-portal-kde 2> >(logger -t autostart-xdg-portals -p user.err) &
+    sleep 0.2
+        if pgrep -f '(^|/)xdg-desktop-portal-kde(\s|$)' >/dev/null; then
+            logger -t autostart-xdg-portals "Started xdg-desktop-portal-kde"
+        else
+            logger -t autostart-xdg-portals "Failed to start xdg-desktop-portal-kde"
+        fi
 
-    if ((attempt < max_attempts)); then
-        sleep 1
-    fi
+    G_MESSAGES_DEBUG=all /usr/libexec/xdg-desktop-portal -r 2> >(logger -t autostart-xdg-portals -p user.err) &
+    sleep 1
+    if pgrep -f '(^|/)xdg-desktop-portal(\s|$)' >/dev/null; then
+        logger -t autostart-xdg-portals "Started main xdg-desktop-portal"
+    else
+        logger -t autostart-xdg-portals "Failed to start main xdg-desktop-portal"
+     fi
+}
+
+
+# -- Start portal processes.
+#   -- XDG portals need to be initialized in a very specific order. First, the Hyprland portal; then the KDE portal; then the main portal; and finally the helpers.
+#   -- If the KDE portal fails to start, the main portal and the helpers will start, but functionality will be missing, such as file chooser and open with «xdg-open» dialogs.
+
+dbus-update-activation-environment 
+
+max=6
+i=1
+ok=0
+while [ "$i" -le "$max" ]; do
+    logger -t autostart-xdg-portals "Attempt $i/$max"
+    start_stack
+    for _ in $(seq 1 30); do
+        if have_interfaces; then ok=1; break; fi
+        sleep 0.3
+    done
+    [ "$ok" -eq 1 ] && break
+    logger -t autostart-xdg-portals "Interfaces not ready; retrying"
+    sleep 1
+    i=$((i+1))
 done
 
-fail "Portal interfaces did not become ready after $max_attempts attempts"
+if [ "$ok" -ne 1 ]; then
+    logger -t autostart-xdg-portals "Failed to expose OpenURI/FileChooser after $max attempts"
+    exit 1
+fi
+
+/usr/libexec/xdg-document-portal &
+sleep 0.2
+if pgrep -f '(^|/)xdg-document-portal(\s|$)' >/dev/null; then
+    logger -t autostart-xdg-portals "Started xdg-document-portal"
+else
+    logger -t autostart-xdg-portals "Failed to start xdg-document-portal"
+fi
+
+/usr/libexec/xdg-permission-store &
+sleep 0.2
+if pgrep -f '(^|/)xdg-permission-store(\s|$)' >/dev/null; then
+    logger -t autostart-xdg-portals "Started xdg-permission-store"
+else
+    logger -t autostart-xdg-portals "Failed to start xdg-permission-store"
+fi
+
+logger -t autostart-xdg-portals "XDG portal startup complete"
