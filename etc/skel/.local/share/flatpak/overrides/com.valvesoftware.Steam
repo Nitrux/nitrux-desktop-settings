@@ -1,0 +1,3 @@
+[Environment]
+SDL_VIDEODRIVER=x11
+GDK_BACKEND=x11

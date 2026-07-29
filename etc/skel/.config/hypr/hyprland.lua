@@ -20,7 +20,7 @@ hl.monitor({
 local terminal = "station"
 local fileManager = "index"
 local menu = "vicinae toggle"
-local lockScreen = "hyprlock"
+local lockScreen = "desklock"
 local webBrowser = "fiery"
 
 

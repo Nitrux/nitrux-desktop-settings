@@ -1,3 +1,12 @@
+nitrux-desktop-settings (8.1.8) nitrux; urgency=medium
+
+  * Add configurationfor desklock.
+  * Update hyprland configuration.
+  * Remove hyprlock configuration.
+  * Add override for Steam Flatpak to use XWayland.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 28 Jul 2026 20:53:00 -0500
+
 nitrux-desktop-settings (8.1.7)  nitrux; urgency=medium
 
   * Clean up kdeglobals, match the file to the expected defaults, and remove unused keys.
