@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.2.2) nitrux; urgency=medium
+
+  * Remove hyprlock configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 02 Aug 2026 16:12:00 -0500
+
 nitrux-desktop-settings (8.2.1) nitrux; urgency=medium
 
   * Update desklock configuration.
