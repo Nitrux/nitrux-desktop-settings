@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.2.3) nitrux; urgency=medium
+
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 03 Aug 2026 17:08:00 -0500
+
 nitrux-desktop-settings (8.2.2) nitrux; urgency=medium
 
   * Remove hyprlock configuration.
