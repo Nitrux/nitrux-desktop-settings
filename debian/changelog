@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.2.5) nitrux; urgency=medium
+
+  * Remove installer and default configuration for bauh.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 04 Aug 2026 08:37:00 -0500
+
 nitrux-desktop-settings (8.2.4) nitrux; urgency=medium
 
   * Fix hypridle configuration.
