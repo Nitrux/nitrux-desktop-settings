@@ -29,11 +29,11 @@ local webBrowser = "fiery"
 -------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("brightnessctl -s set 48000 & hyprscreend & hyprsunset")
-    hl.exec_cmd("autostart-kde-polkit & xdg-user-dirs-update & autostart-pipewire & autostart-xdg-portals & autostart-obexd")
-    hl.exec_cmd("hyprpaper & hypridle & valenz & marina & nwg-look -a & MauiManServer")
-    hl.exec_cmd("nx-apphubd & gamemoded -d & openrazer-daemon -F & nx-sys-usecase & nx-dynamic-ppd & nx-battery-notify & nudge-osd & vicinae server")
-    hl.exec_cmd("dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
+    hl.exec_cmd("autostart-kde-polkit & xdg-user-dirs-update & autostart-pipewire & autostart-xdg-portals & autostart-obexd & MauiManServer")
+    hl.exec_cmd("brightnessctl -s set 48000 & hyprscreend & hyprsunset & openrazer-daemon -F")
+    hl.exec_cmd("nx-sys-usecase & nx-dynamic-ppd & nx-battery-notify & gamemoded -d & dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
+    hl.exec_cmd("nwg-look -a & hyprpaper & hypridle & valenz & marina & nudge-osd")
+    hl.exec_cmd("nx-apphubd & vicinae server")
 end)
 
 

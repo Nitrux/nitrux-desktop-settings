@@ -1,3 +1,11 @@
+nitrux-desktop-settings (8.2.4) nitrux; urgency=medium
+
+  * Fix hypridle configuration.
+  * Update hyprland configuration.
+  * Remove deprecated keys in desklock configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 04 Aug 2026 06:49:00 -0500
+
 nitrux-desktop-settings (8.2.3) nitrux; urgency=medium
 
   * Update hyprland configuration.
