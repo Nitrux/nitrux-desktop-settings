@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.2.7) nitrux; urgency=medium
+
+  * Updatre kdeglobals and kcminputrc.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 05 Aug 2026 16:09:00 -0500
+
 nitrux-desktop-settings (8.2.6) nitrux; urgency=medium
 
   * Updatre desklock configuration.

@@ -1,7 +1,3 @@
-[Mouse]
-cursorSize=24
-cursorTheme=nitrux_snow_cursors
-
 [$Version]
 update_info=delete_cursor_old_default_size.upd:DeleteCursorOldDefaultSize,kcminputrc_fix_botched_5_21_0.upd:kcminputrc_fix_botched_5_21_0_pre,kcminputrc_fix_botched_5_21_0.upd:kcminputrc_fix_botched_5_21_0,kcminputrc_repeat.upd:kcminputrc_migrate_key_repeat
 
@@ -14,6 +10,10 @@ TapToClick=true
 MiddleButtonEmulation=false
 ScrollFactor=2
 TapToClick=true
+
+[Mouse]
+cursorSize=24
+cursorTheme=nitrux_snow_cursors
 
 [Tmp]
 update_info=delete_cursor_old_default_size.upd:DeleteCursorOldDefaultSize
