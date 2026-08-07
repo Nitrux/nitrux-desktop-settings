@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.3.2) nitrux; urgency=medium
+
+  * Update CatppuccinLatteNitrux.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 07 Aug 2026 08:27:00 -0500
+
 nitrux-desktop-settings (8.3.1) nitrux; urgency=medium
 
   * Update hyprland config.
