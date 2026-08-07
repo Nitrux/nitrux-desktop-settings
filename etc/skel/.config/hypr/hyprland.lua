@@ -278,12 +278,21 @@ hl.layer_rule({
     name = "valenz-blur",
     match = { namespace = "^org.maui.valenz$" },
     blur = true,
+    blur_popups = true,
     ignore_alpha = 0.4,
 })
 
 hl.layer_rule({
     name = "marina-blur",
     match = { namespace = "^org.maui.marina$" },
+    blur = true,
+    blur_popups = true,
+    ignore_alpha = 0.4,
+})
+
+hl.layer_rule({
+    name = "nudge-osd-blur",
+    match = { namespace = "^nudge-osd$" },
     blur = true,
     ignore_alpha = 0.4,
 })
@@ -292,7 +301,7 @@ hl.layer_rule({
     name = "vicinae-blur",
     match = { namespace = "vicinae" },
     blur = true,
-    ignore_alpha = 0,
+    ignore_alpha = 0.4,
 })
 
 
