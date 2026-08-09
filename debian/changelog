@@ -1,8 +1,14 @@
+nitrux-desktop-settings (8.3.4) nitrux; urgency=medium
+
+  * Update valenz, desklock, and nudge-osd configuration to use system icons.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 09 Aug 2026 09:04:00 -0500
+
 nitrux-desktop-settings (8.3.3) nitrux; urgency=medium
 
   * Update valenz configuration.
 
- -- Uri Herrera <uri_herrera@nxos.org>  Sun, 08 Aug 2026 05:54:00 -0500
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 09 Aug 2026 05:54:00 -0500
 
 nitrux-desktop-settings (8.3.2) nitrux; urgency=medium
 
