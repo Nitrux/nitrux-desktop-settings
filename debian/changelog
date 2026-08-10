@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.3.5) nitrux; urgency=medium
+
+  * Update hyprland configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 09 Aug 2026 18:25:00 -0500
+
 nitrux-desktop-settings (8.3.4) nitrux; urgency=medium
 
   * Update valenz, desklock, and nudge-osd configuration to use system icons.
