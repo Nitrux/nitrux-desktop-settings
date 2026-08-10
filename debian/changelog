@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.3.6) nitrux; urgency=medium
+
+  * Remove the duplicate xdg-desktop-portal configuration now provided by xdg-desktop-portal-nx.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 10 Aug 2026 00:04:00 -0500
+
 nitrux-desktop-settings (8.3.5) nitrux; urgency=medium
 
   * Update hyprland configuration.
