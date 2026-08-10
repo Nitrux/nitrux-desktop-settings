@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.3.7) nitrux; urgency=medium
+
+  * Remove autostart-xdg-portals since xdg-desktop-portal-nx should automatically start the portals.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 10 Aug 2026 02:01:00 -0500
+
 nitrux-desktop-settings (8.3.6) nitrux; urgency=medium
 
   * Remove the duplicate xdg-desktop-portal configuration now provided by xdg-desktop-portal-nx.
