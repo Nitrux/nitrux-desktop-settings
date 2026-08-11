@@ -221,6 +221,17 @@ hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"))
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
 
+-- Keep the NX portal chooser as a centered floating surface instead of tiling it.
+-- The transparent parts of the surface use decoration.blur below; Hyprland's
+-- window-rule API only has no_blur, not a per-window blur=true setting.
+hl.window_rule({
+    name = "xdg-desktop-portal-nx-dialog",
+    match = { class = "^xdg-desktop-portal-nx$" },
+    float = true,
+    size = "760 560",
+    center = true,
+})
+
 hl.window_rule({
     name = "suppress-maximize-events",
     match = { class = ".*" },
