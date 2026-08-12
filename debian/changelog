@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.3.9) nitrux; urgency=medium
+
+  * Update fiery configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 11 Aug 2026 19:21:00 -0500
+
 nitrux-desktop-settings (8.3.8) nitrux; urgency=medium
 
   * Update hyprland configuration.
