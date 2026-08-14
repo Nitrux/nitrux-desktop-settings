@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.4.2) nitrux; urgency=medium
+
+  * Add autostart-polkit-agent.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Fri, 14 Aug 2026 09:45:00 -0500
+
 nitrux-desktop-settings (8.4.1) nitrux; urgency=medium
 
   * Update grimshot to display a notification when a screenshot was taken even if if wl-copy fails.

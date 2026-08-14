@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# SPDX-License-Identifier: BSD-3-Clause
+# Copyright 2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+
+
+# -- Exit on errors.
+
+set -eu
+
+
+# -- Start Nitrux PolicyKit agent.
+
+ARCH=$(uname -m)
+
+POLKIT_AGENT="/usr/lib/$ARCH/libexec/polkit-nx-agent"
+
+[ -x "$POLKIT_AGENT" ] || POLKIT_AGENT="/usr/lib/polkit-nx-agent"
+
+
+# -- Start the Polkit Agent (Password prompts).
+
+pgrep -fu "$USER" polkit-nx-agent >/dev/null || "$POLKIT_AGENT" &
