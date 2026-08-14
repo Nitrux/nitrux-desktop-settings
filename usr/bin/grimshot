@@ -45,8 +45,16 @@ cleanup() {
 trap cleanup EXIT
 
 notify_success() {
-    wl-copy -t image/png < "$outfile"
-    notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\n\nAlso copied to clipboard."
+    local clipboard_message="Also copied to clipboard."
+
+    # -- A clipboard provider may be unavailable even though the screenshot was
+    # -- captured successfully. Do not let that prevent the notification.
+
+    if ! wl-copy -t image/png < "$outfile"; then
+        clipboard_message="Could not copy to clipboard."
+    fi
+
+    notify-send -a "Grimshot" -u normal -i "$outfile" "Screenshot Taken" "Saved to: $outfile\n\n$clipboard_message"
 }
 
 validate_capture() {
