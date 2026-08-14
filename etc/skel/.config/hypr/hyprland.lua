@@ -30,7 +30,7 @@ local webBrowser = "fiery"
 
 hl.on("hyprland.start", function()
     hl.exec_cmd("dbus-update-activation-environment --all")
-    hl.exec_cmd("autostart-kde-polkit & xdg-user-dirs-update & autostart-pipewire & autostart-obexd & MauiManServer")
+    hl.exec_cmd("autostart-kde-daemons & xdg-user-dirs-update & autostart-pipewire & autostart-obexd & MauiManServer")
     hl.exec_cmd("brightnessctl -s set 48000 & hyprscreend & hyprsunset & openrazer-daemon -F")
     hl.exec_cmd("nx-sys-usecase & nx-powerd & gamemoded -d & dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
     hl.exec_cmd("nwg-look -a & hyprpaper & hypridle & valenz & marina & nudge-osd")
