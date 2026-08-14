@@ -143,6 +143,7 @@ ShowIconsOnPushButtons=false
 SingleClick=false
 contrast=4
 frameContrast=0.2
+widgetStyle=Nirux
 
 [KFileDialog Settings]
 Allow Expansion=false

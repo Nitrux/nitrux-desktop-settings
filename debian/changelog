@@ -1,6 +1,7 @@
 nitrux-desktop-settings (8.4.1) nitrux; urgency=medium
 
   * Update grimshot to display a notification when a screenshot was taken even if if wl-copy fails.
+  * Update kdegloabls to use nitrux kstyle.
 
  -- Uri Herrera <uri_herrera@nxos.org>  Fri, 14 Aug 2026 03:50:00 -0500
 
