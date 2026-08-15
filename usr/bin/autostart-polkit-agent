@@ -1,23 +1,54 @@
 #!/usr/bin/env bash
 
 # SPDX-License-Identifier: BSD-3-Clause
-# Copyright 2026 <Nitrux Latinoamericana S.C. <hello@nxos.org>>
+# Copyright 2026 Nitrux Latinoamericana S.C. <hello@nxos.org>
 
+set -euo pipefail
 
-# -- Exit on errors.
+readonly agent_name="polkit-nx-agent"
+uid="$(id -u)"
+readonly uid
 
-set -eu
+warn()
+{
+    printf "%s: %s\n" "${0##*/}" "$*" >&2
+}
 
+is_running()
+{
+    command -v pgrep >/dev/null 2>&1 || return 1
+    pgrep -u "$uid" -x "$agent_name" >/dev/null 2>&1
+}
 
-# -- Start Nitrux PolicyKit agent.
+agent=""
+for candidate in /usr/lib/*/libexec/"$agent_name" "/usr/libexec/$agent_name" "/usr/lib/$agent_name"; do
+    if [[ -x "$candidate" ]]; then
+        agent="$candidate"
+        break
+    fi
+done
 
-ARCH=$(uname -m)
+if [[ -z "$agent" ]]; then
+    warn "PolicyKit agent not found; skipping startup"
+    exit 0
+fi
 
-POLKIT_AGENT="/usr/lib/$ARCH/libexec/polkit-nx-agent"
+if is_running; then
+    exit 0
+fi
 
-[ -x "$POLKIT_AGENT" ] || POLKIT_AGENT="/usr/lib/polkit-nx-agent"
+runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$uid}"
+if [[ ! -d "$runtime_dir" || ! -w "$runtime_dir" ]]; then
+    runtime_dir="${TMPDIR:-/tmp}"
+fi
+lock_file="$runtime_dir/nitrux-polkit-agent.lock"
 
-
-# -- Start the Polkit Agent (Password prompts).
-
-pgrep -fu "$USER" polkit-nx-agent >/dev/null || "$POLKIT_AGENT" &
+if command -v flock >/dev/null 2>&1; then
+    (
+        flock -n 9 || exit 0
+        is_running && exit 0
+        exec "$agent"
+    ) 9>"$lock_file" &
+else
+    "$agent" &
+fi
