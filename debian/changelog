@@ -1,3 +1,10 @@
+nitrux-desktop-settings (8.4.4) nitrux; urgency=medium
+
+  * Remove grimshot.
+  * Remove package dependency on wl-clipboard.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 15 Aug 2026 23:32:00 -0500
+
 nitrux-desktop-settings (8.4.3) nitrux; urgency=medium
 
   * Fix autostart-polkit-agent.
