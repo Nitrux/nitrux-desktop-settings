@@ -168,15 +168,18 @@ local mainMod = "SUPER"
 local laptopLid = "Lid Switch"
 
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
-hl.bind(mainMod .. " + C", hl.dsp.window.close())
-hl.bind(mainMod .. " + M", hl.dsp.exit())
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + W", hl.dsp.exec_cmd(webBrowser))
+
+hl.bind(mainMod .. " + C", hl.dsp.window.close())
+hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({ action = "toggle" }))
+
+hl.bind(mainMod .. " + M", hl.dsp.exit())
+
+hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 
 hl.bind(mainMod .. " + left", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
@@ -204,13 +207,13 @@ hl.bind("switch:" .. laptopLid, hl.dsp.exec_cmd(lockScreen), { locked = true })
 
 hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("pkill wlogout || wlogout"))
 
-hl.bind("Print", hl.dsp.exec_cmd("grimshot -f"))
-hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -s"))
-hl.bind("SHIFT + Print", hl.dsp.exec_cmd("pkill -x slurp || grimshot -w"))
+hl.bind("Print", hl.dsp.exec_cmd("toma screenshot -f"))
+hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("toma screenshot -s"))
+hl.bind("SHIFT + Print", hl.dsp.exec_cmd("toma screenshot -w"))
 
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall marina && marina"))
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall valenz || true && valenz"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("pkill -x marina || marina"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("pkill -x valenz || valenz"))
 
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
