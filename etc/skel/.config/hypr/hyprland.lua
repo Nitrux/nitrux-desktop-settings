@@ -154,6 +154,20 @@ hl.config({
     },
 })
 
+hl.config({
+    gestures = {
+        workspace_swipe_distance = 300,
+        workspace_swipe_invert = true,
+    },
+})
+
+-- Three-finger horizontal swipes navigate between workspaces.
+hl.gesture({
+    fingers = 3,
+    direction = "horizontal",
+    action = "workspace",
+})
+
 hl.device({
     name = "epic-mouse-v1",
     sensitivity = -0.5,
