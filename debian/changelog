@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.4.9) nitrux; urgency=medium
+
+  * Update gtk settings.ini configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 22 Aug 2026 17:40:00 -0500
+
 nitrux-desktop-settings (8.4.8) nitrux; urgency=medium
 
   * Add breeze-gtk-theme as runtime dependency to fix broken links.
