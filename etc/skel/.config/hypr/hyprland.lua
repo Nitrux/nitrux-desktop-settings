@@ -342,6 +342,14 @@ hl.layer_rule({
     ignore_alpha = 0.4,
 })
 
+hl.layer_rule({
+    name = "qmlogout-blur",
+    match = { namespace = "^org.maui.qmlogout$" },
+    blur = true,
+    blur_popups = true,
+    ignore_alpha = 0.4,
+})
+
 
 ----------------
 ---- NO NEWS ---
