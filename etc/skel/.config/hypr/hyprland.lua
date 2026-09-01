@@ -229,15 +229,15 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("nudge-osd --brightness-down"))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(lockScreen))
 hl.bind("switch:" .. laptopLid, hl.dsp.exec_cmd(lockScreen), { locked = true })
 
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("pkill qmlogout || qmlogout"))
+hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("pkill qmlogout || true && qmlogout"))
 
 hl.bind("Print", hl.dsp.exec_cmd("toma screenshot -f"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("toma screenshot -s"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("toma screenshot -w"))
 
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("pkill -x marina || marina"))
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("pkill -x valenz || valenz"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall marina || true && marina"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall valenz || true && valenz"))
 
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
