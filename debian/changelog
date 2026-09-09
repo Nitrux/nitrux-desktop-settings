@@ -1,3 +1,40 @@
+nitrux-desktop-settings (8.5.10-nwsm) nitrux; urgency=medium
+
+  * Remove the standalone kwalletd6 user service and rely on PAM/D-Bus activation for KWallet.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 06 Sep 2026 10:00:00 -0600
+
+nitrux-desktop-settings (8.5.9-nwsm) nitrux; urgency=medium
+
+  * Replace desktop autostart wrappers with supervised OpenRC user services for KDE and PolicyKit daemons.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 06 Sep 2026 07:18:10 -0600
+
+nitrux-desktop-settings (8.5.8-nwsm) nitrux; urgency=medium
+
+  * Fix the OpenRC PolicyKit agent service path for multiarch installations.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 06 Sep 2026 05:33:58 -0600
+
+nitrux-desktop-settings (8.5.7-nwsm) nitrux; urgency=medium
+
+  * Add OpenRC user services for hyprpaper, hypridle, hyprsunset, and MauiManServer.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 06 Sep 2026 05:08:00 -0600
+
+nitrux-desktop-settings (8.5.6-nwsm) nitrux; urgency=medium
+
+  * Removed all entries from user runlevels.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 04 Sep 2026 15:56:00 -0600
+
+nitrux-desktop-settings (8.5.5-nwsm) nitrux; urgency=medium
+
+  * Add OpenRC user services and the desktop runlevel seed for the Workspace Environment.
+  * Update the Hyprland session configuration to publish its environment through nwsm.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Tue, 01 Sep 2026 17:31:33 -0600
+
 nitrux-desktop-settings (8.5.4) nitrux; urgency=medium
 
   * Update hyprland configuration.

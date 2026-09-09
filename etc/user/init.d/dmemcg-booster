@@ -1,0 +1,6 @@
+#!/sbin/openrc-run
+
+supervisor="supervise-daemon"
+supervise_daemon_args="--respawn-delay 1 --respawn-max 5"
+command="/usr/bin/dmemcg-booster"
+command_args="--mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock"

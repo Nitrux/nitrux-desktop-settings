@@ -29,12 +29,10 @@ local webBrowser = "fiery"
 -------------------
 
 hl.on("hyprland.start", function()
-    hl.exec_cmd("dbus-update-activation-environment --all")
-    hl.exec_cmd("autostart-polkit-agent & autostart-kde-daemons & xdg-user-dirs-update & autostart-pipewire & autostart-obexd & MauiManServer")
-    hl.exec_cmd("brightnessctl -s set 48000 & hyprscreend & hyprsunset & openrazer-daemon -F")
-    hl.exec_cmd("nx-sys-usecase & nx-powerd & gamemoded -d & dmemcg-booster --mode agent --focus-provider=hyprland --socket-path /run/dmemcg-booster/focus.sock")
-    hl.exec_cmd("nwg-look -a & hyprpaper & hypridle & valenz & marina & nudge-osd")
-    hl.exec_cmd("nx-apphubd & vicinae server")
+    hl.exec_cmd("nwsm finalize")
+    hl.exec_cmd("brightnessctl -s set 48000")
+    hl.exec_cmd("xdg-user-dirs-update")
+    hl.exec_cmd("nx-sys-usecase")
 end)
 
 
@@ -236,8 +234,8 @@ hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("toma screenshot -s"))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("toma screenshot -w"))
 
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("vicinae vicinae://launch/clipboard/history"))
-hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("killall marina || true && marina"))
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("killall valenz || true && valenz"))
+hl.bind(mainMod .. " + SHIFT + D", hl.dsp.exec_cmd("rc-service -U marina restart"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("rc-service -U valenz restart"))
 
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))

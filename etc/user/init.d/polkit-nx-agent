@@ -1,0 +1,18 @@
+#!/sbin/openrc-run
+
+supervisor="supervise-daemon"
+supervise_daemon_args="--respawn-delay 1 --respawn-max 5"
+
+start_pre() {
+    local candidate
+
+    for candidate in /usr/lib/*/libexec/polkit-nx-agent /usr/libexec/polkit-nx-agent /usr/lib/polkit-nx-agent; do
+        if [ -x "$candidate" ]; then
+            command="$candidate"
+            return 0
+        fi
+    done
+
+    eerror "PolicyKit agent not found"
+    return 1
+}
