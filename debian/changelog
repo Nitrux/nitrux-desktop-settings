@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.5.12) nitrux; urgency=medium
+
+  * Add vicinae's onboarding marker so its welcome dialog shuts up about it.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sat, 19 Sep 2026 04:35:00 -0600
+
 nitrux-desktop-settings (8.5.11) nitrux; urgency=medium
 
   * Merge nwsm-related changes into the main branch.
