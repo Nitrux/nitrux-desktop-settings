@@ -23,11 +23,7 @@
    },
    "theme": {
       "dark": {
-         "name": "maui-wallpaper-dark",
-         "icon_theme": "Lüv"
-      },
-      "light": {
-         "name": "maui-wallpaper-light",
+         "name": "catppuccin-mocha",
          "icon_theme": "Lüv"
       }
    },
