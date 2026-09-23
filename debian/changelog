@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.6.2) nitrux; urgency=medium
+
+  * Add light and dark Vicinae wallpaper-theme variants to the seed configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Wed, 23 Sep 2026 09:22:13 -0600
+
 nitrux-desktop-settings (8.6.1) nitrux; urgency=medium
 
   * Update vicinae configuration.
