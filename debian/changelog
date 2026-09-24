@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.6.5) nitrux; urgency=medium
+
+  * Update marina configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 24 Sep 2026 14:32:00 -0600
+
 nitrux-desktop-settings (8.6.4) nitrux; urgency=medium
 
   * Revert vicinae config.
