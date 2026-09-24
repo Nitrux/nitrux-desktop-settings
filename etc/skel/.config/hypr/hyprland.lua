@@ -242,6 +242,19 @@ hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"))
 
+hl.bind("SUPER_L",
+    hl.dsp.global("org.maui.marina:launcher-hold"),
+    {
+        ignore_mods = true,
+        transparent = true
+    })
+
+for index = 1, 10 do
+    local key = index % 10
+    hl.bind("SUPER + CTRL + " .. key,
+        hl.dsp.global("org.maui.marina:launcher-" .. index))
+end
+
 
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
