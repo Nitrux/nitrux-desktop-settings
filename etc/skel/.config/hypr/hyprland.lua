@@ -227,7 +227,7 @@ hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("nudge-osd --brightness-down"))
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd(lockScreen))
 hl.bind("switch:" .. laptopLid, hl.dsp.exec_cmd(lockScreen), { locked = true })
 
-hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("pkill qmlogout || true && qmlogout"))
+hl.bind(mainMod .. " + SHIFT + P", hl.dsp.exec_cmd("qmlogout"))
 
 hl.bind("Print", hl.dsp.exec_cmd("toma screenshot -f"))
 hl.bind(mainMod .. " + Print", hl.dsp.exec_cmd("toma screenshot -s"))
