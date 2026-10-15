@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.7.0) nitrux; urgency=medium
+
+  * Update marina configuration.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Thu, 15 Oct 2026 07:35:00 -0600
+
 nitrux-desktop-settings (8.6.9) nitrux; urgency=medium
 
   * Update hyprland configuration.
