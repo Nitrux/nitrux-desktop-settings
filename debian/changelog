@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.7.1) nitrux; urgency=medium
+
+  * Remove shell wrappers used to present the Aesthetic FHS layout.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Mon, 02 Nov 2026 16:22:16 -0600
+
 nitrux-desktop-settings (8.7.0) nitrux; urgency=medium
 
   * Update marina configuration.
