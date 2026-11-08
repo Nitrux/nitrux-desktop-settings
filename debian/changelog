@@ -1,3 +1,9 @@
+nitrux-desktop-settings (8.7.2) nitrux; urgency=medium
+
+  * Allow desktop session and toolkit variables through OpenRC user services.
+
+ -- Uri Herrera <uri_herrera@nxos.org>  Sun, 08 Nov 2026 01:22:56 -0600
+
 nitrux-desktop-settings (8.7.1) nitrux; urgency=medium
 
   * Remove shell wrappers used to present the Aesthetic FHS layout.
